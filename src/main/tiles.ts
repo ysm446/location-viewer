@@ -1,25 +1,17 @@
-// Web Mercator (slippy map) のタイル座標計算 + Mapbox タイルのダウンロード。
+// Mapbox タイルのダウンロード + 必要タイル範囲・クロップ領域の計算。
 // 記事の Mercantile 相当の処理を自前実装している。
+// 座標変換式（ピクセル⇔経緯度）は renderer と共有するため shared/mercator.ts に集約。
 
-export const TILE_SIZE = 512 // @2x タイルを使うので 512px
+import { TILE_SIZE, lonToPixelX, latToPixelY } from '../shared/mercator'
+
+// 既存の main 側 import 互換のため再エクスポートする
+export { TILE_SIZE, lonToPixelX, latToPixelY }
 
 export interface BBox {
   west: number
   south: number
   east: number
   north: number
-}
-
-/** 経度 → ピクセルX座標（ズーム z, タイルサイズ TILE_SIZE 基準の絶対ピクセル） */
-export function lonToPixelX(lon: number, z: number): number {
-  return ((lon + 180) / 360) * Math.pow(2, z) * TILE_SIZE
-}
-
-/** 緯度 → ピクセルY座標（Web Mercator） */
-export function latToPixelY(lat: number, z: number): number {
-  const latRad = (lat * Math.PI) / 180
-  const y = (1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2
-  return y * Math.pow(2, z) * TILE_SIZE
 }
 
 export interface PixelRegion {

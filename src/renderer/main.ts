@@ -4,6 +4,13 @@ import './style.css'
 import type { Api, MeshPayload, LibraryEntry, SatelliteTilesPayload } from '../preload/index'
 import { TerrainViewer } from './viewer3d'
 import { t, setLang, getLang, applyDom, type Lang } from './i18n'
+import {
+  TILE_SIZE as TILE,
+  lonToPixelX as lonPx,
+  latToPixelY as latPx,
+  pixelXToLon as pxLon,
+  pixelYToLat as pxLat
+} from '../shared/mercator'
 
 // ライブラリ操作のアイコン（インラインSVG, currentColor で配色）
 const ICON_EDIT =
@@ -427,24 +434,7 @@ for (const el of [westI, eastI, southI, northI]) {
   })
 }
 
-// ---- 解像度の推定（メイン側 tiles.ts と同じ式） ----
-const TILE = 512
-function lonPx(lon: number, z: number) {
-  return ((lon + 180) / 360) * 2 ** z * TILE
-}
-function latPx(lat: number, z: number) {
-  const r = (lat * Math.PI) / 180
-  return ((1 - Math.asinh(Math.tan(r)) / Math.PI) / 2) * 2 ** z * TILE
-}
-// 逆変換（ピクセル → 経度・緯度）
-function pxLon(px: number, z: number) {
-  return (px / (2 ** z * TILE)) * 360 - 180
-}
-function pxLat(px: number, z: number) {
-  const yNorm = px / (2 ** z * TILE)
-  const latRad = Math.atan(Math.sinh((1 - 2 * yNorm) * Math.PI))
-  return (latRad * 180) / Math.PI
-}
+// ---- 解像度の推定（座標変換は shared/mercator.ts を使用） ----
 
 /** 最も近い 2 のべき乗に丸める（最小32px） */
 function nearestPow2(px: number): number {

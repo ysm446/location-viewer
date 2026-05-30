@@ -3,6 +3,10 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-05-30
+- リファクタリング（挙動変更なし）：
+  - Web Mercator 座標変換式を `src/shared/mercator.ts` に集約し、メイン（`tiles.ts`）とレンダラー（`main.ts` の解像度推定・スナップ）の重複を解消。`tiles.ts` は互換のため再エクスポート。
+  - `heightmap.ts` の `buildMeshData` と `meshFromValues16` のほぼ同一なダウンサンプリング処理を内部ヘルパ `downsampleToMesh`（サンプラ関数で差分吸収）へ共通化。
+  - `buildHeightField` の未使用 `tileX0/tileY0`（`void` で握りつぶし）を分割代入から除去。
 - ライブラリ：名前変更/削除ボタンをアイコン化（インラインSVG、ツールチップ付き）。
 - ライブラリ：空だったサムネ枠に各アイテムの画像を表示（衛星画像優先、なければグレースケールプレビュー。`library:thumb` IPC / `getThumb` を追加）。
 - Electron 既定のアプリメニュー（File/Edit/View…）を非表示化（Menu.setApplicationMenu(null)）。

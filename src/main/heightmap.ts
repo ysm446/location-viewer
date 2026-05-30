@@ -19,7 +19,7 @@ export interface HeightField {
 
 /** ダウンロードしたタイル群を合成し、クロップして標高フィールドを作る */
 export function buildHeightField(tiles: DownloadedTile[], region: PixelRegion): HeightField {
-  const { tileX0, tileY0, outWidth, outHeight, left, top } = region
+  const { outWidth, outHeight, left, top } = region
 
   // タイルを (x,y) で引けるようにする
   const tileMap = new Map<string, PNG>()
@@ -56,10 +56,6 @@ export function buildHeightField(tiles: DownloadedTile[], region: PixelRegion): 
       if (ele > maxEle) maxEle = ele
     }
   }
-
-  // 念のため tileX0/tileY0 を参照（未使用警告回避・将来のデバッグ用）
-  void tileX0
-  void tileY0
 
   return { width: outWidth, height: outHeight, data, minEle, maxEle }
 }
@@ -129,31 +125,44 @@ export interface MeshData {
 }
 
 /**
- * 3Dプレビュー用に標高フィールドを最大 maxDim 頂点までダウンサンプリングする。
- * （フル解像度をそのままGPUへ送ると重いため）
+ * フル解像度のフィールドを最大 maxDim 頂点までダウンサンプリングして 3Dメッシュ用の
+ * 標高グリッドを作る（フル解像度をそのままGPUへ送ると重いため）。
+ * 元データ（標高 float か正規化16bit）の違いは sample コールバックで吸収する。
  */
-export function buildMeshData(hf: HeightField, maxDim = 256): MeshData {
-  const scale = Math.max(1, Math.ceil(Math.max(hf.width, hf.height) / maxDim))
-  const cols = Math.max(2, Math.floor(hf.width / scale))
-  const rows = Math.max(2, Math.floor(hf.height / scale))
+function downsampleToMesh(
+  width: number,
+  height: number,
+  minEle: number,
+  maxEle: number,
+  maxDim: number,
+  sample: (sx: number, sy: number) => number
+): MeshData {
+  const scale = Math.max(1, Math.ceil(Math.max(width, height) / maxDim))
+  const cols = Math.max(2, Math.floor(width / scale))
+  const rows = Math.max(2, Math.floor(height / scale))
   const heights = new Float32Array(cols * rows)
 
   for (let r = 0; r < rows; r++) {
-    const sy = Math.min(hf.height - 1, Math.floor((r / (rows - 1)) * (hf.height - 1)))
+    const sy = Math.min(height - 1, Math.floor((r / (rows - 1)) * (height - 1)))
     for (let c = 0; c < cols; c++) {
-      const sx = Math.min(hf.width - 1, Math.floor((c / (cols - 1)) * (hf.width - 1)))
-      heights[r * cols + c] = hf.data[sy * hf.width + sx]
+      const sx = Math.min(width - 1, Math.floor((c / (cols - 1)) * (width - 1)))
+      heights[r * cols + c] = sample(sx, sy)
     }
   }
 
-  return {
-    cols,
-    rows,
-    heights,
-    minEle: hf.minEle,
-    maxEle: hf.maxEle,
-    aspect: hf.width / hf.height
-  }
+  return { cols, rows, heights, minEle, maxEle, aspect: width / height }
+}
+
+/** 標高フィールド（生成直後, 標高メートルの float）から 3Dメッシュ用データを作る */
+export function buildMeshData(hf: HeightField, maxDim = 256): MeshData {
+  return downsampleToMesh(
+    hf.width,
+    hf.height,
+    hf.minEle,
+    hf.maxEle,
+    maxDim,
+    (sx, sy) => hf.data[sy * hf.width + sx]
+  )
 }
 
 /**
@@ -169,21 +178,10 @@ export function meshFromValues16(
   maxDim = 256
 ): MeshData {
   const span = maxEle - minEle || 1
-  const scale = Math.max(1, Math.ceil(Math.max(width, height) / maxDim))
-  const cols = Math.max(2, Math.floor(width / scale))
-  const rows = Math.max(2, Math.floor(height / scale))
-  const heights = new Float32Array(cols * rows)
-
-  for (let r = 0; r < rows; r++) {
-    const sy = Math.min(height - 1, Math.floor((r / (rows - 1)) * (height - 1)))
-    for (let c = 0; c < cols; c++) {
-      const sx = Math.min(width - 1, Math.floor((c / (cols - 1)) * (width - 1)))
-      const v = values16[sy * width + sx]
-      heights[r * cols + c] = minEle + (v / 65535) * span
-    }
-  }
-
-  return { cols, rows, heights, minEle, maxEle, aspect: width / height }
+  return downsampleToMesh(width, height, minEle, maxEle, maxDim, (sx, sy) => {
+    const v = values16[sy * width + sx]
+    return minEle + (v / 65535) * span
+  })
 }
 
 /** プレビュー用に 8bit グレースケール PNG（DataURL用 Buffer）を作る */
