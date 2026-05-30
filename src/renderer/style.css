@@ -484,6 +484,24 @@ button.primary:hover {
   color: var(--danger-text);
 }
 
+/* ワークスペース詳細ビューの戻るリンク・名前 */
+.back-link {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--accent-bright);
+  font-size: 12px;
+  cursor: pointer;
+}
+.back-link:hover {
+  text-decoration: underline;
+}
+.ws-detail-name {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
 /* ランドマーク（地点）編集パネル */
 #btn-add-landmark.active {
   background: var(--accent);

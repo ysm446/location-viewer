@@ -57,10 +57,23 @@ const btnUpdateTerrain = $<HTMLButtonElement>('btn-update-terrain')
 const libList = $<HTMLUListElement>('library-list')
 const libCount = $('lib-count')
 const selectedInfo = $('selected-info')
-const landmarkCard = $('landmark-card')
+const wsListView = $('ws-list-view')
+const wsDetailView = $('ws-detail-view')
+const wsBack = $('ws-back')
+const wsDetailName = $('ws-detail-name')
 const landmarkList = $<HTMLUListElement>('landmark-list')
 const landmarkHint = $('landmark-hint')
 const btnAddLandmark = $<HTMLButtonElement>('btn-add-landmark')
+
+/** 右ペインを 一覧⇔詳細（ワークスペースの中）で切り替える */
+function showWorkspaceDetail(on: boolean) {
+  wsListView.classList.toggle('hidden', on)
+  wsDetailView.classList.toggle('hidden', !on)
+}
+wsBack.addEventListener('click', () => {
+  setPlaceMode(false)
+  showWorkspaceDetail(false)
+})
 
 let token = ''
 let viewer: TerrainViewer | null = null
@@ -733,11 +746,12 @@ function showPreview(
   // 3Dビューポート上の寸法情報を更新
   updateViewer3dInfo(mesh, h)
 
-  // このワークスペースのランドマークを反映
+  // このワークスペースのランドマークを反映し、詳細ビュー（中の階層）へ
   setPlaceMode(false)
   landmarks = workspace.landmarks
   viewer?.setLandmarks(landmarks)
-  landmarkCard.hidden = false
+  wsDetailName.textContent = workspace.name
+  showWorkspaceDetail(true)
   renderLandmarkPanel()
 }
 
@@ -759,7 +773,7 @@ function clearAnnotations() {
   setPlaceMode(false)
   landmarks = []
   viewer?.setLandmarks([])
-  landmarkCard.hidden = true
+  showWorkspaceDetail(false)
   renderLandmarkPanel()
 }
 

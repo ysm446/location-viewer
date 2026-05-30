@@ -3,7 +3,8 @@ setlocal
 rem ============================================================
 rem  Mapbox Heightmap Importer - launcher
 rem  Installs dependencies on first run, then starts dev mode.
-rem  Keeps the window open on error so messages stay visible.
+rem  The window closes automatically when the app exits normally.
+rem  On setup/start errors it stays open so messages stay visible.
 rem ============================================================
 cd /d "%~dp0"
 
@@ -22,12 +23,19 @@ if not exist "node_modules" (
     )
 )
 
-echo Starting app... [keep this window open]
+echo Starting app... [this window closes when the app exits]
 call npm run dev
-echo.
-echo [EXIT] App closed. If an error is shown above, please check it.
+if errorlevel 1 (
+    echo.
+    echo [ERROR] The app exited with an error.
+    goto :hold
+)
+rem Normal exit: close this window without pausing.
+goto :done
 
 :hold
 echo.
 pause
+
+:done
 endlocal
