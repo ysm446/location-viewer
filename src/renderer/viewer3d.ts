@@ -2,7 +2,16 @@
 // 平面ジオメトリの各頂点 Z を標高で押し出す（displacement 相当）。
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import type { MeshPayload } from '../preload/index'
+import type { MeshPayload, Landmark } from '../preload/index'
+
+/** lng/lat → メッシュのローカル座標変換に必要な情報 */
+interface GeoContext {
+  bbox: { west: number; south: number; east: number; north: number }
+  minEle: number
+  widthMeters: number
+  heightMeters: number
+  k: number // 表示用の一様スケール
+}
 
 export class TerrainViewer {
   private renderer: THREE.WebGLRenderer
@@ -22,6 +31,14 @@ export class TerrainViewer {
   /** 衛星テクスチャ（読み込み済み）と表示 ON/OFF */
   private satelliteTex: THREE.Texture | null = null
   private useSatellite = true
+  // ランドマーク（地点）描画
+  private geo: GeoContext | null = null
+  private landmarks: Landmark[] = []
+  private landmarkGroup: THREE.Group | null = null
+  // 3Dクリックで地点を配置するモード
+  private raycaster = new THREE.Raycaster()
+  private placeMode = false
+  private onPlace: ((lng: number, lat: number) => void) | null = null
 
   constructor(container: HTMLElement) {
     this.container = container
@@ -48,6 +65,39 @@ export class TerrainViewer {
     // 中ボタンドラッグでブラウザの自動スクロールが出ないように抑止
     this.renderer.domElement.addEventListener('pointerdown', (e) => {
       if (e.button === 1) e.preventDefault()
+    })
+
+    // 配置モード時：左クリック（ドラッグでない）で地形にレイキャストして地点を打つ
+    let downX = 0
+    let downY = 0
+    let moved = false
+    const dom = this.renderer.domElement
+    dom.addEventListener('pointerdown', (e) => {
+      if (e.button === 0) {
+        downX = e.clientX
+        downY = e.clientY
+        moved = false
+      }
+    })
+    dom.addEventListener('pointermove', (e) => {
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) > 4) moved = true
+    })
+    dom.addEventListener('pointerup', (e) => {
+      if (e.button !== 0 || !this.placeMode || moved || !this.mesh || !this.geo) return
+      const rect = dom.getBoundingClientRect()
+      const ndc = new THREE.Vector2(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1
+      )
+      this.raycaster.setFromCamera(ndc, this.camera)
+      const hit = this.raycaster.intersectObject(this.mesh)[0]
+      if (!hit) return
+      const g = this.geo
+      const u = hit.point.x / (g.widthMeters * g.k) + 0.5
+      const v = hit.point.z / (g.heightMeters * g.k) + 0.5
+      const lng = g.bbox.west + u * (g.bbox.east - g.bbox.west)
+      const lat = g.bbox.north - v * (g.bbox.north - g.bbox.south)
+      this.onPlace?.(lng, lat)
     })
 
     // ライティング
@@ -82,6 +132,71 @@ export class TerrainViewer {
     mk(new THREE.Vector3(0, 1, 0), 0x55ff55) // 上方向は矢印のみ（ラベルなし）
     mk(new THREE.Vector3(0, 0, -1), 0x5599ff, 'N')
     this.gizmoCamera.position.set(0, 0, 3)
+  }
+
+  /** ランドマーク一覧を設定して描画する */
+  setLandmarks(landmarks: Landmark[]) {
+    this.landmarks = landmarks
+    this.renderLandmarks()
+  }
+
+  /** 3Dクリックで地点を配置するモードの ON/OFF。cb に lng/lat を返す */
+  setPlaceMode(on: boolean, cb?: (lng: number, lat: number) => void) {
+    this.placeMode = on
+    this.onPlace = on ? cb ?? null : null
+    this.renderer.domElement.style.cursor = on ? 'crosshair' : ''
+    // 配置中は誤回転を避けるため左ドラッグ回転を一時停止
+    this.controls.enableRotate = !on
+  }
+
+  /** 現在の geo と landmarks からマーカー（リーダー線＋ラベル）を作り直す */
+  private renderLandmarks() {
+    if (this.landmarkGroup) {
+      this.scene.remove(this.landmarkGroup)
+      this.landmarkGroup.traverse((o) => {
+        const any = o as THREE.Mesh & THREE.Sprite
+        any.geometry?.dispose?.()
+        const m = any.material as THREE.Material & { map?: THREE.Texture }
+        if (m) {
+          m.map?.dispose?.()
+          m.dispose?.()
+        }
+      })
+      this.landmarkGroup = null
+    }
+    const g = this.geo
+    if (!g || this.landmarks.length === 0) return
+
+    const group = new THREE.Group()
+    const stem = 0.4 // リーダー線の長さ（ワールド単位。シーンの最大辺=2基準）
+    for (const lm of this.landmarks) {
+      const u = (lm.lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
+      const v = (g.bbox.north - lm.lat) / (g.bbox.north - g.bbox.south || 1)
+      const x = (u - 0.5) * g.widthMeters * g.k
+      const z = (v - 0.5) * g.heightMeters * g.k
+      const surfaceY = (lm.elevation - g.minEle) * g.k
+      const topY = surfaceY + stem
+
+      // リーダー線（地形に隠れず常に見えるよう深度テスト無効）
+      const lineGeo = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(x, surfaceY, z),
+        new THREE.Vector3(x, topY, z)
+      ])
+      const line = new THREE.Line(
+        lineGeo,
+        new THREE.LineBasicMaterial({ color: 0xcccccc, depthTest: false, transparent: true })
+      )
+      line.renderOrder = 10
+      group.add(line)
+
+      // ラベル（名前＋標高）
+      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.085)
+      label.position.set(x, topY + 0.06, z)
+      label.renderOrder = 11
+      group.add(label)
+    }
+    this.scene.add(group)
+    this.landmarkGroup = group
   }
 
   /** 衛星テクスチャを設定（dataURL）。null でテクスチャなしに戻す。 */
@@ -186,6 +301,10 @@ export class TerrainViewer {
     const k = 2 / maxDim
     this.mesh.scale.setScalar(k)
     this.scene.add(this.mesh)
+
+    // ランドマークの座標変換コンテキストを更新し、再描画する
+    this.geo = { bbox: payload.bbox, minEle, widthMeters, heightMeters, k }
+    this.renderLandmarks()
 
     // グリッド（地表の基準面 y=0 に配置）。1マスをきりの良い実距離にする。
     const gridStep = niceStep(maxDim / 10) // 約10分割になる実距離(m)
@@ -293,43 +412,50 @@ export class TerrainViewer {
       sp.material.map?.dispose()
       sp.material.dispose()
     }
+    this.landmarks = []
+    this.renderLandmarks() // グループとテクスチャを破棄
     this.renderer.dispose()
   }
 }
 
 /**
- * テキストを描いた小さなラベル板（Sprite）を作る。文字幅に合わせて canvas を
- * サイズ調整し、ワールド上では小さめに表示する。color は 0xRRGGBB。
+ * テキストを描いた小さなラベル板（Sprite）を作る。"\n" で複数行に対応。
+ * 文字幅・行数に合わせて canvas をサイズ調整し、ワールド上では小さめに表示する。
+ * color は 0xRRGGBB、worldH は1行あたりのワールド高さ。
  */
-function makeLabelSprite(text: string, color = 0x9fc2e8): THREE.Sprite {
+function makeLabelSprite(text: string, color = 0x9fc2e8, worldH = 0.06): THREE.Sprite {
   const fontPx = 48
   const pad = 10
+  const lineH = fontPx * 1.15
+  const lines = text.split('\n')
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')!
   const font = `${fontPx}px Segoe UI, sans-serif`
   ctx.font = font
-  const w = Math.ceil(ctx.measureText(text).width) + pad * 2
-  const h = fontPx + pad * 2
+  const w = Math.ceil(Math.max(...lines.map((l) => ctx.measureText(l).width))) + pad * 2
+  const h = Math.ceil(lineH * lines.length) + pad * 2
   canvas.width = w
   canvas.height = h
   // canvas をリサイズすると context がクリアされるので font を再設定する
   ctx.font = font
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  // 縁取り（黒）で視認性を確保
   ctx.lineWidth = 6
   ctx.strokeStyle = 'rgba(0,0,0,0.85)'
-  ctx.strokeText(text, w / 2, h / 2)
   ctx.fillStyle = '#' + color.toString(16).padStart(6, '0')
-  ctx.fillText(text, w / 2, h / 2)
+  lines.forEach((l, i) => {
+    const cy = pad + lineH * (i + 0.5)
+    ctx.strokeText(l, w / 2, cy) // 縁取り（黒）で視認性を確保
+    ctx.fillText(l, w / 2, cy)
+  })
 
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
   const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true })
   const sp = new THREE.Sprite(mat)
-  // ワールドでの高さ（小さめ）。文字のアスペクト比を保って横幅を決める。
-  const worldH = 0.06
-  sp.scale.set(worldH * (w / h), worldH, 1)
+  // 文字のアスペクト比を保って横幅を決める（worldH は1行ぶんの高さ基準）
+  const totalH = worldH * lines.length
+  sp.scale.set(totalH * (w / h), totalH, 1)
   return sp
 }
 

@@ -1,22 +1,38 @@
-// 生成したハイトマップを data/ フォルダ内に保存し、一覧・選択・削除するライブラリ。
+// ワークスペース管理。
 //
-// 各アイテムの保存物（data/ 内）:
-//   <id>.u16            … 全解像度の正規化16bit値（Uint16, リトルエンディアン）= 唯一の真実
-//   <id>.preview.png    … 2Dタブ用の8bitプレビュー
-//   <id>.satellite.png  … 衛星画像テクスチャ（任意。3Dメッシュに貼る）
-//   library.json        … 索引（メタ情報の配列）
+// 「ワークスペース」が最上位の入れ物で、ハイトマップ（地形）と地点（ランドマーク）を持つ。
+// ハイトマップはワークスペース内で更新（再生成・差し替え）でき、地点は lng/lat で保持されるため
+// 地形を更新しても残る。
 //
-// PNG16 / R16 のエクスポートは <id>.u16 から都度生成する。
+// 保存レイアウト（data/<id>/）:
+//   workspace.json   … メタ（名前・作成日・order）＋ heightmap メタ ＋ landmarks
+//   heightmap.u16    … 全解像度の正規化16bit値（Uint16, LE）= 地形の真実
+//   preview.png      … 2Dタブ用の8bitプレビュー
+//   satellite.png    … 衛星テクスチャ（任意）
+//
+// 旧フラット構成（data/library.json + <id>.u16 等）は起動時に自動でフォルダへ移行する。
 import { promises as fs } from 'fs'
 import { join } from 'path'
 import type { BBox } from './tiles'
 
-const INDEX_FILE = 'library.json'
+const WS_FILE = 'workspace.json'
+const U16_FILE = 'heightmap.u16'
+const PREVIEW_FILE = 'preview.png'
+const SATELLITE_FILE = 'satellite.png'
+const LEGACY_INDEX = 'library.json'
 
-export interface LibraryEntry {
+/** 地形上のランドマーク（点）。座標は緯度経度で持ち、3D描画時にメッシュ座標へ変換する */
+export interface Landmark {
   id: string
   name: string
-  createdAt: number
+  lng: number
+  lat: number
+  /** 標高(メートル)。配置時にハイトマップからサンプリングするが手入力で上書き可 */
+  elevation: number
+}
+
+/** ワークスペースが現在保持するハイトマップ（地形）のメタ情報 */
+export interface HeightmapMeta {
   bbox: BBox
   zoom: number
   sourceId: string
@@ -24,113 +40,171 @@ export interface LibraryEntry {
   height: number
   minEle: number
   maxEle: number
-  /** 衛星テクスチャ（<id>.satellite.png）を保存しているか */
+  /** 衛星テクスチャ（satellite.png）を保存しているか */
   hasSatellite?: boolean
-  /** 手動並べ替え後の表示順（小さいほど上）。未設定なら createdAt 降順で並べる */
-  order?: number
+  /** 地形を生成/更新した日時 */
+  updatedAt: number
 }
 
-function indexPath(dir: string): string {
-  return join(dir, INDEX_FILE)
+/** 最上位の入れ物。ハイトマップ1つと地点群を持つ */
+export interface Workspace {
+  id: string
+  name: string
+  createdAt: number
+  /** 手動並べ替え後の表示順（小さいほど上）。未設定なら createdAt 降順 */
+  order?: number
+  heightmap: HeightmapMeta
+  landmarks: Landmark[]
+}
+
+function wsDir(dir: string, id: string): string {
+  return join(dir, id)
+}
+function wsJsonPath(dir: string, id: string): string {
+  return join(dir, id, WS_FILE)
 }
 function u16Path(dir: string, id: string): string {
-  return join(dir, `${id}.u16`)
+  return join(dir, id, U16_FILE)
 }
 function previewPath(dir: string, id: string): string {
-  return join(dir, `${id}.preview.png`)
+  return join(dir, id, PREVIEW_FILE)
 }
 function satellitePath(dir: string, id: string): string {
-  return join(dir, `${id}.satellite.png`)
+  return join(dir, id, SATELLITE_FILE)
 }
 
-export async function readIndex(dir: string): Promise<LibraryEntry[]> {
+async function readWorkspaceFile(dir: string, id: string): Promise<Workspace | null> {
   try {
-    const txt = await fs.readFile(indexPath(dir), 'utf-8')
-    const arr = JSON.parse(txt) as LibraryEntry[]
-    // 全件に手動並べ替えの order があればそれに従う。なければ従来通り新着順。
-    const allOrdered = arr.length > 0 && arr.every((e) => typeof e.order === 'number')
-    if (allOrdered) return arr.sort((a, b) => a.order! - b.order!)
-    return arr.sort((a, b) => b.createdAt - a.createdAt)
+    const w = JSON.parse(await fs.readFile(wsJsonPath(dir, id), 'utf-8')) as Workspace
+    w.landmarks = w.landmarks ?? []
+    return w
+  } catch {
+    return null
+  }
+}
+
+async function writeWorkspaceFile(dir: string, ws: Workspace): Promise<void> {
+  await fs.mkdir(wsDir(dir, ws.id), { recursive: true })
+  await fs.writeFile(wsJsonPath(dir, ws.id), JSON.stringify(ws, null, 2), 'utf-8')
+}
+
+async function writeU16(dir: string, id: string, values16: Uint16Array): Promise<void> {
+  const buf = Buffer.from(values16.buffer, values16.byteOffset, values16.byteLength)
+  await fs.writeFile(u16Path(dir, id), buf)
+}
+
+/** 全ワークスペースを一覧する（初回にレガシー構成を移行） */
+export async function listWorkspaces(dir: string): Promise<Workspace[]> {
+  await migrateLegacy(dir)
+  let dirents: import('fs').Dirent[] = []
+  try {
+    dirents = await fs.readdir(dir, { withFileTypes: true })
   } catch {
     return []
   }
+  const out: Workspace[] = []
+  for (const d of dirents) {
+    if (!d.isDirectory()) continue
+    const w = await readWorkspaceFile(dir, d.name)
+    if (w) out.push(w)
+  }
+  const allOrdered = out.length > 0 && out.every((w) => typeof w.order === 'number')
+  if (allOrdered) return out.sort((a, b) => a.order! - b.order!)
+  return out.sort((a, b) => b.createdAt - a.createdAt)
 }
 
-async function writeIndex(dir: string, entries: LibraryEntry[]): Promise<void> {
-  await fs.writeFile(indexPath(dir), JSON.stringify(entries, null, 2), 'utf-8')
+export async function getWorkspace(dir: string, id: string): Promise<Workspace | null> {
+  return readWorkspaceFile(dir, id)
 }
 
-/** 新規アイテムを保存して索引に追加する */
-export async function addEntry(
+/** 新規ワークスペースを作成（地形データ＋メタを書き込む） */
+export async function createWorkspace(
   dir: string,
-  entry: LibraryEntry,
+  ws: Workspace,
   values16: Uint16Array,
   previewPng: Buffer
 ): Promise<void> {
-  // Uint16 をリトルエンディアンのバイト列で保存
-  const buf = Buffer.from(values16.buffer, values16.byteOffset, values16.byteLength)
-  await fs.writeFile(u16Path(dir, entry.id), buf)
-  await fs.writeFile(previewPath(dir, entry.id), previewPng)
-
-  const entries = await readIndex(dir)
-  // 既に手動並べ替え済み（全件 order あり）なら、新規は先頭（最小 order - 1）に置く
-  const allOrdered = entries.length > 0 && entries.every((e) => typeof e.order === 'number')
-  if (allOrdered) {
-    entry.order = Math.min(...entries.map((e) => e.order!)) - 1
-  }
-  entries.push(entry)
-  await writeIndex(dir, entries)
+  await fs.mkdir(wsDir(dir, ws.id), { recursive: true })
+  await writeU16(dir, ws.id, values16)
+  await fs.writeFile(previewPath(dir, ws.id), previewPng)
+  await writeWorkspaceFile(dir, ws)
 }
 
-/** ライブラリの表示順を、与えられた id 配列の順に並べ替えて保存する */
-export async function reorderEntries(dir: string, ids: string[]): Promise<boolean> {
-  const entries = await readIndex(dir)
-  const rank = new Map(ids.map((id, i) => [id, i]))
-  for (const e of entries) {
-    // 与えられた配列にない id は末尾へ
-    e.order = rank.has(e.id) ? rank.get(e.id)! : ids.length
-  }
-  await writeIndex(dir, entries)
-  return true
-}
-
-/** 合成済み衛星 PNG を保存し、索引の hasSatellite を立てる */
-export async function saveSatellite(dir: string, id: string, png: Buffer): Promise<void> {
-  await fs.writeFile(satellitePath(dir, id), png)
-  const entries = await readIndex(dir)
-  const e = findEntry(entries, id)
-  if (e) {
-    e.hasSatellite = true
-    await writeIndex(dir, entries)
-  }
-}
-
-/** アイテムの表示名を変更する */
-export async function renameEntry(dir: string, id: string, name: string): Promise<boolean> {
-  const entries = await readIndex(dir)
-  const e = findEntry(entries, id)
-  if (!e) return false
-  e.name = name
-  await writeIndex(dir, entries)
-  return true
-}
-
-/** アイテムを削除（ファイル＋索引） */
-export async function deleteEntry(dir: string, id: string): Promise<boolean> {
-  const entries = await readIndex(dir)
-  const next = entries.filter((e) => e.id !== id)
-  if (next.length === entries.length) return false
-  await writeIndex(dir, next)
-  await fs.rm(u16Path(dir, id), { force: true })
-  await fs.rm(previewPath(dir, id), { force: true })
+/**
+ * 既存ワークスペースの地形を更新（上書き）する。landmarks は保持。
+ * 古い衛星テクスチャは破棄し hasSatellite を false に戻す（範囲が変わり得るため）。
+ */
+export async function updateHeightmap(
+  dir: string,
+  id: string,
+  heightmap: HeightmapMeta,
+  values16: Uint16Array,
+  previewPng: Buffer
+): Promise<Workspace | null> {
+  const w = await readWorkspaceFile(dir, id)
+  if (!w) return null
+  await writeU16(dir, id, values16)
+  await fs.writeFile(previewPath(dir, id), previewPng)
   await fs.rm(satellitePath(dir, id), { force: true })
+  w.heightmap = { ...heightmap, hasSatellite: false }
+  await writeWorkspaceFile(dir, w)
+  return w
+}
+
+/** 合成済み衛星 PNG を保存し、hasSatellite を立てる */
+export async function saveSatellite(dir: string, id: string, png: Buffer): Promise<void> {
+  const w = await readWorkspaceFile(dir, id)
+  if (!w) return
+  await fs.writeFile(satellitePath(dir, id), png)
+  w.heightmap.hasSatellite = true
+  await writeWorkspaceFile(dir, w)
+}
+
+export async function renameWorkspace(dir: string, id: string, name: string): Promise<boolean> {
+  const w = await readWorkspaceFile(dir, id)
+  if (!w) return false
+  w.name = name
+  await writeWorkspaceFile(dir, w)
   return true
 }
 
-/** アイテムの全解像度 16bit 値を読み出す */
+export async function deleteWorkspace(dir: string, id: string): Promise<boolean> {
+  try {
+    await fs.rm(wsDir(dir, id), { recursive: true, force: true })
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** 表示順を id 配列の順に保存する */
+export async function reorderWorkspaces(dir: string, ids: string[]): Promise<boolean> {
+  for (let i = 0; i < ids.length; i++) {
+    const w = await readWorkspaceFile(dir, ids[i])
+    if (w) {
+      w.order = i
+      await writeWorkspaceFile(dir, w)
+    }
+  }
+  return true
+}
+
+/** ワークスペースのランドマークを保存する */
+export async function saveLandmarks(
+  dir: string,
+  id: string,
+  landmarks: Landmark[]
+): Promise<boolean> {
+  const w = await readWorkspaceFile(dir, id)
+  if (!w) return false
+  w.landmarks = landmarks
+  await writeWorkspaceFile(dir, w)
+  return true
+}
+
+/** ワークスペースの全解像度 16bit 値を読み出す */
 export async function readValues16(dir: string, id: string): Promise<Uint16Array> {
   const buf = await fs.readFile(u16Path(dir, id))
-  // Buffer から独立した Uint16Array を作る（バイト境界に注意）
   const out = new Uint16Array(buf.byteLength / 2)
   for (let i = 0; i < out.length; i++) out[i] = buf.readUInt16LE(i * 2)
   return out
@@ -152,6 +226,73 @@ export async function readSatelliteDataUrl(dir: string, id: string): Promise<str
   }
 }
 
-export function findEntry(entries: LibraryEntry[], id: string): LibraryEntry | undefined {
-  return entries.find((e) => e.id === id)
+async function moveIfExists(from: string, to: string): Promise<void> {
+  try {
+    await fs.rename(from, to)
+  } catch {
+    /* 元ファイルが無ければ無視 */
+  }
+}
+
+/**
+ * 旧フラット構成（data/library.json + <id>.u16 / .preview.png / .satellite.png / .annotations.json）
+ * を data/<id>/ フォルダ構成へ移行する。library.json が無ければ何もしない（移行済み）。
+ */
+async function migrateLegacy(dir: string): Promise<void> {
+  let legacy: Array<{
+    id: string
+    name: string
+    createdAt: number
+    order?: number
+    bbox: BBox
+    zoom: number
+    sourceId: string
+    width: number
+    height: number
+    minEle: number
+    maxEle: number
+    hasSatellite?: boolean
+  }>
+  try {
+    legacy = JSON.parse(await fs.readFile(join(dir, LEGACY_INDEX), 'utf-8'))
+  } catch {
+    return
+  }
+
+  for (const e of legacy) {
+    if (await readWorkspaceFile(dir, e.id)) continue // 既に移行済み
+    await fs.mkdir(wsDir(dir, e.id), { recursive: true })
+    await moveIfExists(join(dir, `${e.id}.u16`), u16Path(dir, e.id))
+    await moveIfExists(join(dir, `${e.id}.preview.png`), previewPath(dir, e.id))
+    await moveIfExists(join(dir, `${e.id}.satellite.png`), satellitePath(dir, e.id))
+
+    let landmarks: Landmark[] = []
+    try {
+      const a = JSON.parse(await fs.readFile(join(dir, `${e.id}.annotations.json`), 'utf-8'))
+      landmarks = a.landmarks ?? []
+    } catch {
+      /* 注記なし */
+    }
+    await fs.rm(join(dir, `${e.id}.annotations.json`), { force: true })
+
+    await writeWorkspaceFile(dir, {
+      id: e.id,
+      name: e.name,
+      createdAt: e.createdAt,
+      order: e.order,
+      heightmap: {
+        bbox: e.bbox,
+        zoom: e.zoom,
+        sourceId: e.sourceId,
+        width: e.width,
+        height: e.height,
+        minEle: e.minEle,
+        maxEle: e.maxEle,
+        hasSatellite: e.hasSatellite,
+        updatedAt: e.createdAt
+      },
+      landmarks
+    })
+  }
+  await fs.rm(join(dir, LEGACY_INDEX), { force: true })
 }

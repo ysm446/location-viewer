@@ -1,7 +1,14 @@
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './style.css'
-import type { Api, MeshPayload, LibraryEntry, SatelliteTilesPayload } from '../preload/index'
+import type {
+  Api,
+  MeshPayload,
+  Workspace,
+  HeightmapMeta,
+  SatelliteTilesPayload,
+  Landmark
+} from '../preload/index'
 import { TerrainViewer } from './viewer3d'
 import { t, setLang, getLang, applyDom, type Lang } from './i18n'
 import {
@@ -46,14 +53,22 @@ const viewer3dInfo = $('viewer3d-info')
 const progress = $('progress')
 const btnExportPng = $<HTMLButtonElement>('btn-export-png')
 const btnExportRaw = $<HTMLButtonElement>('btn-export-raw')
+const btnUpdateTerrain = $<HTMLButtonElement>('btn-update-terrain')
 const libList = $<HTMLUListElement>('library-list')
 const libCount = $('lib-count')
 const selectedInfo = $('selected-info')
+const landmarkCard = $('landmark-card')
+const landmarkList = $<HTMLUListElement>('landmark-list')
+const landmarkHint = $('landmark-hint')
+const btnAddLandmark = $<HTMLButtonElement>('btn-add-landmark')
 
 let token = ''
 let viewer: TerrainViewer | null = null
 let pendingMesh: MeshPayload | null = null // 3Dタブ未生成時の保留データ
 let selectedId: string | null = null
+// 選択中ワークスペースのランドマーク
+let landmarks: Landmark[] = []
+let placeMode = false
 
 // ---- 地図 ----
 // Mapbox の各スタイルを raster タイルとして読み込む（styles/v1 の tiles エンドポイント）
@@ -177,6 +192,7 @@ function refreshDynamicTexts() {
   updateEstimate()
   if (!selectedId) selectedInfo.textContent = t('selected.none')
   refreshLibrary()
+  renderLandmarkPanel()
 }
 
 // 選択範囲の矩形を描画する（四隅のリサイズ用ハンドルも描画）
@@ -582,6 +598,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       pendingMesh = null
       pendingSatellite = null
     }
+    viewer.setLandmarks(landmarks) // 初回生成時にも反映
   }
 }
 tabMap.addEventListener('click', () => showTab('map'))
@@ -684,7 +701,7 @@ function showPreview(
   previewDataUrl: string,
   satelliteDataUrl: string | null,
   mesh: MeshPayload,
-  entry: LibraryEntry
+  workspace: Workspace
 ) {
   previewImg.src = previewDataUrl
   previewImg.style.display = 'block'
@@ -702,21 +719,30 @@ function showPreview(
   // 衛星画像チェックボックスの有効/無効
   useSatellite.disabled = !satelliteDataUrl
 
-  selectedId = entry.id
+  selectedId = workspace.id
+  const h = workspace.heightmap
   const satMark = satelliteDataUrl ? ` / ${t('view3d.satellite')}` : ''
-  selectedInfo.textContent = `${entry.width}×${entry.height}px / ${entry.minEle.toFixed(
+  selectedInfo.textContent = `${h.width}×${h.height}px / ${h.minEle.toFixed(1)}〜${h.maxEle.toFixed(
     1
-  )}〜${entry.maxEle.toFixed(1)}m${satMark}`
+  )}m${satMark}`
   btnExportPng.disabled = false
   btnExportRaw.disabled = false
+  btnUpdateTerrain.disabled = false
   markSelected()
 
   // 3Dビューポート上の寸法情報を更新
-  updateViewer3dInfo(mesh, entry)
+  updateViewer3dInfo(mesh, h)
+
+  // このワークスペースのランドマークを反映
+  setPlaceMode(false)
+  landmarks = workspace.landmarks
+  viewer?.setLandmarks(landmarks)
+  landmarkCard.hidden = false
+  renderLandmarkPanel()
 }
 
 /** 3Dビューポート左上に 縦横(km) / 高さ(標高差) / px を表示する */
-function updateViewer3dInfo(mesh: MeshPayload, entry: LibraryEntry) {
+function updateViewer3dInfo(mesh: MeshPayload, h: HeightmapMeta) {
   const wKm = mesh.widthMeters / 1000
   const hKm = mesh.heightMeters / 1000
   const relief = mesh.maxEle - mesh.minEle // 標高差（高さ=長さ）
@@ -724,7 +750,110 @@ function updateViewer3dInfo(mesh: MeshPayload, entry: LibraryEntry) {
     `<div>${t('view3d.size')}: ${wKm.toFixed(2)} × ${hKm.toFixed(2)} km</div>` +
     `<div>${t('view3d.height')}: ${relief.toFixed(0)} m (${(relief / 1000).toFixed(2)} km)</div>` +
     `<div>${t('view3d.elevation')}: ${mesh.minEle.toFixed(0)} 〜 ${mesh.maxEle.toFixed(0)} m</div>` +
-    `<div>${t('view3d.pixels')}: ${entry.width} × ${entry.height} px</div>`
+    `<div>${t('view3d.pixels')}: ${h.width} × ${h.height} px</div>`
+}
+
+// ---- ランドマーク ----
+/** 選択が無くなったときにランドマーク表示をクリアする */
+function clearAnnotations() {
+  setPlaceMode(false)
+  landmarks = []
+  viewer?.setLandmarks([])
+  landmarkCard.hidden = true
+  renderLandmarkPanel()
+}
+
+async function saveLandmarks() {
+  if (selectedId) await api.saveLandmarks(selectedId, landmarks)
+}
+
+function setPlaceMode(on: boolean) {
+  placeMode = on && !!selectedId
+  btnAddLandmark.classList.toggle('active', placeMode)
+  landmarkHint.hidden = !placeMode
+  viewer?.setPlaceMode(placeMode, onPlaceLandmark)
+}
+
+/** 3Dクリックで地点が打たれたとき：標高をサンプリングして追加・保存 */
+async function onPlaceLandmark(lng: number, lat: number) {
+  if (!selectedId) return
+  const ele = (await api.sampleElevation(selectedId, lng, lat)) ?? 0
+  landmarks.push({
+    id: `lm_${Date.now().toString(36)}`,
+    name: `${t('landmark.defaultName')} ${landmarks.length + 1}`,
+    lng,
+    lat,
+    elevation: ele
+  })
+  await saveLandmarks()
+  viewer?.setLandmarks(landmarks)
+  renderLandmarkPanel()
+}
+
+btnAddLandmark.addEventListener('click', () => {
+  if (!selectedId) return
+  showTab('3d') // 配置は3Dビューで行う
+  setPlaceMode(!placeMode)
+})
+
+/** 右ペインのランドマーク編集パネルを描画する */
+function renderLandmarkPanel() {
+  landmarkList.innerHTML = ''
+  for (const lm of landmarks) {
+    const li = document.createElement('li')
+    li.className = 'lm-item'
+
+    const top = document.createElement('div')
+    top.className = 'lm-top'
+    const name = document.createElement('input')
+    name.className = 'lm-name'
+    name.value = lm.name
+    name.addEventListener('change', async () => {
+      lm.name = name.value
+      await saveLandmarks()
+      viewer?.setLandmarks(landmarks)
+    })
+    const del = document.createElement('button')
+    del.className = 'lib-icon lib-del'
+    del.innerHTML = ICON_DELETE
+    del.title = t('lib.delete')
+    del.setAttribute('aria-label', t('lib.delete'))
+    del.addEventListener('click', async () => {
+      landmarks = landmarks.filter((x) => x.id !== lm.id)
+      await saveLandmarks()
+      viewer?.setLandmarks(landmarks)
+      renderLandmarkPanel()
+    })
+    top.append(name, del)
+
+    const coords = document.createElement('div')
+    coords.className = 'lm-coords'
+    const mkNum = (label: string, val: number, step: string, on: (v: number) => void) => {
+      const wrap = document.createElement('label')
+      wrap.textContent = label
+      const inp = document.createElement('input')
+      inp.type = 'number'
+      inp.step = step
+      inp.value = String(val)
+      inp.addEventListener('change', async () => {
+        const v = parseFloat(inp.value)
+        if (isNaN(v)) return
+        on(v)
+        await saveLandmarks()
+        viewer?.setLandmarks(landmarks)
+      })
+      wrap.appendChild(inp)
+      return wrap
+    }
+    coords.append(
+      mkNum('lat', lm.lat, '0.00001', (v) => (lm.lat = v)),
+      mkNum('lon', lm.lng, '0.00001', (v) => (lm.lng = v)),
+      mkNum(t('landmark.elev'), lm.elevation, '1', (v) => (lm.elevation = v))
+    )
+
+    li.append(top, coords)
+    landmarkList.appendChild(li)
+  }
 }
 
 // ---- 生成 ----
@@ -732,6 +861,24 @@ api.onProgress((p) => {
   progress.textContent = `${t('gen.downloading')} ${p.done}/${p.total} ${t('gen.tiles')}`
 })
 
+/** 衛星画像を取得・合成して保存し、選択中なら 3D に反映する（失敗は無視） */
+async function fetchAndSaveSatellite(wsId: string, bbox: ReturnType<typeof currentBBox>, zoom: number) {
+  try {
+    progress.textContent = t('gen.fetchingSatellite')
+    const sat = await api.fetchSatellite(bbox, zoom)
+    const pngDataUrl = await compositeSatellite(sat)
+    await api.saveSatellite(wsId, pngDataUrl)
+    if (selectedId === wsId) {
+      viewer?.setSatelliteTexture(pngDataUrl)
+      useSatellite.disabled = false
+    }
+    progress.textContent = t('gen.doneWithSatellite')
+  } catch (e) {
+    progress.textContent = t('gen.doneNoSatellite') + (e as Error).message
+  }
+}
+
+// 新規ワークスペース作成（地形を生成）
 $('btn-generate').addEventListener('click', async () => {
   const b = currentBBox()
   if ([b.west, b.south, b.east, b.north].some((v) => isNaN(v))) {
@@ -744,31 +891,41 @@ $('btn-generate').addEventListener('click', async () => {
   }
   progress.textContent = t('gen.preparing')
   try {
-    const bbox = b
-    const res = await api.generate({
-      bbox,
-      zoom: parseInt(zoomInput.value),
-      sourceId: sourceSel.value
-    })
-    showPreview(res.previewDataUrl, null, res.mesh, res.entry)
+    const zoom = parseInt(zoomInput.value)
+    const res = await api.createWorkspace({ bbox: b, zoom, sourceId: sourceSel.value })
+    showPreview(res.previewDataUrl, null, res.mesh, res.workspace)
     progress.textContent = `${res.tileCount} ${t('gen.tiles')} — ${t('gen.savedToData')}`
     await refreshLibrary()
     showTab('3d') // 生成後は3Dで確認
+    await fetchAndSaveSatellite(res.workspace.id, b, zoom)
+  } catch (err) {
+    progress.textContent = ''
+    alert(t('gen.failed') + (err as Error).message)
+  }
+})
 
-    // 衛星画像を取得・合成・保存（失敗してもハイトマップは保存済み）
-    try {
-      progress.textContent = t('gen.fetchingSatellite')
-      const sat = await api.fetchSatellite(bbox, parseInt(zoomInput.value))
-      const pngDataUrl = await compositeSatellite(sat)
-      await api.saveSatellite(res.entry.id, pngDataUrl)
-      if (selectedId === res.entry.id) {
-        viewer?.setSatelliteTexture(pngDataUrl)
-        useSatellite.disabled = false
-      }
-      progress.textContent = t('gen.doneWithSatellite')
-    } catch (e) {
-      progress.textContent = t('gen.doneNoSatellite') + (e as Error).message
-    }
+// 選択中ワークスペースの地形を更新（現在の範囲・ズーム・ソースで再生成。地点は保持）
+btnUpdateTerrain.addEventListener('click', async () => {
+  if (!selectedId) return
+  const b = currentBBox()
+  if ([b.west, b.south, b.east, b.north].some((v) => isNaN(v))) {
+    alert(t('alert.selectRange'))
+    return
+  }
+  if (!token) {
+    alert(t('alert.saveToken'))
+    return
+  }
+  if (!confirm(t('terrain.updateConfirm'))) return
+  progress.textContent = t('gen.preparing')
+  try {
+    const zoom = parseInt(zoomInput.value)
+    const res = await api.updateHeightmap(selectedId, { bbox: b, zoom, sourceId: sourceSel.value })
+    showPreview(res.previewDataUrl, null, res.mesh, res.workspace)
+    progress.textContent = `${res.tileCount} ${t('gen.tiles')} — ${t('gen.savedToData')}`
+    await refreshLibrary()
+    showTab('3d')
+    await fetchAndSaveSatellite(res.workspace.id, b, zoom)
   } catch (err) {
     progress.textContent = ''
     alert(t('gen.failed') + (err as Error).message)
@@ -835,10 +992,11 @@ libList.addEventListener('dragover', (ev) => {
 })
 
 async function refreshLibrary() {
-  const entries = await api.listLibrary()
-  libCount.textContent = `${entries.length}${t('count.items')}`
+  const workspaces = await api.listWorkspaces()
+  libCount.textContent = `${workspaces.length}${t('count.items')}`
   libList.innerHTML = ''
-  for (const e of entries) {
+  for (const e of workspaces) {
+    const h = e.heightmap
     const li = document.createElement('li')
     li.className = 'lib-item'
     li.dataset.id = e.id
@@ -859,12 +1017,13 @@ async function refreshLibrary() {
     name.title = e.name
     const sub = document.createElement('div')
     sub.className = 'lib-sub'
-    sub.textContent = `${e.width}×${e.height} / ${e.minEle.toFixed(0)}〜${e.maxEle.toFixed(0)}m`
+    const lmMark = e.landmarks.length ? ` / ${e.landmarks.length}${t('landmark.count')}` : ''
+    sub.textContent = `${h.width}×${h.height} / ${h.minEle.toFixed(0)}〜${h.maxEle.toFixed(0)}m${lmMark}`
     // 緯度・経度（bbox 中心）の行を追加
     const geo = document.createElement('div')
     geo.className = 'lib-sub'
-    const clat = (e.bbox.north + e.bbox.south) / 2
-    const clon = (e.bbox.east + e.bbox.west) / 2
+    const clat = (h.bbox.north + h.bbox.south) / 2
+    const clon = (h.bbox.east + h.bbox.west) / 2
     geo.textContent = `lat ${clat.toFixed(4)}, lon ${clon.toFixed(4)}`
     meta.append(name, sub, geo)
 
@@ -882,7 +1041,7 @@ async function refreshLibrary() {
         done = true
         const newName = input.value.trim()
         if (save && newName && newName !== e.name) {
-          await api.renameLibraryItem(e.id, newName)
+          await api.renameWorkspace(e.id, newName)
         }
         await refreshLibrary()
       }
@@ -918,7 +1077,7 @@ async function refreshLibrary() {
     del.addEventListener('click', async (ev) => {
       ev.stopPropagation()
       if (!confirm(`「${e.name}」${t('lib.deleteConfirm')}`)) return
-      await api.deleteLibraryItem(e.id)
+      await api.deleteWorkspace(e.id)
       if (selectedId === e.id) {
         selectedId = null
         selectedInfo.textContent = t('selected.none')
@@ -926,6 +1085,8 @@ async function refreshLibrary() {
         previewEmpty.style.display = 'block'
         btnExportPng.disabled = true
         btnExportRaw.disabled = true
+        btnUpdateTerrain.disabled = true
+        clearAnnotations()
       }
       await refreshLibrary()
     })
@@ -957,7 +1118,7 @@ async function refreshLibrary() {
       const ids = (Array.from(libList.children) as HTMLElement[])
         .map((c) => c.dataset.id)
         .filter((id): id is string => !!id)
-      await api.reorderLibrary(ids)
+      await api.reorderWorkspaces(ids)
     })
 
     li.addEventListener('click', () => selectItem(e.id))
@@ -970,14 +1131,14 @@ async function refreshLibrary() {
 async function selectItem(id: string) {
   progress.textContent = t('load.loading')
   try {
-    const item = await api.getLibraryItem(id)
-    showPreview(item.previewDataUrl, item.satelliteDataUrl, item.mesh, item.entry)
+    const item = await api.getWorkspace(id)
+    showPreview(item.previewDataUrl, item.satelliteDataUrl, item.mesh, item.workspace)
 
-    // 選択アイテムの範囲へ地図を移動し、bbox を反映
-    const bb = item.entry.bbox
+    // 選択ワークスペースの範囲へ地図を移動し、bbox を反映
+    const bb = item.workspace.heightmap.bbox
     setBBoxFields(bb.west, bb.south, bb.east, bb.north)
-    zoomInput.value = String(item.entry.zoom)
-    zoomVal.textContent = String(item.entry.zoom)
+    zoomInput.value = String(item.workspace.heightmap.zoom)
+    zoomVal.textContent = String(item.workspace.heightmap.zoom)
     updateEstimate()
     map.fitBounds(
       [

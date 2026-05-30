@@ -9,20 +9,25 @@ import {
   normalizeTo16bit,
   buildPreviewPng,
   exportPng16,
-  exportRaw16
+  exportRaw16,
+  sampleElevation
 } from './heightmap'
 import {
-  LibraryEntry,
-  readIndex,
-  addEntry,
-  deleteEntry,
-  renameEntry,
-  reorderEntries,
+  Workspace,
+  HeightmapMeta,
+  Landmark,
+  listWorkspaces,
+  getWorkspace,
+  createWorkspace,
+  updateHeightmap,
+  renameWorkspace,
+  deleteWorkspace,
+  reorderWorkspaces,
+  saveLandmarks,
   readValues16,
   readPreviewDataUrl,
   readSatelliteDataUrl,
-  saveSatellite,
-  findEntry
+  saveSatellite
 } from './library'
 
 interface Config {
@@ -137,8 +142,79 @@ function meshToPayload(mesh: ReturnType<typeof buildMeshData>, bbox: BBox) {
     maxEle: mesh.maxEle,
     widthMeters,
     heightMeters,
+    // ランドマークの lng/lat → メッシュ座標変換に使う
+    bbox,
     // Float32Array は ArrayBuffer として転送（構造化クローン対応）
     heights: mesh.heights.buffer.slice(0)
+  }
+}
+
+interface TerrainArgs {
+  bbox: BBox
+  zoom: number
+  sourceId: string
+  rangeMin?: number
+  rangeMax?: number
+}
+
+/** 地形タイルをダウンロードして合成・正規化・プレビュー・メッシュを作る（生成/更新で共通） */
+async function generateTerrain(
+  event: Electron.IpcMainInvokeEvent,
+  args: TerrainArgs
+): Promise<{
+  values16: Uint16Array
+  previewPng: Buffer
+  mesh: ReturnType<typeof buildMeshData>
+  width: number
+  height: number
+  minEle: number
+  maxEle: number
+  tileCount: number
+}> {
+  const cfg = await loadConfig()
+  if (!cfg.token) throw new Error('Mapbox アクセストークンが未設定です。')
+
+  const source = TILE_SOURCES[args.sourceId] ?? TILE_SOURCES['terrain-dem']
+  const region = computeRegion(args.bbox, args.zoom)
+  const tileCount = (region.tileX1 - region.tileX0 + 1) * (region.tileY1 - region.tileY0 + 1)
+  if (tileCount > 400) {
+    throw new Error(`タイル数が多すぎます (${tileCount})。範囲を狭めるかズームを下げてください。`)
+  }
+
+  const tiles = await downloadTiles(source, region, args.zoom, cfg.token, 6, (done, total) => {
+    event.sender.send('heightmap:progress', { done, total })
+  })
+
+  const hf = buildHeightField(tiles, region)
+  const values16 = normalizeTo16bit(hf, args.rangeMin, args.rangeMax)
+  const previewPng = buildPreviewPng(hf.width, hf.height, values16)
+  const mesh = buildMeshData(hf, 256)
+  return {
+    values16,
+    previewPng,
+    mesh,
+    width: hf.width,
+    height: hf.height,
+    minEle: hf.minEle,
+    maxEle: hf.maxEle,
+    tileCount
+  }
+}
+
+/** TerrainArgs と生成結果から HeightmapMeta を組み立てる */
+function makeHeightmapMeta(
+  args: TerrainArgs,
+  r: { width: number; height: number; minEle: number; maxEle: number }
+): HeightmapMeta {
+  return {
+    bbox: args.bbox,
+    zoom: args.zoom,
+    sourceId: args.sourceId,
+    width: r.width,
+    height: r.height,
+    minEle: r.minEle,
+    maxEle: r.maxEle,
+    updatedAt: Date.now()
   }
 }
 
@@ -159,60 +235,39 @@ app.whenReady().then(() => {
     return true
   })
 
-  // --- ハイトマップ生成（= data/ ライブラリへインポート） ---
-  ipcMain.handle(
-    'heightmap:generate',
-    async (
-      event,
-      args: { bbox: BBox; zoom: number; sourceId: string; rangeMin?: number; rangeMax?: number }
-    ) => {
-      const cfg = await loadConfig()
-      if (!cfg.token) throw new Error('Mapbox アクセストークンが未設定です。')
-
-      const source = TILE_SOURCES[args.sourceId] ?? TILE_SOURCES['terrain-dem']
-      const region = computeRegion(args.bbox, args.zoom)
-      const tileCount =
-        (region.tileX1 - region.tileX0 + 1) * (region.tileY1 - region.tileY0 + 1)
-
-      if (tileCount > 400) {
-        throw new Error(
-          `タイル数が多すぎます (${tileCount})。範囲を狭めるかズームを下げてください。`
-        )
-      }
-
-      const tiles = await downloadTiles(source, region, args.zoom, cfg.token, 6, (done, total) => {
-        event.sender.send('heightmap:progress', { done, total })
-      })
-
-      const hf = buildHeightField(tiles, region)
-      const values16 = normalizeTo16bit(hf, args.rangeMin, args.rangeMax)
-      const previewPng = buildPreviewPng(hf.width, hf.height, values16)
-      const mesh = buildMeshData(hf, 256)
-
-      // data/ へ自動保存（衛星は別IPCでレンダラーが合成・保存する）
-      const dir = await ensureDataDir()
-      const entry: LibraryEntry = {
-        id: `hm_${Date.now().toString(36)}`,
-        name: autoName(args.bbox, args.zoom),
-        createdAt: Date.now(),
-        bbox: args.bbox,
-        zoom: args.zoom,
-        sourceId: args.sourceId,
-        width: hf.width,
-        height: hf.height,
-        minEle: hf.minEle,
-        maxEle: hf.maxEle
-      }
-      await addEntry(dir, entry, values16, previewPng)
-
-      return {
-        entry,
-        tileCount,
-        previewDataUrl: `data:image/png;base64,${previewPng.toString('base64')}`,
-        mesh: meshToPayload(mesh, args.bbox)
-      }
+  // --- 新規ワークスペースを作成（地形を生成して保存） ---
+  ipcMain.handle('workspace:create', async (event, args: TerrainArgs) => {
+    const r = await generateTerrain(event, args)
+    const dir = await ensureDataDir()
+    const ws: Workspace = {
+      id: `ws_${Date.now().toString(36)}`,
+      name: autoName(args.bbox, args.zoom),
+      createdAt: Date.now(),
+      heightmap: { ...makeHeightmapMeta(args, r), hasSatellite: false },
+      landmarks: []
     }
-  )
+    await createWorkspace(dir, ws, r.values16, r.previewPng)
+    return {
+      workspace: ws,
+      tileCount: r.tileCount,
+      previewDataUrl: `data:image/png;base64,${r.previewPng.toString('base64')}`,
+      mesh: meshToPayload(r.mesh, args.bbox)
+    }
+  })
+
+  // --- 既存ワークスペースの地形を更新（上書き。landmarks は保持） ---
+  ipcMain.handle('workspace:updateHeightmap', async (event, id: string, args: TerrainArgs) => {
+    const r = await generateTerrain(event, args)
+    const dir = await ensureDataDir()
+    const ws = await updateHeightmap(dir, id, makeHeightmapMeta(args, r), r.values16, r.previewPng)
+    if (!ws) throw new Error('ワークスペースが見つかりません。')
+    return {
+      workspace: ws,
+      tileCount: r.tileCount,
+      previewDataUrl: `data:image/png;base64,${r.previewPng.toString('base64')}`,
+      mesh: meshToPayload(r.mesh, args.bbox)
+    }
+  })
 
   // --- 衛星タイル取得（WebP のままレンダラーへ。Chromium が合成する） ---
   ipcMain.handle('satellite:fetch', async (event, args: { bbox: BBox; zoom: number }) => {
@@ -250,14 +305,14 @@ app.whenReady().then(() => {
     return true
   })
 
-  // --- ライブラリ: 一覧 ---
-  ipcMain.handle('library:list', async () => {
+  // --- ワークスペース: 一覧 ---
+  ipcMain.handle('workspace:list', async () => {
     const dir = await ensureDataDir()
-    return readIndex(dir)
+    return listWorkspaces(dir)
   })
 
-  // --- ライブラリ: サムネの dataURL を返す（衛星画像優先、なければプレビュー） ---
-  ipcMain.handle('library:thumb', async (_e, id: string) => {
+  // --- ワークスペース: サムネの dataURL（衛星優先、なければプレビュー） ---
+  ipcMain.handle('workspace:thumb', async (_e, id: string) => {
     const dir = await ensureDataDir()
     const sat = await readSatelliteDataUrl(dir, id)
     if (sat) return sat
@@ -268,48 +323,63 @@ app.whenReady().then(() => {
     }
   })
 
-  // --- ライブラリ: 1件の表示用データ（プレビュー + 3Dメッシュ） ---
-  ipcMain.handle('library:get', async (_e, id: string) => {
+  // --- ワークスペース: 1件の表示用データ（メタ + プレビュー + 3Dメッシュ） ---
+  ipcMain.handle('workspace:get', async (_e, id: string) => {
     const dir = await ensureDataDir()
-    const entries = await readIndex(dir)
-    const entry = findEntry(entries, id)
-    if (!entry) throw new Error('アイテムが見つかりません。')
-
+    const ws = await getWorkspace(dir, id)
+    if (!ws) throw new Error('ワークスペースが見つかりません。')
+    const h = ws.heightmap
     const values16 = await readValues16(dir, id)
     const previewDataUrl = await readPreviewDataUrl(dir, id)
     const satelliteDataUrl = await readSatelliteDataUrl(dir, id)
-    const mesh = meshFromValues16(values16, entry.width, entry.height, entry.minEle, entry.maxEle)
-    return { entry, previewDataUrl, satelliteDataUrl, mesh: meshToPayload(mesh, entry.bbox) }
+    const mesh = meshFromValues16(values16, h.width, h.height, h.minEle, h.maxEle)
+    return { workspace: ws, previewDataUrl, satelliteDataUrl, mesh: meshToPayload(mesh, h.bbox) }
   })
 
-  // --- ライブラリ: 名前変更 ---
-  ipcMain.handle('library:rename', async (_e, id: string, name: string) => {
+  // --- ワークスペース: 名前変更 ---
+  ipcMain.handle('workspace:rename', async (_e, id: string, name: string) => {
     const dir = await ensureDataDir()
-    return renameEntry(dir, id, name)
+    return renameWorkspace(dir, id, name)
   })
 
-  // --- ライブラリ: 削除 ---
-  ipcMain.handle('library:delete', async (_e, id: string) => {
+  // --- ワークスペース: 削除 ---
+  ipcMain.handle('workspace:delete', async (_e, id: string) => {
     const dir = await ensureDataDir()
-    return deleteEntry(dir, id)
+    return deleteWorkspace(dir, id)
   })
 
-  // --- ライブラリ: 並べ替え（id 配列の順に保存） ---
-  ipcMain.handle('library:reorder', async (_e, ids: string[]) => {
+  // --- ワークスペース: 並べ替え（id 配列の順に保存） ---
+  ipcMain.handle('workspace:reorder', async (_e, ids: string[]) => {
     const dir = await ensureDataDir()
-    return reorderEntries(dir, ids)
+    return reorderWorkspaces(dir, ids)
   })
 
-  // --- ライブラリ: 指定アイテムを PNG16 / R16 で書き出す ---
-  ipcMain.handle('library:export', async (_e, id: string, format: 'png16' | 'raw16') => {
+  // --- ランドマーク: 保存 ---
+  ipcMain.handle('workspace:saveLandmarks', async (_e, id: string, landmarks: Landmark[]) => {
     const dir = await ensureDataDir()
-    const entries = await readIndex(dir)
-    const entry = findEntry(entries, id)
-    if (!entry) throw new Error('アイテムが見つかりません。')
+    return saveLandmarks(dir, id, landmarks)
+  })
+
+  // --- 標高サンプリング（緯度経度 → メートル） ---
+  ipcMain.handle('workspace:sampleElevation', async (_e, id: string, lng: number, lat: number) => {
+    const dir = await ensureDataDir()
+    const ws = await getWorkspace(dir, id)
+    if (!ws) return null
+    const h = ws.heightmap
+    const values16 = await readValues16(dir, id)
+    return sampleElevation(values16, h.width, h.height, h.bbox, h.zoom, h.minEle, h.maxEle, lng, lat)
+  })
+
+  // --- ワークスペース: ハイトマップを PNG16 / R16 で書き出す ---
+  ipcMain.handle('workspace:export', async (_e, id: string, format: 'png16' | 'raw16') => {
+    const dir = await ensureDataDir()
+    const ws = await getWorkspace(dir, id)
+    if (!ws) throw new Error('ワークスペースが見つかりません。')
+    const h = ws.heightmap
 
     const values16 = await readValues16(dir, id)
     const ext = format === 'png16' ? 'png' : 'r16'
-    const fileName = `${entry.id}_${entry.width}x${entry.height}.${ext}`
+    const fileName = `${ws.name}_${h.width}x${h.height}.${ext}`.replace(/[\\/:*?"<>|]/g, '_')
     const { canceled, filePath } = await dialog.showSaveDialog({
       title: 'ハイトマップを書き出し',
       defaultPath: join(dir, fileName),
@@ -321,7 +391,7 @@ app.whenReady().then(() => {
     if (canceled || !filePath) return { saved: false }
 
     if (format === 'png16') {
-      await exportPng16(filePath, entry.width, entry.height, values16)
+      await exportPng16(filePath, h.width, h.height, values16)
     } else {
       await exportRaw16(filePath, values16)
     }

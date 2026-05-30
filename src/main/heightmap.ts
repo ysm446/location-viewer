@@ -1,7 +1,15 @@
 // タイルの合成・RGB→標高デコード・16bit 書き出し。
 import { PNG } from 'pngjs'
 import { promises as fs } from 'fs'
-import { TILE_SIZE, PixelRegion, DownloadedTile } from './tiles'
+import {
+  TILE_SIZE,
+  PixelRegion,
+  DownloadedTile,
+  BBox,
+  computeRegion,
+  lonToPixelX,
+  latToPixelY
+} from './tiles'
 
 /** Mapbox Terrain-RGB / Terrain-DEM の標高デコード式 */
 export function decodeElevation(r: number, g: number, b: number): number {
@@ -222,6 +230,30 @@ export function meshFromValues16(
     const v = values16[sy * width + sx]
     return minEle + (v / 65535) * span
   })
+}
+
+/**
+ * 緯度経度の地点における標高(メートル)を、保存済みの正規化16bit値からサンプリングする。
+ * 出力画像は Web Mercator ピクセル空間のクロップなので、bbox/zoom から該当ピクセルを求める。
+ */
+export function sampleElevation(
+  values16: Uint16Array,
+  width: number,
+  height: number,
+  bbox: BBox,
+  zoom: number,
+  minEle: number,
+  maxEle: number,
+  lng: number,
+  lat: number
+): number {
+  const region = computeRegion(bbox, zoom)
+  const px = Math.round(lonToPixelX(lng, zoom) - region.left)
+  const py = Math.round(latToPixelY(lat, zoom) - region.top)
+  const cx = Math.max(0, Math.min(width - 1, px))
+  const cy = Math.max(0, Math.min(height - 1, py))
+  const v = values16[cy * width + cx]
+  return minEle + (v / 65535) * ((maxEle - minEle) || 1)
 }
 
 /** プレビュー用に 8bit グレースケール PNG（DataURL用 Buffer）を作る */

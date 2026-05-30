@@ -38,7 +38,10 @@
 
           <p class="muted" id="estimate" data-i18n="estimate.initial">推定: -</p>
           <button id="btn-generate" class="primary" data-i18n="btn.generate">
-            ハイトマップ生成（data/ に保存）
+            新規ワークスペース作成
+          </button>
+          <button id="btn-update-terrain" disabled data-i18n="terrain.update">
+            選択中の地形を更新
           </button>
           <div id="progress" class="muted"></div>
         </section>
@@ -119,6 +122,18 @@
               <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
             </div>
             <ul id="library-list"></ul>
+          </section>
+
+          <!-- 選択アイテムのランドマーク（地点） -->
+          <section class="card" id="landmark-card" hidden>
+            <div class="row" style="justify-content: space-between">
+              <label style="margin: 0" data-i18n="landmark.title">ランドマーク</label>
+              <button id="btn-add-landmark" data-i18n="landmark.add">📍 地点を追加</button>
+            </div>
+            <p class="muted" id="landmark-hint" data-i18n="landmark.hint" hidden>
+              3Dビューで地形をクリックして地点を追加
+            </p>
+            <ul id="landmark-list"></ul>
           </section>
         </div>
 

@@ -3,6 +3,16 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-05-31
+- データ管理を「ワークスペース」モデルへ再設計：
+  - 最上位を**ワークスペース**とし、**ハイトマップ（地形）**と**地点（ランドマーク）**がぶら下がる構造に。地形はワークスペース内で更新（再生成・範囲変更も可）でき、地点は lng/lat 保持なので更新後も残る。
+  - 保存レイアウトを `data/<id>/`（`workspace.json` / `heightmap.u16` / `preview.png` / `satellite.png`）に変更。旧フラット構成（`library.json` + `<id>.*`）は**起動時に自動マイグレーション**。
+  - IPC を `workspace:create/updateHeightmap/get/list/rename/delete/reorder/thumb/saveLandmarks/sampleElevation/export` に刷新。preload も同名 API に。地形更新時は古い衛星を破棄し再取得。
+  - UI：「ライブラリ」→「ワークスペース」表記。左パネルに「新規ワークスペース作成」と「選択中の地形を更新」を分離。一覧に地点数を表示。
+- 3D ランドマーク（地点）機能を追加（フェーズ1）：
+  - 3Dビューで地形をクリックして地点を配置（レイキャスト）。リーダー線＋ラベル（名前＋標高）を地形に隠れず表示。
+  - 右ペイン「ライブラリ」タブに編集パネルを追加（名前・緯度・経度・標高の数値編集／削除）。
+  - 座標は lng/lat で `data/<id>.annotations.json` に保存（アイテム単位、遅延読み込み）。標高は配置時に全解像度 u16 からサンプリングし手入力で上書き可。
+  - 追加IPC: `annotations:get/save/sampleElevation`。MeshPayload に bbox を追加。`makeLabelSprite` を複数行対応に。
 - PNG16 書き出しの形式を変更：従来の 16bit グレースケール（colorType 0）から、**16bit RGBA（colorType 6, R=G=B=標高 / A=不透明）＋ pHYs チャンク**へ。World Machine / Gaea 等の参照ハイトマップ（mountain-ridge サンプル）と同一形式に合わせた。`exportPng16` に CRC32 と pHYs 挿入処理を追加。
   - 注意：値の刻みは元 DEM の垂直分解能（0.1m）に依存するため、合成地形のような完全連続（刻み=1）にはならない（実データ由来）。
 
