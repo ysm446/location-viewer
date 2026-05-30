@@ -98,6 +98,41 @@ const map = new maplibregl.Map({
 })
 map.addControl(new maplibregl.NavigationControl(), 'bottom-right')
 
+// 中ボタンドラッグでパン（MapLibre 標準にないので自前実装）
+;(() => {
+  const canvas = map.getCanvas()
+  let panning = false
+  let lastX = 0
+  let lastY = 0
+  canvas.addEventListener('pointerdown', (e) => {
+    if (e.button !== 1) return // 中ボタンのみ
+    e.preventDefault() // 自動スクロール（丸アイコン）を抑止
+    panning = true
+    lastX = e.clientX
+    lastY = e.clientY
+    canvas.setPointerCapture(e.pointerId)
+    canvas.style.cursor = 'grabbing'
+  })
+  canvas.addEventListener('pointermove', (e) => {
+    if (!panning) return
+    // ドラッグした分だけ地図を動かす（マウス移動と逆方向に panBy）
+    map.panBy([-(e.clientX - lastX), -(e.clientY - lastY)], { duration: 0 })
+    lastX = e.clientX
+    lastY = e.clientY
+  })
+  const endPan = () => {
+    if (!panning) return
+    panning = false
+    canvas.style.cursor = ''
+  }
+  canvas.addEventListener('pointerup', endPan)
+  canvas.addEventListener('pointercancel', endPan)
+  // 中ボタンの既定のオートスクロール起動を防ぐ
+  canvas.addEventListener('auxclick', (e) => {
+    if (e.button === 1) e.preventDefault()
+  })
+})()
+
 // スタイル切替時に bbox 矩形レイヤーが消えるので、styledata で再描画する
 map.on('styledata', () => {
   const b = currentBBox()
