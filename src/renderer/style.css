@@ -1,3 +1,78 @@
+/* ============================================================
+   配色は CSS 変数（設計トークン）に集約。個々の色をハードコードせず、
+   ここを編集すれば全体に反映される。
+   - --c-* … フル明度の元色（パレット）。色味はここだけ編集する。
+   - --ui-brightness … UI パネルの明度（100%=元のまま / 80%=暗め）。1か所で全体を調整。
+   - --bg/--surface/... … 上記から明度を反映して導出した、実際に使う色。
+   地図・2D・3D の表示内容（canvas/画像）は CSS 色の影響を受けないため常に元の明るさ。
+   ============================================================ */
+:root {
+  /* ===== パレット（フル明度の元色） ===== */
+  --c-bg: #1e1e1e;
+  --c-surface: #252526;
+  --c-surface-2: #2d2d30;
+  --c-control: #3a3d41;
+  --c-control-hover: #45494e;
+
+  --c-border: #3a3a3a;
+  --c-border-subtle: #333;
+  --c-border-input: #444;
+  --c-border-strong: #555;
+
+  --c-text: #e0e0e0;
+  --c-text-2: #d0d0d0;
+  --c-text-muted: #b0b0b0;
+  --c-text-dim: #888;
+  --c-handle: #777;
+  --c-handle-hover: #ccc;
+
+  --c-accent: #0e639c;
+  --c-accent-bright: #1177bb;
+  --c-accent-surface: #1b2a36;
+
+  --c-danger-bg: #5a3030;
+  --c-danger-border: #5a3a3a;
+  --c-danger-text: #ffd0d0;
+
+  /* ===== UI 明度（ここだけ変えれば全 UI パネルに効く） ===== */
+  --ui-brightness: 80%;
+
+  /* ===== 明度を反映した実使用色（色味の編集は上の --c-* で行う） ===== */
+  --bg: color-mix(in srgb, var(--c-bg) var(--ui-brightness), #000);
+  --surface: color-mix(in srgb, var(--c-surface) var(--ui-brightness), #000);
+  --surface-2: color-mix(in srgb, var(--c-surface-2) var(--ui-brightness), #000);
+  --control: color-mix(in srgb, var(--c-control) var(--ui-brightness), #000);
+  --control-hover: color-mix(in srgb, var(--c-control-hover) var(--ui-brightness), #000);
+
+  --border: color-mix(in srgb, var(--c-border) var(--ui-brightness), #000);
+  --border-subtle: color-mix(in srgb, var(--c-border-subtle) var(--ui-brightness), #000);
+  --border-input: color-mix(in srgb, var(--c-border-input) var(--ui-brightness), #000);
+  --border-strong: color-mix(in srgb, var(--c-border-strong) var(--ui-brightness), #000);
+
+  --text: color-mix(in srgb, var(--c-text) var(--ui-brightness), #000);
+  --text-2: color-mix(in srgb, var(--c-text-2) var(--ui-brightness), #000);
+  --text-muted: color-mix(in srgb, var(--c-text-muted) var(--ui-brightness), #000);
+  --text-dim: color-mix(in srgb, var(--c-text-dim) var(--ui-brightness), #000);
+  --handle: color-mix(in srgb, var(--c-handle) var(--ui-brightness), #000);
+  --handle-hover: color-mix(in srgb, var(--c-handle-hover) var(--ui-brightness), #000);
+
+  --accent: color-mix(in srgb, var(--c-accent) var(--ui-brightness), #000);
+  --accent-bright: color-mix(in srgb, var(--c-accent-bright) var(--ui-brightness), #000);
+  --accent-surface: color-mix(in srgb, var(--c-accent-surface) var(--ui-brightness), #000);
+
+  --danger-bg: color-mix(in srgb, var(--c-danger-bg) var(--ui-brightness), #000);
+  --danger-border: color-mix(in srgb, var(--c-danger-border) var(--ui-brightness), #000);
+  --danger-text: color-mix(in srgb, var(--c-danger-text) var(--ui-brightness), #000);
+
+  /* ===== コンテンツ領域の背景（地図/2D/3D。明度は下げず元のまま） ===== */
+  --viewport-bg: #111417;
+  --content-bg: #111;
+
+  /* ===== コンテンツ上に浮かぶオーバーレイ（半透明・明度反映済みの値） ===== */
+  --overlay-bg: rgba(24, 24, 24, 0.85);
+  --overlay-bg-2: rgba(24, 24, 24, 0.8);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -6,8 +81,8 @@ body {
   margin: 0;
   height: 100%;
   font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #1e1e1e;
-  color: #e0e0e0;
+  background: var(--bg);
+  color: var(--text);
 }
 #app {
   display: flex;
@@ -50,7 +125,7 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
-  background: rgba(30, 30, 30, 0.85);
+  background: var(--overlay-bg);
   padding: 8px 12px;
   border-radius: 6px;
 }
@@ -58,8 +133,8 @@ body {
   width: auto;
 }
 #btn-draw.active {
-  background: #0e639c;
-  border-color: #1177bb;
+  background: var(--accent);
+  border-color: var(--accent-bright);
 }
 
 /* 2D プレビュー（ズーム/パン対応） */
@@ -67,7 +142,7 @@ body {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #111;
+  background: var(--content-bg);
   cursor: grab;
 }
 #preview-2d-wrap.dragging {
@@ -94,7 +169,7 @@ body {
 #viewer3d {
   position: absolute;
   inset: 0;
-  background: #111417;
+  background: var(--viewport-bg);
   overflow: hidden;
 }
 #viewer3d canvas {
@@ -106,12 +181,12 @@ body {
   top: 12px;
   left: 12px;
   z-index: 10;
-  background: rgba(30, 30, 30, 0.8);
+  background: var(--overlay-bg-2);
   padding: 6px 10px;
   border-radius: 6px;
   font-size: 12px;
   line-height: 1.5;
-  color: #d0d0d0;
+  color: var(--text-2);
   pointer-events: none;
 }
 #viewer3d-info:empty {
@@ -126,7 +201,7 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
-  background: rgba(30, 30, 30, 0.85);
+  background: var(--overlay-bg);
   padding: 8px 12px;
   border-radius: 6px;
 }
@@ -144,15 +219,15 @@ body {
   flex: 0 0 340px;
   overflow-y: auto;
   padding: 16px;
-  background: #252526;
+  background: var(--surface);
   scrollbar-width: thin; /* Firefox 系 */
-  scrollbar-color: #555 transparent;
+  scrollbar-color: var(--border-strong) transparent;
 }
 #left-pane {
-  border-right: 1px solid #333;
+  border-right: 1px solid var(--border-subtle);
 }
 #right-pane {
-  border-left: 1px solid #333;
+  border-left: 1px solid var(--border-subtle);
 }
 #right-tabs {
   margin-bottom: 12px;
@@ -167,12 +242,12 @@ body {
 }
 #left-pane::-webkit-scrollbar-thumb,
 #right-pane::-webkit-scrollbar-thumb {
-  background: #555;
+  background: var(--border-strong);
   border-radius: 3px;
 }
 #left-pane::-webkit-scrollbar-thumb:hover,
 #right-pane::-webkit-scrollbar-thumb:hover {
-  background: #777;
+  background: var(--handle);
 }
 #left-pane::-webkit-scrollbar-track,
 #right-pane::-webkit-scrollbar-track {
@@ -183,8 +258,8 @@ h2 {
   margin: 4px 0 16px;
 }
 .card {
-  background: #2d2d30;
-  border: 1px solid #3a3a3a;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 14px;
@@ -192,17 +267,17 @@ h2 {
 label {
   display: block;
   font-size: 12px;
-  color: #b0b0b0;
+  color: var(--text-muted);
   margin: 8px 0 4px;
 }
 input,
 select {
   width: 100%;
   padding: 6px 8px;
-  background: #1e1e1e;
-  border: 1px solid #444;
+  background: var(--bg);
+  border: 1px solid var(--border-input);
   border-radius: 4px;
-  color: #e0e0e0;
+  color: var(--text);
   font-size: 13px;
 }
 /* スライダーを細く・つまみを小さく（ズーム/高さ強調 共通） */
@@ -211,7 +286,7 @@ input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
-  background: #444;
+  background: var(--border-input);
   border-radius: 2px;
   cursor: pointer;
 }
@@ -221,8 +296,8 @@ input[type='range']::-webkit-slider-thumb {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: #0e639c;
-  border: 1px solid #1177bb;
+  background: var(--accent);
+  border: 1px solid var(--accent-bright);
 }
 /* サイドバー（ズーム）のスライダーは幅を控えめに */
 #zoom {
@@ -243,16 +318,16 @@ input[type='range']::-webkit-slider-thumb {
 }
 button {
   padding: 7px 12px;
-  background: #3a3d41;
-  border: 1px solid #555;
+  background: var(--control);
+  border: 1px solid var(--border-strong);
   border-radius: 4px;
-  color: #e0e0e0;
+  color: var(--text);
   cursor: pointer;
   font-size: 13px;
   white-space: nowrap;
 }
 button:hover:not(:disabled) {
-  background: #45494e;
+  background: var(--control-hover);
 }
 button:disabled {
   opacity: 0.45;
@@ -261,14 +336,14 @@ button:disabled {
 button.primary {
   width: 100%;
   margin-top: 10px;
-  background: #0e639c;
-  border-color: #1177bb;
+  background: var(--accent);
+  border-color: var(--accent-bright);
 }
 button.primary:hover {
-  background: #1177bb;
+  background: var(--accent-bright);
 }
 .muted {
-  color: #888;
+  color: var(--text-dim);
   font-size: 12px;
 }
 
@@ -279,14 +354,14 @@ button.primary:hover {
 }
 .tab {
   flex: 1;
-  background: #2d2d30;
-  border: 1px solid #3a3a3a;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-bottom: none;
   border-radius: 6px 6px 0 0;
 }
 .tab.active {
-  background: #0e639c;
-  border-color: #1177bb;
+  background: var(--accent);
+  border-color: var(--accent-bright);
 }
 
 /* ライブラリ一覧 */
@@ -303,21 +378,21 @@ button.primary:hover {
   align-items: center;
   gap: 8px;
   padding: 8px;
-  background: #1e1e1e;
-  border: 1px solid #3a3a3a;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
 }
 .lib-item:hover {
-  border-color: #555;
+  border-color: var(--border-strong);
 }
 .lib-item.selected {
-  border-color: #1177bb;
-  background: #1b2a36;
+  border-color: var(--accent-bright);
+  background: var(--accent-surface);
 }
 .lib-item.dragging {
   opacity: 0.5;
-  border-color: #1177bb;
+  border-color: var(--accent-bright);
 }
 /* ドラッグ用ハンドル（掴んで行を並べ替える） */
 .lib-drag {
@@ -326,11 +401,11 @@ button.primary:hover {
   align-items: center;
   justify-content: center;
   width: 16px;
-  color: #777;
+  color: var(--handle);
   cursor: grab;
 }
 .lib-drag:hover {
-  color: #ccc;
+  color: var(--handle-hover);
 }
 .lib-item.dragging .lib-drag {
   cursor: grabbing;
@@ -340,8 +415,8 @@ button.primary:hover {
   height: 44px;
   flex: 0 0 auto;
   object-fit: cover;
-  background: #111;
-  border: 1px solid #444;
+  background: var(--content-bg);
+  border: 1px solid var(--border-input);
   border-radius: 4px;
   image-rendering: pixelated;
 }
@@ -363,7 +438,7 @@ button.primary:hover {
 }
 .lib-sub {
   font-size: 11px;
-  color: #888;
+  color: var(--text-dim);
 }
 /* ライブラリのアイコンボタン（rename / delete） */
 .lib-icon {
@@ -375,15 +450,15 @@ button.primary:hover {
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: 1px solid #444;
-  color: #b0b0b0;
+  border: 1px solid var(--border-input);
+  color: var(--text-muted);
 }
 .lib-icon:hover {
-  background: #3a3d41;
-  color: #e0e0e0;
+  background: var(--control);
+  color: var(--text);
 }
 .lib-del:hover {
-  background: #5a3030;
-  border-color: #5a3a3a;
-  color: #ffd0d0;
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger-text);
 }

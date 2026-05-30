@@ -3,6 +3,7 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-05-30
+- UI：配色をハードコードから CSS 変数（`:root` の設計トークン）へ集約。`--c-*`（元色パレット）＋`--ui-brightness`（UI明度）から `color-mix` で実使用色を導出する方式に。`brightness` フィルタのハックは廃止し、明度は `--ui-brightness`（既定 80%）1か所で調整可能に。地図・2D・3D のコンテンツは CSS 色の影響を受けないため常に元の明るさ。
 - ライブラリ：行を左端のハンドル（⠿）でドラッグして表示順を入れ替え可能に。順序は `library.json` の `order` フィールドへ永続化（`library:reorder` IPC / `reorderLibrary` を追加）。手動並べ替え後は新規生成分を先頭に挿入。未並べ替え時は従来通り新着順。
 - 3Dビュー：衛星画像チェックボックスの ON/OFF（および衛星テクスチャ適用）でカメラ視点がリセットされる問題を修正。`setData(payload, fitCamera=false)` を追加し、見た目だけの再構築では視点を維持。
 - 3Dビュー：「高さ強調」スライダーを削除（常に実寸=1.0 表示）。`setExaggeration`・`exaggeration` フィールド・i18n キー（`view3d.exaggeration`）も併せて削除。
