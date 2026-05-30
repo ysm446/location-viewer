@@ -254,9 +254,11 @@ app.whenReady().then(() => {
     return readIndex(dir)
   })
 
-  // --- ライブラリ: サムネ（プレビューPNG）の dataURL を返す ---
+  // --- ライブラリ: サムネの dataURL を返す（衛星画像優先、なければプレビュー） ---
   ipcMain.handle('library:thumb', async (_e, id: string) => {
     const dir = await ensureDataDir()
+    const sat = await readSatelliteDataUrl(dir, id)
+    if (sat) return sat
     try {
       return await readPreviewDataUrl(dir, id)
     } catch {
