@@ -11,7 +11,6 @@ export class TerrainViewer {
   private controls: OrbitControls
   private mesh: THREE.Mesh | null = null
   private grid: THREE.GridHelper | null = null
-  private markers: THREE.Group | null = null
   private container: HTMLElement
   private raf = 0
   private resizeObs: ResizeObserver
@@ -139,17 +138,6 @@ export class TerrainViewer {
       ;(this.grid.material as THREE.Material).dispose()
       this.grid = null
     }
-    if (this.markers) {
-      this.scene.remove(this.markers)
-      this.markers.traverse((o) => {
-        const m = o as THREE.Mesh
-        m.geometry?.dispose?.()
-        const mat = m.material as THREE.Material | THREE.Material[]
-        if (Array.isArray(mat)) mat.forEach((x) => x.dispose())
-        else mat?.dispose?.()
-      })
-      this.markers = null
-    }
 
     // ジオメトリは「地表メートル」で作る（X=東西, Z=南北, Y=高さ[m]）。
     // 高さも同じメートル単位なので、全軸を同じ倍率でスケールすれば実寸比率になる。
@@ -204,9 +192,6 @@ export class TerrainViewer {
     // 地形のバウンディングボックス（スケール後）。X=東西, Z=南北, Y=高さ。
     const halfX = (widthMeters * k) / 2
     const halfZ = (heightMeters * k) / 2
-
-    // 方位ラベルと色付き軸（地理: 北=-Z, 東=+X）。グリッドの端に配置。
-    this.buildAxisMarkers(halfX, halfZ)
     const sizeY = (maxEle - minEle) * this.exaggeration * k
     const centerY = sizeY / 2
 
