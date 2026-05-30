@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapbox Heightmap Importer</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- 左: 大きいビュー領域（位置選択 / 2D / 3D をタブ切替） -->
+      <div id="main-pane">
+        <div id="left-tabs" class="tabs">
+          <button id="tab-map" class="tab active">🗺 位置選択</button>
+          <button id="tab-2d" class="tab">2D ハイトマップ</button>
+          <button id="tab-3d" class="tab">3D ビュー</button>
+        </div>
+
+        <div id="view-area">
+          <!-- 位置選択（地図） -->
+          <div id="view-map" class="view">
+            <div id="map"></div>
+            <div id="map-overlay">
+              <button id="btn-use-view">この表示範囲を選択</button>
+              <span id="bbox-readout" class="muted">範囲未選択</span>
+            </div>
+          </div>
+
+          <!-- 2D グレースケール -->
+          <div id="view-2d" class="view hidden">
+            <div id="preview-2d-wrap">
+              <img id="preview" alt="プレビュー" />
+              <p class="muted" id="preview-empty">まだ生成・選択されていません</p>
+            </div>
+          </div>
+
+          <!-- 3D 地形ビューワ -->
+          <div id="view-3d" class="view hidden">
+            <div id="viewer3d"></div>
+            <div id="viewer3d-controls">
+              <label>高さ強調 (1.0=実寸)</label>
+              <input id="exaggeration" type="range" min="1" max="10" step="0.5" value="1" />
+              <span id="exaggeration-val" class="muted">1.0×</span>
+              <label style="margin-left: 14px"
+                ><input id="use-satellite" type="checkbox" checked style="width: auto" /> 衛星画像</label
+              >
+              <span class="muted" style="margin-left: auto"
+                >ドラッグ=回転 / ホイール=ズーム / 中・右ドラッグ=パン</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右: 設定・生成・ライブラリ -->
+      <div id="side-pane">
+        <h2>Mapbox Heightmap Importer</h2>
+
+        <section class="card">
+          <label>Mapbox アクセストークン</label>
+          <div class="row">
+            <input id="token" type="password" placeholder="pk.xxxxx" />
+            <button id="btn-save-token">保存</button>
+          </div>
+          <p class="muted" id="token-status"></p>
+        </section>
+
+        <section class="card">
+          <label>標高ソース</label>
+          <select id="source">
+            <option value="terrain-dem">Mapbox Terrain-DEM v1 (推奨)</option>
+            <option value="terrain-rgb">Mapbox Terrain-RGB v1 (旧)</option>
+          </select>
+
+          <label>ズームレベル (解像度): <span id="zoom-val">12</span></label>
+          <input id="zoom" type="range" min="6" max="15" value="12" />
+
+          <div class="grid2">
+            <div><label>West</label><input id="west" type="number" step="0.0001" /></div>
+            <div><label>East</label><input id="east" type="number" step="0.0001" /></div>
+            <div><label>South</label><input id="south" type="number" step="0.0001" /></div>
+            <div><label>North</label><input id="north" type="number" step="0.0001" /></div>
+          </div>
+
+          <p class="muted" id="estimate">推定: -</p>
+          <button id="btn-generate" class="primary">ハイトマップ生成（data/ に保存）</button>
+          <div id="progress" class="muted"></div>
+        </section>
+
+        <section class="card">
+          <div class="row" style="justify-content: space-between">
+            <label style="margin: 0">ライブラリ（data/）</label>
+            <span class="muted" id="lib-count"></span>
+          </div>
+          <p class="muted" id="selected-info">選択なし</p>
+          <div class="row">
+            <button id="btn-export-png" disabled>PNG16 書き出し</button>
+            <button id="btn-export-raw" disabled>R16 書き出し</button>
+          </div>
+          <ul id="library-list"></ul>
+        </section>
+      </div>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+node_modules/
+out/
+dist/
+*.log
+.DS_Store
+# 個人のMapboxトークンを保存する場所（コミットしない）
+config.json
+# 生成したハイトマップなどの出力物
+data/
+*.r16

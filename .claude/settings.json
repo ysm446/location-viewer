@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(npx tsc *)",
+      "Bash(echo \"tsc-exit:$?\")",
+      "Bash(npx electron-vite *)",
+      "Bash(echo \"build-exit:$?\")",
+      "Bash(git ls-files *)",
+      "Bash(git check-ignore *)",
+      "Bash(echo \"exit:$?\")"
+    ]
+  }
+}
