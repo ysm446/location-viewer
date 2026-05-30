@@ -45,6 +45,27 @@ async function ensureDataDir(): Promise<string> {
   return dir
 }
 
+// data/settings.json … アプリの環境設定（地図スタイルなど）
+interface Settings {
+  mapStyle?: string
+}
+function settingsPath(dir: string): string {
+  return join(dir, 'settings.json')
+}
+async function loadSettings(): Promise<Settings> {
+  try {
+    const dir = await ensureDataDir()
+    return JSON.parse(await fs.readFile(settingsPath(dir), 'utf-8'))
+  } catch {
+    return {}
+  }
+}
+async function saveSettings(patch: Settings): Promise<void> {
+  const dir = await ensureDataDir()
+  const cur = await loadSettings()
+  await fs.writeFile(settingsPath(dir), JSON.stringify({ ...cur, ...patch }, null, 2), 'utf-8')
+}
+
 async function loadConfig(): Promise<Config> {
   try {
     return JSON.parse(await fs.readFile(configPath(), 'utf-8'))
@@ -120,6 +141,13 @@ app.whenReady().then(() => {
     const cfg = await loadConfig()
     cfg.token = token
     await saveConfig(cfg)
+    return true
+  })
+
+  // --- 環境設定（data/settings.json） ---
+  ipcMain.handle('settings:get', async () => loadSettings())
+  ipcMain.handle('settings:set', async (_e, patch: Settings) => {
+    await saveSettings(patch)
     return true
   })
 

@@ -97,11 +97,12 @@ map.on('styledata', () => {
   }
 })
 
-// 地図スタイル切替
+// 地図スタイル切替（data/settings.json に保存）
 const mapStyleSel = $<HTMLSelectElement>('map-style')
 mapStyleSel.addEventListener('change', () => {
   currentStyleKey = mapStyleSel.value
   map.setStyle(makeStyle(token, currentStyleKey))
+  api.setSettings({ mapStyle: currentStyleKey })
 })
 
 // 選択範囲の矩形を描画する
@@ -570,12 +571,20 @@ btnExportRaw.addEventListener('click', async () => {
 
 // ---- 起動時 ----
 ;(async () => {
+  // 環境設定（地図スタイル）を先に読み込む
+  const settings = await api.getSettings()
+  if (settings.mapStyle && MAPBOX_STYLES[settings.mapStyle]) {
+    currentStyleKey = settings.mapStyle
+    mapStyleSel.value = currentStyleKey
+  }
+
   const cfg = await api.getConfig()
   if (cfg.token) {
     token = cfg.token
     tokenInput.value = cfg.token
     tokenStatus.textContent = '保存済みトークンを読み込みました。'
-    map.setStyle(makeStyle(token, currentStyleKey))
   }
+  // トークン有無に関わらず、保存済みスタイルでスタイルを適用
+  map.setStyle(makeStyle(token, currentStyleKey))
   await refreshLibrary()
 })()

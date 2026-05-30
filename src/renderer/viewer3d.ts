@@ -11,9 +11,13 @@ export class TerrainViewer {
   private controls: OrbitControls
   private mesh: THREE.Mesh | null = null
   private grid: THREE.GridHelper | null = null
+  private markers: THREE.Group | null = null
   private container: HTMLElement
   private raf = 0
   private resizeObs: ResizeObserver
+  // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
+  private gizmoScene = new THREE.Scene()
+  private gizmoCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 10)
   /** 高さ強調倍率（1.0 = 実寸） */
   private exaggeration = 1.0
   /** 衛星テクスチャ（読み込み済み）と表示 ON/OFF */
@@ -53,10 +57,30 @@ export class TerrainViewer {
     this.scene.add(dir)
     this.scene.add(new THREE.AmbientLight(0xffffff, 0.5))
 
+    this.buildGizmo()
+
     this.resizeObs = new ResizeObserver(() => this.resize())
     this.resizeObs.observe(container)
     this.resize()
     this.animate()
+  }
+
+  /** 左下に表示する小さな軸ギズモを組み立てる（東=X赤 / 上=Y緑 / 北=Z青） */
+  private buildGizmo() {
+    const len = 0.8
+    const mk = (dir: THREE.Vector3, color: number, label: string) => {
+      const arrow = new THREE.ArrowHelper(dir, new THREE.Vector3(0, 0, 0), len, color, 0.25, 0.15)
+      this.gizmoScene.add(arrow)
+      const sp = makeTextSprite(label, color)
+      sp.position.copy(dir.clone().multiplyScalar(len + 0.25))
+      sp.scale.set(0.5, 0.5, 0.5)
+      this.gizmoScene.add(sp)
+    }
+    // 北を -Z にしているので、ギズモの「N」も -Z に置く
+    mk(new THREE.Vector3(1, 0, 0), 0xff5555, 'E')
+    mk(new THREE.Vector3(0, 1, 0), 0x55ff55, 'Up')
+    mk(new THREE.Vector3(0, 0, -1), 0x5599ff, 'N')
+    this.gizmoCamera.position.set(0, 0, 3)
   }
 
   setExaggeration(v: number) {
@@ -114,6 +138,17 @@ export class TerrainViewer {
       this.grid.geometry.dispose()
       ;(this.grid.material as THREE.Material).dispose()
       this.grid = null
+    }
+    if (this.markers) {
+      this.scene.remove(this.markers)
+      this.markers.traverse((o) => {
+        const m = o as THREE.Mesh
+        m.geometry?.dispose?.()
+        const mat = m.material as THREE.Material | THREE.Material[]
+        if (Array.isArray(mat)) mat.forEach((x) => x.dispose())
+        else mat?.dispose?.()
+      })
+      this.markers = null
     }
 
     // ジオメトリは「地表メートル」で作る（X=東西, Z=南北, Y=高さ[m]）。
@@ -174,6 +209,9 @@ export class TerrainViewer {
     // 地形のバウンディングボックス（スケール後）。X=東西, Z=南北, Y=高さ。
     const halfX = (widthMeters * k) / 2
     const halfZ = (heightMeters * k) / 2
+
+    // 方位ラベルと色付き軸（地理: 北=-Z, 東=+X）。グリッドの端に配置。
+    this.buildAxisMarkers(halfX, halfZ)
     const sizeY = (maxEle - minEle) * this.exaggeration * k
     const centerY = sizeY / 2
 
@@ -199,6 +237,40 @@ export class TerrainViewer {
     this.controls.update()
   }
 
+  /** 方位ラベル(N/E/S/W)と色付き軸線をグリッド端に配置する */
+  private buildAxisMarkers(halfX: number, halfZ: number) {
+    const g = new THREE.Group()
+
+    // 地表の色付き軸線（東西=X赤 / 南北=Z青）
+    const axisMat = (c: number) => new THREE.LineBasicMaterial({ color: c })
+    const ew = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(-halfX, 0.001, 0),
+      new THREE.Vector3(halfX, 0.001, 0)
+    ])
+    g.add(new THREE.Line(ew, axisMat(0xff5555))) // 東西
+    const ns = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, 0.001, -halfZ),
+      new THREE.Vector3(0, 0.001, halfZ)
+    ])
+    g.add(new THREE.Line(ns, axisMat(0x5599ff))) // 南北
+
+    // 方位ラベル（地理: 北=-Z, 南=+Z, 東=+X, 西=-X）
+    const labelScale = Math.max(halfX, halfZ) * 0.18
+    const place = (text: string, color: number, x: number, z: number) => {
+      const sp = makeTextSprite(text, color)
+      sp.position.set(x, labelScale * 0.5, z)
+      sp.scale.set(labelScale, labelScale, labelScale)
+      g.add(sp)
+    }
+    place('N', 0x5599ff, 0, -halfZ)
+    place('S', 0x5599ff, 0, halfZ)
+    place('E', 0xff5555, halfX, 0)
+    place('W', 0xff5555, -halfX, 0)
+
+    this.markers = g
+    this.scene.add(g)
+  }
+
   private resize() {
     const w = this.container.clientWidth || 1
     const h = this.container.clientHeight || 1
@@ -212,7 +284,27 @@ export class TerrainViewer {
   private animate = () => {
     this.raf = requestAnimationFrame(this.animate)
     this.controls.update()
+
+    // メインシーン
+    this.renderer.setViewport(0, 0, this.container.clientWidth, this.container.clientHeight)
+    this.renderer.setScissorTest(false)
     this.renderer.render(this.scene, this.camera)
+
+    // 左下に軸ギズモを重ねて描画（メインカメラの向きに同期）
+    const size = 110
+    const margin = 8
+    this.renderer.clearDepth()
+    this.renderer.setScissorTest(true)
+    this.renderer.setScissor(margin, margin, size, size)
+    this.renderer.setViewport(margin, margin, size, size)
+    // メインカメラの回転だけを反映し、一定距離から見る
+    const dirToCam = new THREE.Vector3()
+      .subVectors(this.camera.position, this.controls.target)
+      .normalize()
+    this.gizmoCamera.position.copy(dirToCam.multiplyScalar(3))
+    this.gizmoCamera.lookAt(0, 0, 0)
+    this.renderer.render(this.gizmoScene, this.gizmoCamera)
+    this.renderer.setScissorTest(false)
   }
 
   dispose() {
@@ -231,6 +323,31 @@ function niceStep(x: number): number {
   const f = x / base
   const nice = f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10
   return nice * base
+}
+
+/** 文字を描いた板（Sprite）を作る。color は 0xRRGGBB */
+function makeTextSprite(text: string, color: number): THREE.Sprite {
+  const size = 128
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')!
+  ctx.clearRect(0, 0, size, size)
+  const hex = '#' + color.toString(16).padStart(6, '0')
+  ctx.font = 'bold 80px Segoe UI, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  // 縁取り（黒）で視認性を確保
+  ctx.lineWidth = 8
+  ctx.strokeStyle = 'rgba(0,0,0,0.85)'
+  ctx.strokeText(text, size / 2, size / 2)
+  ctx.fillStyle = hex
+  ctx.fillText(text, size / 2, size / 2)
+
+  const tex = new THREE.CanvasTexture(canvas)
+  tex.colorSpace = THREE.SRGBColorSpace
+  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true })
+  return new THREE.Sprite(mat)
 }
 
 /** 標高比 t(0..1) を地形配色に変換 */

@@ -52,9 +52,16 @@ export interface SatelliteTilesPayload {
   tiles: SatelliteTile[]
 }
 
+export interface AppSettings {
+  mapStyle?: string
+}
+
 const api = {
   getConfig: (): Promise<{ token?: string }> => ipcRenderer.invoke('config:get'),
   setToken: (token: string): Promise<boolean> => ipcRenderer.invoke('config:setToken', token),
+  getSettings: (): Promise<AppSettings> => ipcRenderer.invoke('settings:get'),
+  setSettings: (patch: AppSettings): Promise<boolean> =>
+    ipcRenderer.invoke('settings:set', patch),
   generate: (args: GenerateArgs): Promise<GenerateResult> =>
     ipcRenderer.invoke('heightmap:generate', args),
   // ライブラリ
