@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron'
 import { join } from 'path'
 import { promises as fs } from 'fs'
 import { BBox, TILE_SIZE, TILE_SOURCES, computeRegion, downloadTiles } from './tiles'
@@ -81,6 +81,9 @@ async function saveConfig(cfg: Config): Promise<void> {
 }
 
 function createWindow(): void {
+  // Electron 既定のメニュー（File/Edit/View…）を非表示にする
+  Menu.setApplicationMenu(null)
+
   const win = new BrowserWindow({
     width: 1600,
     height: 900,
@@ -249,6 +252,16 @@ app.whenReady().then(() => {
   ipcMain.handle('library:list', async () => {
     const dir = await ensureDataDir()
     return readIndex(dir)
+  })
+
+  // --- ライブラリ: サムネ（プレビューPNG）の dataURL を返す ---
+  ipcMain.handle('library:thumb', async (_e, id: string) => {
+    const dir = await ensureDataDir()
+    try {
+      return await readPreviewDataUrl(dir, id)
+    } catch {
+      return null
+    }
   })
 
   // --- ライブラリ: 1件の表示用データ（プレビュー + 3Dメッシュ） ---

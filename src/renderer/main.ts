@@ -393,6 +393,21 @@ tabMap.addEventListener('click', () => showTab('map'))
 tab2d.addEventListener('click', () => showTab('2d'))
 tab3d.addEventListener('click', () => showTab('3d'))
 
+// ---- 右タブ（ライブラリ / 環境設定） ----
+const rtabLibrary = $<HTMLButtonElement>('rtab-library')
+const rtabSettings = $<HTMLButtonElement>('rtab-settings')
+const rviewLibrary = $('rview-library')
+const rviewSettings = $('rview-settings')
+
+function showRightTab(which: 'library' | 'settings') {
+  rtabLibrary.classList.toggle('active', which === 'library')
+  rtabSettings.classList.toggle('active', which === 'settings')
+  rviewLibrary.classList.toggle('hidden', which !== 'library')
+  rviewSettings.classList.toggle('hidden', which !== 'settings')
+}
+rtabLibrary.addEventListener('click', () => showRightTab('library'))
+rtabSettings.addEventListener('click', () => showRightTab('settings'))
+
 // ---- 2D プレビューのズーム/パン ----
 const previewWrap = $('preview-2d-wrap')
 let pvScale = 1
@@ -599,8 +614,11 @@ async function refreshLibrary() {
 
     const thumb = document.createElement('img')
     thumb.className = 'lib-thumb'
-    // サムネは選択時に本体プレビューを読むため、ここでは軽くプレースホルダ
     thumb.alt = ''
+    // プレビューPNGを非同期で読み込んでサムネ表示
+    api.getThumb(e.id).then((url) => {
+      if (url) thumb.src = url
+    })
 
     const meta = document.createElement('div')
     meta.className = 'lib-meta'

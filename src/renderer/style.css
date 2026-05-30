@@ -137,6 +137,12 @@ body {
 #right-pane {
   border-left: 1px solid #333;
 }
+#right-tabs {
+  margin-bottom: 12px;
+}
+.rview.hidden {
+  display: none;
+}
 /* サイドバーの縦スクロールバーを細く */
 #left-pane::-webkit-scrollbar,
 #right-pane::-webkit-scrollbar {

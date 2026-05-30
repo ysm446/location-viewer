@@ -7,26 +7,9 @@
   </head>
   <body>
     <div id="app">
-      <!-- 左: 設定・生成パネル -->
+      <!-- 左: 生成パネル -->
       <div id="left-pane">
         <h2>Mapbox Heightmap Importer</h2>
-
-        <section class="card">
-          <label data-i18n="side.language">言語 / Language</label>
-          <select id="lang-select">
-            <option value="ja">日本語</option>
-            <option value="en">English</option>
-          </select>
-        </section>
-
-        <section class="card">
-          <label data-i18n="side.token">Mapbox アクセストークン</label>
-          <div class="row">
-            <input id="token" type="password" placeholder="pk.xxxxx" />
-            <button id="btn-save-token" data-i18n="btn.save">保存</button>
-          </div>
-          <p class="muted" id="token-status"></p>
-        </section>
 
         <section class="card">
           <label data-i18n="side.source">標高ソース</label>
@@ -114,20 +97,48 @@
         </div>
       </div>
 
-      <!-- 右: ライブラリ -->
+      <!-- 右: ライブラリ / 環境設定 タブ -->
       <div id="right-pane">
-        <section class="card">
-          <div class="row" style="justify-content: space-between">
-            <label style="margin: 0" data-i18n="side.library">ライブラリ（data/）</label>
-            <span class="muted" id="lib-count"></span>
-          </div>
-          <p class="muted" id="selected-info" data-i18n="selected.none">選択なし</p>
-          <div class="row">
-            <button id="btn-export-png" disabled data-i18n="btn.exportPng">PNG16 書き出し</button>
-            <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
-          </div>
-          <ul id="library-list"></ul>
-        </section>
+        <div id="right-tabs" class="tabs">
+          <button id="rtab-library" class="tab active" data-i18n="rtab.library">ライブラリ</button>
+          <button id="rtab-settings" class="tab" data-i18n="rtab.settings">環境設定</button>
+        </div>
+
+        <!-- ライブラリ -->
+        <div id="rview-library" class="rview">
+          <section class="card">
+            <div class="row" style="justify-content: space-between">
+              <label style="margin: 0" data-i18n="side.library">ライブラリ（data/）</label>
+              <span class="muted" id="lib-count"></span>
+            </div>
+            <p class="muted" id="selected-info" data-i18n="selected.none">選択なし</p>
+            <div class="row">
+              <button id="btn-export-png" disabled data-i18n="btn.exportPng">PNG16 書き出し</button>
+              <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
+            </div>
+            <ul id="library-list"></ul>
+          </section>
+        </div>
+
+        <!-- 環境設定 -->
+        <div id="rview-settings" class="rview hidden">
+          <section class="card">
+            <label data-i18n="side.language">言語 / Language</label>
+            <select id="lang-select">
+              <option value="ja">日本語</option>
+              <option value="en">English</option>
+            </select>
+          </section>
+
+          <section class="card">
+            <label data-i18n="side.token">Mapbox アクセストークン</label>
+            <div class="row">
+              <input id="token" type="password" placeholder="pk.xxxxx" />
+              <button id="btn-save-token" data-i18n="btn.save">保存</button>
+            </div>
+            <p class="muted" id="token-status"></p>
+          </section>
+        </div>
       </div>
     </div>
     <script type="module" src="./main.ts"></script>
