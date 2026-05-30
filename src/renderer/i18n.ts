@@ -25,7 +25,7 @@ const ja: Dict = {
   'view3d.satellite': '衛星画像',
   'view3d.hint': 'ドラッグ=回転 / ホイール=ズーム / 中・右ドラッグ=パン',
   'view3d.size': 'サイズ',
-  'view3d.height': '高さ',
+  'view3d.height': '標高',
   'view3d.pixels': '解像度',
   'side.token': 'Mapbox アクセストークン',
   'btn.save': '保存',
