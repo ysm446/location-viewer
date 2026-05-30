@@ -67,6 +67,7 @@ const btnAddLandmark = $<HTMLButtonElement>('btn-add-landmark')
 const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
 chkShowLandmarks.addEventListener('change', () => {
   viewer?.setLandmarksVisible(chkShowLandmarks.checked)
+  api.setSettings({ showLandmarks: chkShowLandmarks.checked })
 })
 
 /**
@@ -614,6 +615,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer = new TerrainViewer($('viewer3d'))
       viewer.setLandmarkMoveHandler(onMoveLandmark)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
+      viewer.setRenderMode(renderModeSel.value as 'default' | 'heightmap' | 'satellite')
     }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
@@ -711,9 +713,11 @@ previewWrap.addEventListener('pointercancel', endPvDrag)
 // ダブルクリックでフィットに戻す
 previewWrap.addEventListener('dblclick', () => fitPreview())
 
-const useSatellite = $<HTMLInputElement>('use-satellite')
-useSatellite.addEventListener('change', () => {
-  viewer?.setUseSatellite(useSatellite.checked)
+const renderModeSel = $<HTMLSelectElement>('render-mode')
+renderModeSel.addEventListener('change', () => {
+  const mode = renderModeSel.value as 'default' | 'heightmap' | 'satellite'
+  viewer?.setRenderMode(mode)
+  api.setSettings({ renderMode: mode })
 })
 
 // ---- プレビュー表示の共通処理 ----
@@ -738,9 +742,6 @@ function showPreview(
     pendingMesh = mesh
     pendingSatellite = satelliteDataUrl
   }
-
-  // 衛星画像チェックボックスの有効/無効
-  useSatellite.disabled = !satelliteDataUrl
 
   selectedId = workspace.id
   const h = workspace.heightmap
@@ -923,7 +924,6 @@ async function fetchAndSaveSatellite(wsId: string, bbox: ReturnType<typeof curre
     await api.saveSatellite(wsId, pngDataUrl)
     if (selectedId === wsId) {
       viewer?.setSatelliteTexture(pngDataUrl)
-      useSatellite.disabled = false
     }
     progress.textContent = t('gen.doneWithSatellite')
   } catch (e) {
@@ -1254,6 +1254,15 @@ btnExportRaw.addEventListener('click', async () => {
     snapPow2 = true
     snapCheckbox.checked = true
   }
+  // 3Dビューポートの描画モード・地点表示を復元（既定は default / 表示）
+  if (
+    settings.renderMode === 'default' ||
+    settings.renderMode === 'heightmap' ||
+    settings.renderMode === 'satellite'
+  ) {
+    renderModeSel.value = settings.renderMode
+  }
+  if (settings.showLandmarks === false) chkShowLandmarks.checked = false
 
   const cfg = await api.getConfig()
   if (cfg.token) {

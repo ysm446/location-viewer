@@ -57,6 +57,8 @@ interface Settings {
   mapStyle?: string
   lang?: 'ja' | 'en'
   snapPow2?: boolean
+  renderMode?: 'default' | 'heightmap' | 'satellite'
+  showLandmarks?: boolean
 }
 function settingsPath(dir: string): string {
   return join(dir, 'settings.json')

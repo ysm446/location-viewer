@@ -32,9 +32,10 @@ export class TerrainViewer {
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
   private gizmoCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 10)
-  /** 衛星テクスチャ（読み込み済み）と表示 ON/OFF */
+  /** 衛星テクスチャ（読み込み済み）と描画モード */
   private satelliteTex: THREE.Texture | null = null
-  private useSatellite = true
+  /** default=地形配色 / heightmap=標高グレースケール / satellite=衛星テクスチャ */
+  private renderMode: 'default' | 'heightmap' | 'satellite' = 'default'
   // ランドマーク（地点）描画
   private geo: GeoContext | null = null
   private landmarks: Landmark[] = []
@@ -362,10 +363,9 @@ export class TerrainViewer {
     }
   }
 
-  /** 衛星テクスチャの表示 ON/OFF（テクスチャ未設定時は頂点色のまま） */
-  setUseSatellite(on: boolean) {
-    this.useSatellite = on
-    // 見た目のみの更新なのでカメラ位置は維持する
+  /** 描画モードを設定（default / heightmap / satellite）。見た目のみの更新でカメラは維持 */
+  setRenderMode(mode: 'default' | 'heightmap' | 'satellite') {
+    this.renderMode = mode
     if (this.lastPayload) this.setData(this.lastPayload, false)
   }
 
@@ -412,13 +412,16 @@ export class TerrainViewer {
 
     const span = maxEle - minEle || 1
     const pos = geo.attributes.position as THREE.BufferAttribute
+    // 衛星モードはテクスチャ使用（テクスチャ未読込なら地形配色にフォールバック）
+    const useTex = this.renderMode === 'satellite' && !!this.satelliteTex
+    const grayscale = this.renderMode === 'heightmap'
     const colors = new Float32Array(pos.count * 3)
     for (let i = 0; i < pos.count; i++) {
       const ele = heights[i] ?? minEle
       // 実標高(メートル)。base を 0 に合わせて押し出す（実寸）
       pos.setY(i, ele - minEle)
       const t = (ele - minEle) / span
-      const col = ramp(t)
+      const col = grayscale ? [t, t, t] : ramp(t)
       colors[i * 3] = col[0]
       colors[i * 3 + 1] = col[1]
       colors[i * 3 + 2] = col[2]
@@ -430,7 +433,6 @@ export class TerrainViewer {
     // テクスチャ（衛星画像）は北西原点。PlaneGeometry を rotateX(-90°) で寝かせると
     // 既定 UV のままで南北が一致するため、V 反転は行わない（反転すると南北が逆になる）。
 
-    const useTex = this.useSatellite && this.satelliteTex
     const mat = new THREE.MeshStandardMaterial({
       vertexColors: !useTex, // テクスチャ使用時は頂点色を無効化
       map: useTex ? this.satelliteTex : null,

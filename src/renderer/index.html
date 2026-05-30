@@ -90,13 +90,19 @@
             <div id="viewer3d"></div>
             <div id="viewer3d-info" class="muted"></div>
             <div id="viewer3d-controls">
-              <label
-                ><input id="use-satellite" type="checkbox" checked style="width: auto" />
-                <span data-i18n="view3d.satellite">衛星画像</span></label
-              >
-              <span class="muted" style="margin-left: auto" data-i18n="view3d.hint"
-                >ドラッグ=回転 / ホイール=ズーム / 中・右ドラッグ=パン</span
-              >
+              <label style="margin: 0" data-i18n="view3d.render">描画</label>
+              <select id="render-mode" style="width: auto">
+                <option value="default" data-i18n="render.default">デフォルト</option>
+                <option value="heightmap" data-i18n="render.heightmap">ハイトマップ</option>
+                <option value="satellite" data-i18n="render.satellite">衛星画像</option>
+              </select>
+              <label class="checkbox-row" style="margin: 0 0 0 6px">
+                <input id="chk-show-landmarks" type="checkbox" checked />
+                <span data-i18n="landmark.show">地点を表示</span>
+              </label>
+            </div>
+            <div id="viewer3d-help" data-i18n="view3d.hint">
+              ドラッグ=回転 / ホイール=ズーム / 中・右ドラッグ=パン
             </div>
           </div>
         </div>
@@ -136,10 +142,6 @@
                 <label style="margin: 0" data-i18n="landmark.title">ランドマーク</label>
                 <button id="btn-add-landmark" data-i18n="landmark.add">📍 地点を追加</button>
               </div>
-              <label class="checkbox-row" style="margin-top: 6px">
-                <input id="chk-show-landmarks" type="checkbox" checked />
-                <span data-i18n="landmark.show">地点を表示</span>
-              </label>
               <p class="muted" id="landmark-hint" data-i18n="landmark.hint" hidden>
                 3Dビューで地形をクリックして地点を追加
               </p>

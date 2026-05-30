@@ -60,6 +60,8 @@ export interface AppSettings {
   mapStyle?: string
   lang?: 'ja' | 'en'
   snapPow2?: boolean
+  renderMode?: 'default' | 'heightmap' | 'satellite'
+  showLandmarks?: boolean
 }
 
 const api = {
