@@ -62,6 +62,10 @@ const wsBack = $('ws-back')
 const landmarkList = $<HTMLUListElement>('landmark-list')
 const landmarkHint = $('landmark-hint')
 const btnAddLandmark = $<HTMLButtonElement>('btn-add-landmark')
+const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
+chkShowLandmarks.addEventListener('change', () => {
+  viewer?.setLandmarksVisible(chkShowLandmarks.checked)
+})
 
 /**
  * 右ペインを 一覧⇔詳細 で切り替える。詳細モードでは CSS で選択以外の
@@ -607,6 +611,7 @@ function showTab(which: 'map' | '2d' | '3d') {
     if (!viewer) {
       viewer = new TerrainViewer($('viewer3d'))
       viewer.setLandmarkMoveHandler(onMoveLandmark)
+      viewer.setLandmarksVisible(chkShowLandmarks.checked)
     }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
@@ -835,6 +840,17 @@ function renderLandmarkPanel() {
 
     const top = document.createElement('div')
     top.className = 'lm-top'
+    // 個別の表示/非表示チェックボックス
+    const vis = document.createElement('input')
+    vis.type = 'checkbox'
+    vis.className = 'lm-vis'
+    vis.checked = lm.visible !== false
+    vis.title = t('landmark.show')
+    vis.addEventListener('change', async () => {
+      lm.visible = vis.checked
+      await saveLandmarks()
+      viewer?.setLandmarks(landmarks)
+    })
     const name = document.createElement('input')
     name.className = 'lm-name'
     name.value = lm.name
@@ -854,7 +870,7 @@ function renderLandmarkPanel() {
       viewer?.setLandmarks(landmarks)
       renderLandmarkPanel()
     })
-    top.append(name, del)
+    top.append(vis, name, del)
 
     const coords = document.createElement('div')
     coords.className = 'lm-coords'

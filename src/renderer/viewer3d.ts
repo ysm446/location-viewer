@@ -39,6 +39,7 @@ export class TerrainViewer {
   private geo: GeoContext | null = null
   private landmarks: Landmark[] = []
   private landmarkGroup: THREE.Group | null = null
+  private landmarksVisible = true
   // 地点ごとの描画オブジェクト（ドラッグ移動時に位置を更新する）
   private landmarkObjs = new Map<string, { marker: THREE.Mesh; line: THREE.Line; label: THREE.Sprite }>()
   private markerMeshes: THREE.Mesh[] = [] // レイキャスト用（クリック判定）
@@ -86,7 +87,7 @@ export class TerrainViewer {
     dom.addEventListener(
       'pointerdown',
       (e) => {
-        if (e.button !== 0 || this.placeMode) return
+        if (e.button !== 0 || this.placeMode || !this.landmarksVisible) return
         const id = this.markerHitId(e)
         if (!id) return
         // OrbitControls（回転）へ渡さない
@@ -179,6 +180,12 @@ export class TerrainViewer {
   setLandmarks(landmarks: Landmark[]) {
     this.landmarks = landmarks
     this.renderLandmarks()
+  }
+
+  /** ランドマークの表示/非表示を切り替える */
+  setLandmarksVisible(on: boolean) {
+    this.landmarksVisible = on
+    if (this.landmarkGroup) this.landmarkGroup.visible = on
   }
 
   /** 地点をドラッグ移動して確定したときのコールバックを登録する */
@@ -290,6 +297,7 @@ export class TerrainViewer {
     const stem = 0.4 // リーダー線の長さ（ワールド単位。シーンの最大辺=2基準）
     const markerGeo = new THREE.SphereGeometry(0.013, 12, 12)
     for (const lm of this.landmarks) {
+      if (lm.visible === false) continue // 個別に非表示の地点はスキップ
       const u = (lm.lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
       const v = (g.bbox.north - lm.lat) / (g.bbox.north - g.bbox.south || 1)
       const x = (u - 0.5) * g.widthMeters * g.k
@@ -329,6 +337,7 @@ export class TerrainViewer {
 
       this.landmarkObjs.set(lm.id, { marker, line, label })
     }
+    group.visible = this.landmarksVisible
     this.scene.add(group)
     this.landmarkGroup = group
   }

@@ -29,6 +29,8 @@ export interface Landmark {
   lat: number
   /** 標高(メートル)。配置時にハイトマップからサンプリングするが手入力で上書き可 */
   elevation: number
+  /** 3Dでの表示 ON/OFF。未設定（undefined）は表示扱い */
+  visible?: boolean
 }
 
 /** ワークスペースが現在保持するハイトマップ（地形）のメタ情報 */

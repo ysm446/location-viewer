@@ -537,6 +537,11 @@ button.primary:hover {
   gap: 6px;
   align-items: center;
 }
+.lm-vis {
+  flex: 0 0 auto;
+  width: auto;
+  margin: 0;
+}
 .lm-name {
   flex: 1 1 auto;
   font-size: 12px;
