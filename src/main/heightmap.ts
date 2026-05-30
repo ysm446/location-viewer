@@ -78,7 +78,39 @@ export function normalizeTo16bit(
   return out
 }
 
-/** 16bit グレースケール PNG として書き出す */
+/** PNG 標準の CRC-32（チャンク用） */
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256)
+  for (let n = 0; n < 256; n++) {
+    let c = n
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+    t[n] = c >>> 0
+  }
+  return t
+})()
+function crc32(buf: Buffer): number {
+  let c = 0xffffffff
+  for (let i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8)
+  return (c ^ 0xffffffff) >>> 0
+}
+/** pHYs チャンク（解像度メタ）。既定 3780px/m = 96DPI, unit=1(meter) */
+function physChunk(ppuX = 3780, ppuY = 3780, unit = 1): Buffer {
+  const data = Buffer.alloc(9)
+  data.writeUInt32BE(ppuX, 0)
+  data.writeUInt32BE(ppuY, 4)
+  data[8] = unit
+  const type = Buffer.from('pHYs')
+  const len = Buffer.alloc(4)
+  len.writeUInt32BE(9, 0)
+  const crc = Buffer.alloc(4)
+  crc.writeUInt32BE(crc32(Buffer.concat([type, data])), 0)
+  return Buffer.concat([len, type, data, crc])
+}
+
+/**
+ * 16bit RGBA PNG として書き出す（R=G=B=標高値, A=不透明 65535）。
+ * World Machine / Gaea 等の「16bit RGBA + pHYs」ハイトマップ出力に合わせた形式。
+ */
 export async function exportPng16(
   filePath: string,
   width: number,
@@ -88,18 +120,26 @@ export async function exportPng16(
   const png = new PNG({
     width,
     height,
-    colorType: 0, // grayscale
+    colorType: 6, // RGBA
     bitDepth: 16,
-    inputColorType: 0,
-    inputHasAlpha: false
+    inputColorType: 6,
+    inputHasAlpha: true
   })
-  // pngjs はビッグエンディアン 16bit を期待する。各画素1チャンネル。
-  const buf = Buffer.alloc(width * height * 2)
+  // pngjs はビッグエンディアン 16bit を期待する。1画素 = RGBA × 2byte。
+  const buf = Buffer.alloc(width * height * 4 * 2)
   for (let i = 0; i < values16.length; i++) {
-    buf.writeUInt16BE(values16[i], i * 2)
+    const v = values16[i]
+    const o = i * 8
+    buf.writeUInt16BE(v, o) // R
+    buf.writeUInt16BE(v, o + 2) // G
+    buf.writeUInt16BE(v, o + 4) // B
+    buf.writeUInt16BE(65535, o + 6) // A（不透明）
   }
   png.data = buf
-  const out = PNG.sync.write(png, { colorType: 0, bitDepth: 16, inputColorType: 0 })
+  let out = PNG.sync.write(png, { colorType: 6, bitDepth: 16, inputColorType: 6 })
+  // IHDR チャンク（8byte sig + 25byte IHDR）の直後に pHYs を挿入する
+  const afterIhdr = 33
+  out = Buffer.concat([out.subarray(0, afterIhdr), physChunk(), out.subarray(afterIhdr)])
   await fs.writeFile(filePath, out)
 }
 

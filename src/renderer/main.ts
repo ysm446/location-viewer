@@ -225,10 +225,10 @@ function drawBBoxRect(w: number, s: number, e: number, n: number) {
       type: 'circle',
       source: 'bbox-handles',
       paint: {
-        'circle-radius': 6,
+        'circle-radius': 4,
         'circle-color': '#ffffff',
         'circle-stroke-color': '#1177bb',
-        'circle-stroke-width': 2
+        'circle-stroke-width': 1.5
       }
     })
   }
@@ -324,9 +324,16 @@ map.on('mouseup', (e) => {
 // ---- 四隅ハンドルをドラッグして矩形をリサイズ ----
 let dragCorner: string | null = null
 
-// ハンドルにカーソルを乗せたらポインタ表示
-map.on('mouseenter', 'bbox-handles', () => {
-  if (!drawMode) map.getCanvas().style.cursor = 'move'
+// 角に応じた斜めリサイズカーソル（NW/SE=↖↘ / NE/SW=↗↙）
+function cornerCursor(corner?: string): string {
+  return corner === 'nw' || corner === 'se' ? 'nwse-resize' : 'nesw-resize'
+}
+
+// ハンドルにカーソルを乗せたら、その角の向きの斜め矢印にする
+map.on('mousemove', 'bbox-handles', (e) => {
+  if (drawMode || dragCorner) return
+  const corner = e.features?.[0]?.properties?.corner as string | undefined
+  map.getCanvas().style.cursor = cornerCursor(corner)
 })
 map.on('mouseleave', 'bbox-handles', () => {
   if (!drawMode && !dragCorner) map.getCanvas().style.cursor = ''
@@ -343,6 +350,7 @@ map.on('mousedown', 'bbox-handles', (e) => {
 
 map.on('mousemove', (e) => {
   if (!dragCorner) return
+  map.getCanvas().style.cursor = cornerCursor(dragCorner) // ドラッグ中も斜め矢印を維持
   const b = currentBBox()
   // ドラッグ中の角の経度・緯度を更新（反対側の角は固定）
   let { west, south, east, north } = b
