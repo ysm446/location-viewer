@@ -118,7 +118,7 @@ body {
   flex: 0 0 auto;
 }
 #viewer3d-controls input[type='range'] {
-  width: 160px;
+  width: 110px;
 }
 
 /* 右サイドバー */
@@ -156,8 +156,28 @@ select {
   color: #e0e0e0;
   font-size: 13px;
 }
+/* スライダーを細く・つまみを小さく（ズーム/高さ強調 共通） */
 input[type='range'] {
   padding: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: #444;
+  border-radius: 2px;
+  cursor: pointer;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #0e639c;
+  border: 1px solid #1177bb;
+}
+/* サイドバー（ズーム）のスライダーは幅を控えめに */
+#zoom {
+  width: 70%;
 }
 .row {
   display: flex;
