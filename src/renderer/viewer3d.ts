@@ -173,13 +173,8 @@ export class TerrainViewer {
     geo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     geo.computeVertexNormals()
 
-    // 平面 UV はそのまま使える（PlaneGeometry は 0..1 の UV を持つ）。
-    // rotateX で寝かせたが UV は不変。北西原点に合わせるため V を反転する。
-    const uv = geo.attributes.uv as THREE.BufferAttribute
-    for (let i = 0; i < uv.count; i++) {
-      uv.setY(i, 1 - uv.getY(i))
-    }
-    uv.needsUpdate = true
+    // テクスチャ（衛星画像）は北西原点。PlaneGeometry を rotateX(-90°) で寝かせると
+    // 既定 UV のままで南北が一致するため、V 反転は行わない（反転すると南北が逆になる）。
 
     const useTex = this.useSatellite && this.satelliteTex
     const mat = new THREE.MeshStandardMaterial({
