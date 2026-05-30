@@ -11,6 +11,10 @@ interface GeoContext {
   widthMeters: number
   heightMeters: number
   k: number // 表示用の一様スケール
+  // 表示メッシュの高さグリッド（地点をメッシュ表面へ接地させるのに使う）
+  cols: number
+  rows: number
+  heights: Float32Array // 標高(メートル), row-major（r=北→南, c=西→東）
 }
 
 export class TerrainViewer {
@@ -35,10 +39,16 @@ export class TerrainViewer {
   private geo: GeoContext | null = null
   private landmarks: Landmark[] = []
   private landmarkGroup: THREE.Group | null = null
+  // 地点ごとの描画オブジェクト（ドラッグ移動時に位置を更新する）
+  private landmarkObjs = new Map<string, { marker: THREE.Mesh; line: THREE.Line; label: THREE.Sprite }>()
+  private markerMeshes: THREE.Mesh[] = [] // レイキャスト用（クリック判定）
   // 3Dクリックで地点を配置するモード
   private raycaster = new THREE.Raycaster()
   private placeMode = false
   private onPlace: ((lng: number, lat: number) => void) | null = null
+  // 地点のドラッグ移動
+  private draggingId: string | null = null
+  private onMoveLandmark: ((id: string, lng: number, lat: number) => void) | null = null
 
   constructor(container: HTMLElement) {
     this.container = container
@@ -67,11 +77,29 @@ export class TerrainViewer {
       if (e.button === 1) e.preventDefault()
     })
 
-    // 配置モード時：左クリック（ドラッグでない）で地形にレイキャストして地点を打つ
+    const dom = this.renderer.domElement
     let downX = 0
     let downY = 0
     let moved = false
-    const dom = this.renderer.domElement
+
+    // 地点マーカーを掴んだら OrbitControls より先に捕捉してドラッグ開始（capture フェーズ）。
+    dom.addEventListener(
+      'pointerdown',
+      (e) => {
+        if (e.button !== 0 || this.placeMode) return
+        const id = this.markerHitId(e)
+        if (!id) return
+        // OrbitControls（回転）へ渡さない
+        e.stopPropagation()
+        e.preventDefault()
+        this.draggingId = id
+        this.controls.enabled = false
+        dom.style.cursor = 'grabbing'
+        dom.setPointerCapture(e.pointerId)
+      },
+      true
+    )
+
     dom.addEventListener('pointerdown', (e) => {
       if (e.button === 0) {
         downX = e.clientX
@@ -81,23 +109,36 @@ export class TerrainViewer {
     })
     dom.addEventListener('pointermove', (e) => {
       if (Math.hypot(e.clientX - downX, e.clientY - downY) > 4) moved = true
+      // ドラッグ中：地形上の位置に追従させる
+      if (this.draggingId) {
+        const p = this.terrainHit(e)
+        if (p) this.moveLandmarkObjects(this.draggingId, p)
+        return
+      }
+      // ホバー時のカーソル（配置モードは crosshair のまま）
+      if (!this.placeMode) {
+        dom.style.cursor = this.markerHitId(e) ? 'grab' : ''
+      }
     })
     dom.addEventListener('pointerup', (e) => {
-      if (e.button !== 0 || !this.placeMode || moved || !this.mesh || !this.geo) return
-      const rect = dom.getBoundingClientRect()
-      const ndc = new THREE.Vector2(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        -((e.clientY - rect.top) / rect.height) * 2 + 1
-      )
-      this.raycaster.setFromCamera(ndc, this.camera)
-      const hit = this.raycaster.intersectObject(this.mesh)[0]
-      if (!hit) return
-      const g = this.geo
-      const u = hit.point.x / (g.widthMeters * g.k) + 0.5
-      const v = hit.point.z / (g.heightMeters * g.k) + 0.5
-      const lng = g.bbox.west + u * (g.bbox.east - g.bbox.west)
-      const lat = g.bbox.north - v * (g.bbox.north - g.bbox.south)
-      this.onPlace?.(lng, lat)
+      if (e.button !== 0) return
+      // 地点ドラッグの確定
+      if (this.draggingId) {
+        const id = this.draggingId
+        this.draggingId = null
+        this.controls.enabled = true
+        dom.style.cursor = this.markerHitId(e) ? 'grab' : ''
+        const p = this.terrainHit(e)
+        const ll = p && this.pointToLngLat(p)
+        if (ll) this.onMoveLandmark?.(id, ll.lng, ll.lat)
+        return
+      }
+      // 配置モード：ドラッグでない左クリックで地点を打つ
+      if (this.placeMode && !moved) {
+        const p = this.terrainHit(e)
+        const ll = p && this.pointToLngLat(p)
+        if (ll) this.onPlace?.(ll.lng, ll.lat)
+      }
     })
 
     // ライティング
@@ -140,6 +181,82 @@ export class TerrainViewer {
     this.renderLandmarks()
   }
 
+  /** 地点をドラッグ移動して確定したときのコールバックを登録する */
+  setLandmarkMoveHandler(cb: (id: string, lng: number, lat: number) => void) {
+    this.onMoveLandmark = cb
+  }
+
+  /** マウス位置直下にある地点マーカーの id を返す（無ければ null） */
+  private markerHitId(e: PointerEvent): string | null {
+    if (!this.markerMeshes.length) return null
+    const rect = this.renderer.domElement.getBoundingClientRect()
+    const ndc = new THREE.Vector2(
+      ((e.clientX - rect.left) / rect.width) * 2 - 1,
+      -((e.clientY - rect.top) / rect.height) * 2 + 1
+    )
+    this.raycaster.setFromCamera(ndc, this.camera)
+    const hit = this.raycaster.intersectObjects(this.markerMeshes)[0]
+    return hit ? (hit.object.userData.landmarkId as string) : null
+  }
+
+  /** マウス位置から地形メッシュへレイキャストしたワールド座標を返す */
+  private terrainHit(e: PointerEvent): THREE.Vector3 | null {
+    if (!this.mesh) return null
+    const rect = this.renderer.domElement.getBoundingClientRect()
+    const ndc = new THREE.Vector2(
+      ((e.clientX - rect.left) / rect.width) * 2 - 1,
+      -((e.clientY - rect.top) / rect.height) * 2 + 1
+    )
+    this.raycaster.setFromCamera(ndc, this.camera)
+    return this.raycaster.intersectObject(this.mesh)[0]?.point ?? null
+  }
+
+  /** ワールド座標 → 緯度経度（メッシュのローカル→bbox の逆変換） */
+  private pointToLngLat(p: THREE.Vector3): { lng: number; lat: number } | null {
+    const g = this.geo
+    if (!g) return null
+    const u = p.x / (g.widthMeters * g.k) + 0.5
+    const v = p.z / (g.heightMeters * g.k) + 0.5
+    return {
+      lng: g.bbox.west + u * (g.bbox.east - g.bbox.west),
+      lat: g.bbox.north - v * (g.bbox.north - g.bbox.south)
+    }
+  }
+
+  /** 表示メッシュ表面のワールドY座標を (u,v) で返す（高さグリッドをバイリニア補間） */
+  private surfaceWorldY(u: number, v: number): number {
+    const g = this.geo
+    if (!g) return 0
+    const fc = Math.max(0, Math.min(g.cols - 1, u * (g.cols - 1)))
+    const fr = Math.max(0, Math.min(g.rows - 1, v * (g.rows - 1)))
+    const c0 = Math.floor(fc)
+    const r0 = Math.floor(fr)
+    const c1 = Math.min(g.cols - 1, c0 + 1)
+    const r1 = Math.min(g.rows - 1, r0 + 1)
+    const tx = fc - c0
+    const ty = fr - r0
+    const h = g.heights
+    const e00 = h[r0 * g.cols + c0]
+    const e10 = h[r0 * g.cols + c1]
+    const e01 = h[r1 * g.cols + c0]
+    const e11 = h[r1 * g.cols + c1]
+    const ele = (e00 * (1 - tx) + e10 * tx) * (1 - ty) + (e01 * (1 - tx) + e11 * tx) * ty
+    return (ele - g.minEle) * g.k
+  }
+
+  /** ドラッグ中：地点のマーカー・線・ラベルを地形上の base 位置へ移動する */
+  private moveLandmarkObjects(id: string, base: THREE.Vector3) {
+    const o = this.landmarkObjs.get(id)
+    if (!o) return
+    const top = base.y + 0.4
+    o.marker.position.set(base.x, base.y, base.z)
+    const pos = o.line.geometry.attributes.position as THREE.BufferAttribute
+    pos.setXYZ(0, base.x, base.y, base.z)
+    pos.setXYZ(1, base.x, top, base.z)
+    pos.needsUpdate = true
+    o.label.position.set(base.x, top + 0.06, base.z)
+  }
+
   /** 3Dクリックで地点を配置するモードの ON/OFF。cb に lng/lat を返す */
   setPlaceMode(on: boolean, cb?: (lng: number, lat: number) => void) {
     this.placeMode = on
@@ -164,18 +281,33 @@ export class TerrainViewer {
       })
       this.landmarkGroup = null
     }
+    this.landmarkObjs.clear()
+    this.markerMeshes = []
     const g = this.geo
     if (!g || this.landmarks.length === 0) return
 
     const group = new THREE.Group()
     const stem = 0.4 // リーダー線の長さ（ワールド単位。シーンの最大辺=2基準）
+    const markerGeo = new THREE.SphereGeometry(0.013, 12, 12)
     for (const lm of this.landmarks) {
       const u = (lm.lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
       const v = (g.bbox.north - lm.lat) / (g.bbox.north - g.bbox.south || 1)
       const x = (u - 0.5) * g.widthMeters * g.k
       const z = (v - 0.5) * g.heightMeters * g.k
-      const surfaceY = (lm.elevation - g.minEle) * g.k
+      // 根本は「保存標高」ではなく表示メッシュ表面に合わせる（DEM平滑化や標高手入力でも浮かない）
+      const surfaceY = this.surfaceWorldY(u, v)
       const topY = surfaceY + stem
+
+      // 地表の点＝ドラッグ用マーカー（クリック判定の対象。常に見えるよう深度テスト無効）
+      const marker = new THREE.Mesh(
+        markerGeo,
+        new THREE.MeshBasicMaterial({ color: 0xffd24d, depthTest: false, transparent: true })
+      )
+      marker.position.set(x, surfaceY, z)
+      marker.renderOrder = 12
+      marker.userData.landmarkId = lm.id
+      group.add(marker)
+      this.markerMeshes.push(marker)
 
       // リーダー線（地形に隠れず常に見えるよう深度テスト無効）
       const lineGeo = new THREE.BufferGeometry().setFromPoints([
@@ -190,10 +322,12 @@ export class TerrainViewer {
       group.add(line)
 
       // ラベル（名前＋標高）
-      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.085)
+      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.055)
       label.position.set(x, topY + 0.06, z)
       label.renderOrder = 11
       group.add(label)
+
+      this.landmarkObjs.set(lm.id, { marker, line, label })
     }
     this.scene.add(group)
     this.landmarkGroup = group
@@ -303,7 +437,16 @@ export class TerrainViewer {
     this.scene.add(this.mesh)
 
     // ランドマークの座標変換コンテキストを更新し、再描画する
-    this.geo = { bbox: payload.bbox, minEle, widthMeters, heightMeters, k }
+    this.geo = {
+      bbox: payload.bbox,
+      minEle,
+      widthMeters,
+      heightMeters,
+      k,
+      cols,
+      rows,
+      heights
+    }
     this.renderLandmarks()
 
     // グリッド（地表の基準面 y=0 に配置）。1マスをきりの良い実距離にする。

@@ -604,7 +604,10 @@ function showTab(which: 'map' | '2d' | '3d') {
     setTimeout(() => fitPreview(), 0)
   }
   if (which === '3d') {
-    if (!viewer) viewer = new TerrainViewer($('viewer3d'))
+    if (!viewer) {
+      viewer = new TerrainViewer($('viewer3d'))
+      viewer.setLandmarkMoveHandler(onMoveLandmark)
+    }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
       viewer.setData(pendingMesh)
@@ -808,6 +811,20 @@ btnAddLandmark.addEventListener('click', () => {
   showTab('3d') // 配置は3Dビューで行う
   setPlaceMode(!placeMode)
 })
+
+/** 3Dで地点をドラッグ移動して確定したとき：標高を取り直して保存 */
+async function onMoveLandmark(id: string, lng: number, lat: number) {
+  if (!selectedId) return
+  const lm = landmarks.find((x) => x.id === id)
+  if (!lm) return
+  lm.lng = lng
+  lm.lat = lat
+  const ele = await api.sampleElevation(selectedId, lng, lat)
+  if (ele != null) lm.elevation = ele
+  await saveLandmarks()
+  viewer?.setLandmarks(landmarks)
+  renderLandmarkPanel()
+}
 
 /** 右ペインのランドマーク編集パネルを描画する */
 function renderLandmarkPanel() {
