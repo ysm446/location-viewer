@@ -29,7 +29,8 @@
       "Bash(grep -c 'id=\"__TRACKED_VAR__\"' src/renderer/index.html)",
       "Bash(awk 'NR>=85 && NR<=96' src/renderer/style.css)",
       "Bash(echo \"BUILD=$?\")",
-      "Bash(echo \"BUILD_EXIT=$?\")"
+      "Bash(echo \"BUILD_EXIT=$?\")",
+      "Bash(awk 'NR>=740 && NR<=756 {print NR\": \"$0}' src/renderer/main.ts)"
     ]
   }
 }

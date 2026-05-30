@@ -732,12 +732,11 @@ function showPreview(
 function updateViewer3dInfo(mesh: MeshPayload, entry: LibraryEntry) {
   const wKm = mesh.widthMeters / 1000
   const hKm = mesh.heightMeters / 1000
-  const relief = mesh.maxEle - mesh.minEle // 標高差(m)
+  const relief = mesh.maxEle - mesh.minEle // 標高差（高さ=長さ）
   viewer3dInfo.innerHTML =
     `<div>${t('view3d.size')}: ${wKm.toFixed(2)} × ${hKm.toFixed(2)} km</div>` +
-    `<div>${t('view3d.height')}: ${relief.toFixed(0)} m (${(relief / 1000).toFixed(
-      2
-    )} km) / ${mesh.minEle.toFixed(0)}〜${mesh.maxEle.toFixed(0)} m</div>` +
+    `<div>${t('view3d.height')}: ${relief.toFixed(0)} m (${(relief / 1000).toFixed(2)} km)</div>` +
+    `<div>${t('view3d.elevation')}: ${mesh.minEle.toFixed(0)} 〜 ${mesh.maxEle.toFixed(0)} m</div>` +
     `<div>${t('view3d.pixels')}: ${entry.width} × ${entry.height} px</div>`
 }
 
