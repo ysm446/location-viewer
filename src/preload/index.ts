@@ -55,6 +55,7 @@ export interface SatelliteTilesPayload {
 export interface AppSettings {
   mapStyle?: string
   lang?: 'ja' | 'en'
+  snapPow2?: boolean
 }
 
 const api = {

@@ -50,6 +50,7 @@ async function ensureDataDir(): Promise<string> {
 interface Settings {
   mapStyle?: string
   lang?: 'ja' | 'en'
+  snapPow2?: boolean
 }
 function settingsPath(dir: string): string {
   return join(dir, 'settings.json')

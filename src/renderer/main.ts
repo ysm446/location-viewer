@@ -213,6 +213,21 @@ $('btn-use-view').addEventListener('click', () => {
   setBBoxFields(b.getWest(), b.getSouth(), b.getEast(), b.getNorth())
 })
 
+// ---- 2のべき乗スナップ ----
+const snapCheckbox = $<HTMLInputElement>('snap-pow2')
+let snapPow2 = false
+snapCheckbox.addEventListener('change', () => {
+  snapPow2 = snapCheckbox.checked
+  // 既に範囲があれば即スナップ（北西を固定）
+  const b = currentBBox()
+  if (snapPow2 && [b.west, b.south, b.east, b.north].every((v) => !isNaN(v))) {
+    const z = parseInt(zoomInput.value)
+    const s = snapToPow2(b.west, b.south, b.east, b.north, z, 'w', 'n')
+    setBBoxFields(s.west, s.south, s.east, s.north)
+  }
+  api.setSettings({ snapPow2 })
+})
+
 // ---- マウスで矩形を描いて範囲選択 ----
 const btnDraw = $<HTMLButtonElement>('btn-draw')
 let drawMode = false
@@ -252,7 +267,16 @@ map.on('mouseup', (e) => {
   const n = Math.max(drawStart.lat, e.lngLat.lat)
   // クリックだけ（ドラッグなし）の誤操作を無視
   if (Math.abs(east - w) > 1e-5 && Math.abs(n - s) > 1e-5) {
-    setBBoxFields(w, s, east, n)
+    if (snapPow2) {
+      // 描き始めの角を固定してスナップ
+      const ax = drawStart.lng <= e.lngLat.lng ? 'w' : 'e'
+      const ay = drawStart.lat >= e.lngLat.lat ? 'n' : 's'
+      const z = parseInt(zoomInput.value)
+      const sp = snapToPow2(w, s, east, n, z, ax, ay)
+      setBBoxFields(sp.west, sp.south, sp.east, sp.north)
+    } else {
+      setBBoxFields(w, s, east, n)
+    }
   }
   setDrawMode(false) // 1回描いたら通常モードに戻す
 })
@@ -297,6 +321,15 @@ map.on('mousemove', (e) => {
 
 map.on('mouseup', () => {
   if (!dragCorner) return
+  // 離した時にスナップ（動かした角の反対側を固定）
+  if (snapPow2) {
+    const b = currentBBox()
+    const ax = dragCorner.includes('w') ? 'e' : 'w'
+    const ay = dragCorner.includes('n') ? 's' : 'n'
+    const z = parseInt(zoomInput.value)
+    const sp = snapToPow2(b.west, b.south, b.east, b.north, z, ax, ay)
+    setBBoxFields(sp.west, sp.south, sp.east, sp.north)
+  }
   dragCorner = null
   map.dragPan.enable()
   map.getCanvas().style.cursor = ''
@@ -320,6 +353,46 @@ function lonPx(lon: number, z: number) {
 function latPx(lat: number, z: number) {
   const r = (lat * Math.PI) / 180
   return ((1 - Math.asinh(Math.tan(r)) / Math.PI) / 2) * 2 ** z * TILE
+}
+// 逆変換（ピクセル → 経度・緯度）
+function pxLon(px: number, z: number) {
+  return (px / (2 ** z * TILE)) * 360 - 180
+}
+function pxLat(px: number, z: number) {
+  const yNorm = px / (2 ** z * TILE)
+  const latRad = Math.atan(Math.sinh((1 - 2 * yNorm) * Math.PI))
+  return (latRad * 180) / Math.PI
+}
+
+/** 最も近い 2 のべき乗に丸める（最小32px） */
+function nearestPow2(px: number): number {
+  if (px < 1) return 32
+  const p = Math.round(Math.log2(px))
+  return Math.max(32, 2 ** p)
+}
+
+/**
+ * 出力ピクセルが 2 のべき乗になるよう bbox を調整する。
+ * anchorX/anchorY が固定する辺（'w'/'e', 'n'/'s'）。
+ */
+function snapToPow2(
+  west: number,
+  south: number,
+  east: number,
+  north: number,
+  z: number,
+  anchorX: 'w' | 'e',
+  anchorY: 'n' | 's'
+) {
+  const tW = nearestPow2(lonPx(east, z) - lonPx(west, z))
+  if (anchorX === 'w') east = pxLon(lonPx(west, z) + tW, z)
+  else west = pxLon(lonPx(east, z) - tW, z)
+
+  const tH = nearestPow2(latPx(south, z) - latPx(north, z))
+  if (anchorY === 'n') south = pxLat(latPx(north, z) + tH, z)
+  else north = pxLat(latPx(south, z) - tH, z)
+
+  return { west, south, east, north }
 }
 function updateEstimate() {
   const b = currentBBox()
@@ -759,6 +832,10 @@ btnExportRaw.addEventListener('click', async () => {
   if (settings.mapStyle && MAPBOX_STYLES[settings.mapStyle]) {
     currentStyleKey = settings.mapStyle
     mapStyleSel.value = currentStyleKey
+  }
+  if (settings.snapPow2) {
+    snapPow2 = true
+    snapCheckbox.checked = true
   }
 
   const cfg = await api.getConfig()
