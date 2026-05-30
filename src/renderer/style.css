@@ -121,28 +121,38 @@ body {
   width: 110px;
 }
 
-/* 右サイドバー */
-#side-pane {
-  flex: 0 0 380px;
+/* 両サイドバー（左:設定 / 右:ライブラリ） */
+#left-pane,
+#right-pane {
+  flex: 0 0 340px;
   overflow-y: auto;
   padding: 16px;
   background: #252526;
-  border-left: 1px solid #333;
   scrollbar-width: thin; /* Firefox 系 */
   scrollbar-color: #555 transparent;
 }
+#left-pane {
+  border-right: 1px solid #333;
+}
+#right-pane {
+  border-left: 1px solid #333;
+}
 /* サイドバーの縦スクロールバーを細く */
-#side-pane::-webkit-scrollbar {
+#left-pane::-webkit-scrollbar,
+#right-pane::-webkit-scrollbar {
   width: 6px;
 }
-#side-pane::-webkit-scrollbar-thumb {
+#left-pane::-webkit-scrollbar-thumb,
+#right-pane::-webkit-scrollbar-thumb {
   background: #555;
   border-radius: 3px;
 }
-#side-pane::-webkit-scrollbar-thumb:hover {
+#left-pane::-webkit-scrollbar-thumb:hover,
+#right-pane::-webkit-scrollbar-thumb:hover {
   background: #777;
 }
-#side-pane::-webkit-scrollbar-track {
+#left-pane::-webkit-scrollbar-track,
+#right-pane::-webkit-scrollbar-track {
   background: transparent;
 }
 h2 {
