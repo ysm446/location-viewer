@@ -255,8 +255,15 @@ function updateEstimate() {
   const ty = Math.floor(latPx(b.south, z) / TILE) - Math.floor(latPx(b.north, z) / TILE) + 1
   const tiles = tx * ty
   const mpx = ((w * h) / 1e6).toFixed(1)
+  // 地表の実距離（km）。東西は中央緯度に沿った長さ。
+  const R = 6371
+  const toRad = (d: number) => (d * Math.PI) / 180
+  const midLat = (b.north + b.south) / 2
+  const wkm = R * Math.cos(toRad(midLat)) * toRad(b.east - b.west)
+  const hkm = R * toRad(b.north - b.south)
+  const km = `${Math.abs(wkm).toFixed(1)}×${Math.abs(hkm).toFixed(1)}km`
   const warn = tiles > 400 ? ' ' + t('estimate.tileOver') : ''
-  estimate.textContent = `${t('estimate.output')} ${w}×${h}px (${mpx}MP) / ${tiles} ${t(
+  estimate.textContent = `${t('estimate.output')} ${km} / ${w}×${h}px (${mpx}MP) / ${tiles} ${t(
     'gen.tiles'
   )}${warn}`
 }
