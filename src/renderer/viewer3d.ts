@@ -232,40 +232,6 @@ export class TerrainViewer {
     this.controls.update()
   }
 
-  /** 方位ラベル(N/E/S/W)と色付き軸線をグリッド端に配置する */
-  private buildAxisMarkers(halfX: number, halfZ: number) {
-    const g = new THREE.Group()
-
-    // 地表の色付き軸線（東西=X赤 / 南北=Z青）
-    const axisMat = (c: number) => new THREE.LineBasicMaterial({ color: c })
-    const ew = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-halfX, 0.001, 0),
-      new THREE.Vector3(halfX, 0.001, 0)
-    ])
-    g.add(new THREE.Line(ew, axisMat(0xff5555))) // 東西
-    const ns = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, 0.001, -halfZ),
-      new THREE.Vector3(0, 0.001, halfZ)
-    ])
-    g.add(new THREE.Line(ns, axisMat(0x5599ff))) // 南北
-
-    // 方位ラベル（地理: 北=-Z, 南=+Z, 東=+X, 西=-X）
-    const labelScale = Math.max(halfX, halfZ) * 0.18
-    const place = (text: string, color: number, x: number, z: number) => {
-      const sp = makeTextSprite(text, color)
-      sp.position.set(x, labelScale * 0.5, z)
-      sp.scale.set(labelScale, labelScale, labelScale)
-      g.add(sp)
-    }
-    place('N', 0x5599ff, 0, -halfZ)
-    place('S', 0x5599ff, 0, halfZ)
-    place('E', 0xff5555, halfX, 0)
-    place('W', 0xff5555, -halfX, 0)
-
-    this.markers = g
-    this.scene.add(g)
-  }
-
   private resize() {
     const w = this.container.clientWidth || 1
     const h = this.container.clientHeight || 1
