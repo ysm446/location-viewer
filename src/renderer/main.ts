@@ -529,6 +529,22 @@ zoomInput.addEventListener('input', () => {
   updateEstimate()
 })
 
+// 標高ソースごとの最大ズーム（Terrain-DEM は z14 まで、Terrain-RGB は z18 まで）
+const SOURCE_MAX_ZOOM: Record<string, number> = {
+  'terrain-dem': 14,
+  'terrain-rgb': 18
+}
+function applySourceMaxZoom() {
+  const max = SOURCE_MAX_ZOOM[sourceSel.value] ?? 14
+  zoomInput.max = String(max)
+  if (parseInt(zoomInput.value) > max) {
+    zoomInput.value = String(max)
+    zoomVal.textContent = zoomInput.value
+    updateEstimate()
+  }
+}
+sourceSel.addEventListener('change', applySourceMaxZoom)
+
 // ---- トークン ----
 $('btn-save-token').addEventListener('click', async () => {
   token = tokenInput.value.trim()
