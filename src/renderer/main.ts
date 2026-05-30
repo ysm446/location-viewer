@@ -403,6 +403,13 @@ map.on('mousemove', (e) => {
 
 map.on('mouseup', () => {
   if (!movingBox) return
+  // 2のべき乗モード時は、離した位置でタイル境界へ吸着（サイズは維持）
+  if (snapPow2) {
+    const b = currentBBox()
+    const z = parseInt(zoomInput.value)
+    const sp = snapOriginToTile(b.west, b.south, b.east, b.north, z)
+    setBBoxFields(sp.west, sp.south, sp.east, sp.north)
+  }
   movingBox = false
   moveLast = null
   map.dragPan.enable()
@@ -467,6 +474,29 @@ function snapToPow2(
   else north = pxLat(latPx(south, z) - tH, z)
 
   return { west, south, east, north }
+}
+
+/**
+ * サイズを変えずに、北西角をタイル境界（TILE px の倍数）へスナップする。
+ * 移動時に呼ぶと、矩形がタイルグリッドに吸着する。
+ */
+function snapOriginToTile(
+  west: number,
+  south: number,
+  east: number,
+  north: number,
+  z: number
+) {
+  const pxW = lonPx(east, z) - lonPx(west, z)
+  const pxH = latPx(south, z) - latPx(north, z)
+  const left = Math.round(lonPx(west, z) / TILE) * TILE
+  const top = Math.round(latPx(north, z) / TILE) * TILE
+  return {
+    west: pxLon(left, z),
+    north: pxLat(top, z),
+    east: pxLon(left + pxW, z),
+    south: pxLat(top + pxH, z)
+  }
 }
 function updateEstimate() {
   const b = currentBBox()
