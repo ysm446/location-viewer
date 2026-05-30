@@ -128,6 +128,22 @@ body {
   padding: 16px;
   background: #252526;
   border-left: 1px solid #333;
+  scrollbar-width: thin; /* Firefox 系 */
+  scrollbar-color: #555 transparent;
+}
+/* サイドバーの縦スクロールバーを細く */
+#side-pane::-webkit-scrollbar {
+  width: 6px;
+}
+#side-pane::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+#side-pane::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+#side-pane::-webkit-scrollbar-track {
+  background: transparent;
 }
 h2 {
   font-size: 16px;
@@ -177,7 +193,7 @@ input[type='range']::-webkit-slider-thumb {
 }
 /* サイドバー（ズーム）のスライダーは幅を控えめに */
 #zoom {
-  width: 50%;
+  width: 100%;
 }
 .row {
   display: flex;
