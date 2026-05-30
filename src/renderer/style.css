@@ -7,35 +7,40 @@
    地図・2D・3D の表示内容（canvas/画像）は CSS 色の影響を受けないため常に元の明るさ。
    ============================================================ */
 :root {
-  /* ===== パレット（フル明度の元色） ===== */
-  --c-bg: #1e1e1e;
-  --c-surface: #252526;
-  --c-surface-2: #2d2d30;
-  --c-control: #3a3d41;
-  --c-control-hover: #45494e;
+  /* ===== パレット（ニュートラルグレーのダーク：色味なし＋明るいテキスト＋単一アクセント） ===== */
+  /* サーフェス（背面→前面の段階。無彩色グレーで少しずつ持ち上げる） */
+  --c-bg: #141414;
+  --c-surface: #1b1b1b;
+  --c-surface-2: #232323;
+  --c-control: #2b2b2b;
+  --c-control-hover: #353535;
 
-  --c-border: #3a3a3a;
-  --c-border-subtle: #333;
-  --c-border-input: #444;
-  --c-border-strong: #555;
+  /* ボーダー（基本は控えめ、強調時だけ少し明るく） */
+  --c-border: #2e2e2e;
+  --c-border-subtle: #222222;
+  --c-border-input: #353535;
+  --c-border-strong: #454545;
 
-  --c-text: #e0e0e0;
-  --c-text-2: #d0d0d0;
-  --c-text-muted: #b0b0b0;
-  --c-text-dim: #888;
-  --c-handle: #777;
-  --c-handle-hover: #ccc;
+  /* テキスト（主文は明るく、補助は段階的に落とす） */
+  --c-text: #e8e8e8;
+  --c-text-2: #cccccc;
+  --c-text-muted: #9a9a9a;
+  --c-text-dim: #6e6e6e;
+  --c-handle: #5c5c5c;
+  --c-handle-hover: #b0b0b0;
 
-  --c-accent: #0e639c;
-  --c-accent-bright: #1177bb;
-  --c-accent-surface: #1b2a36;
+  /* アクセント（唯一の有彩色。落ち着いた青。選択面は無彩色のまま枠線で示す） */
+  --c-accent: #3b6fd1;
+  --c-accent-bright: #5688e6;
+  --c-accent-surface: #262626;
 
-  --c-danger-bg: #5a3030;
-  --c-danger-border: #5a3a3a;
-  --c-danger-text: #ffd0d0;
+  /* 危険操作（削除） */
+  --c-danger-bg: #432626;
+  --c-danger-border: #663636;
+  --c-danger-text: #ffc9c9;
 
-  /* ===== UI 明度（ここだけ変えれば全 UI パネルに効く） ===== */
-  --ui-brightness: 80%;
+  /* ===== UI 明度（80%等にすると全 UI パネルをさらに暗くできる。既定は素の配色） ===== */
+  --ui-brightness: 100%;
 
   /* ===== 明度を反映した実使用色（色味の編集は上の --c-* で行う） ===== */
   --bg: color-mix(in srgb, var(--c-bg) var(--ui-brightness), #000);
@@ -64,13 +69,13 @@
   --danger-border: color-mix(in srgb, var(--c-danger-border) var(--ui-brightness), #000);
   --danger-text: color-mix(in srgb, var(--c-danger-text) var(--ui-brightness), #000);
 
-  /* ===== コンテンツ領域の背景（地図/2D/3D。明度は下げず元のまま） ===== */
-  --viewport-bg: #111417;
-  --content-bg: #111;
+  /* ===== コンテンツ領域の背景（地図/2D/3D。near-black で表示を引き立てる） ===== */
+  --viewport-bg: #0c0c0c;
+  --content-bg: #0a0a0a;
 
-  /* ===== コンテンツ上に浮かぶオーバーレイ（半透明・明度反映済みの値） ===== */
-  --overlay-bg: rgba(24, 24, 24, 0.85);
-  --overlay-bg-2: rgba(24, 24, 24, 0.8);
+  /* ===== コンテンツ上に浮かぶオーバーレイ（半透明ダーク） ===== */
+  --overlay-bg: rgba(20, 20, 20, 0.9);
+  --overlay-bg-2: rgba(20, 20, 20, 0.82);
 }
 
 * {
@@ -303,6 +308,17 @@ input[type='range']::-webkit-slider-thumb {
 #zoom {
   width: 100%;
 }
+/* チェックボックス＋ラベルを1行に並べる（チェックボックスは全幅にしない） */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--text);
+}
+.checkbox-row input[type='checkbox'] {
+  width: auto;
+}
 .row {
   display: flex;
   gap: 8px;
@@ -347,13 +363,13 @@ button.primary:hover {
   font-size: 12px;
 }
 
-/* タブ */
+/* タブ（中身の幅に合わせる。全幅ストレッチはしない） */
 .tabs {
   display: flex;
   gap: 4px;
 }
 .tab {
-  flex: 1;
+  padding: 4px 14px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-bottom: none;
