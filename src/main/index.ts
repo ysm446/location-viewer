@@ -17,6 +17,7 @@ import {
   addEntry,
   deleteEntry,
   renameEntry,
+  reorderEntries,
   readValues16,
   readPreviewDataUrl,
   readSatelliteDataUrl,
@@ -291,6 +292,12 @@ app.whenReady().then(() => {
   ipcMain.handle('library:delete', async (_e, id: string) => {
     const dir = await ensureDataDir()
     return deleteEntry(dir, id)
+  })
+
+  // --- ライブラリ: 並べ替え（id 配列の順に保存） ---
+  ipcMain.handle('library:reorder', async (_e, ids: string[]) => {
+    const dir = await ensureDataDir()
+    return reorderEntries(dir, ids)
   })
 
   // --- ライブラリ: 指定アイテムを PNG16 / R16 で書き出す ---

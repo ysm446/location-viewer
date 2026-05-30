@@ -17,6 +17,8 @@ const ICON_EDIT =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>'
 const ICON_DELETE =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>'
+const ICON_DRAG =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>'
 
 declare global {
   interface Window {
@@ -250,11 +252,6 @@ function setBBoxFields(w: number, s: number, e: number, n: number) {
   drawBBoxRect(w, s, e, n)
   updateEstimate()
 }
-
-$('btn-use-view').addEventListener('click', () => {
-  const b = map.getBounds()
-  setBBoxFields(b.getWest(), b.getSouth(), b.getEast(), b.getNorth())
-})
 
 // ---- 2のべき乗スナップ ----
 const snapCheckbox = $<HTMLInputElement>('snap-pow2')
@@ -666,14 +663,6 @@ previewWrap.addEventListener('pointercancel', endPvDrag)
 // ダブルクリックでフィットに戻す
 previewWrap.addEventListener('dblclick', () => fitPreview())
 
-const exaggeration = $<HTMLInputElement>('exaggeration')
-const exaggerationVal = $('exaggeration-val')
-exaggeration.addEventListener('input', () => {
-  const v = parseFloat(exaggeration.value)
-  exaggerationVal.textContent = `${v.toFixed(1)}×`
-  viewer?.setExaggeration(v)
-})
-
 const useSatellite = $<HTMLInputElement>('use-satellite')
 useSatellite.addEventListener('change', () => {
   viewer?.setUseSatellite(useSatellite.checked)
@@ -808,6 +797,35 @@ function markSelected() {
   }
 }
 
+// ---- ライブラリのドラッグ並べ替え ----
+// ドラッグ中の行。dragover で挿入位置を計算して DOM を並べ替え、dragend で順序を保存する。
+let draggingEl: HTMLElement | null = null
+
+/** カーソルの y 座標から、ドラッグ中の行を「この要素の前」に入れるべき要素を返す */
+function dragAfterElement(y: number): HTMLElement | null {
+  const items = Array.from(
+    libList.querySelectorAll<HTMLElement>('.lib-item:not(.dragging)')
+  )
+  let closest: { offset: number; el: HTMLElement | null } = {
+    offset: Number.NEGATIVE_INFINITY,
+    el: null
+  }
+  for (const el of items) {
+    const box = el.getBoundingClientRect()
+    const offset = y - box.top - box.height / 2
+    if (offset < 0 && offset > closest.offset) closest = { offset, el }
+  }
+  return closest.el
+}
+
+libList.addEventListener('dragover', (ev) => {
+  if (!draggingEl) return
+  ev.preventDefault()
+  const after = dragAfterElement(ev.clientY)
+  if (after == null) libList.appendChild(draggingEl)
+  else libList.insertBefore(draggingEl, after)
+})
+
 async function refreshLibrary() {
   const entries = await api.listLibrary()
   libCount.textContent = `${entries.length}${t('count.items')}`
@@ -904,8 +922,38 @@ async function refreshLibrary() {
       await refreshLibrary()
     })
 
+    // ドラッグ用ハンドル（このハンドルを掴んだ時だけ行をドラッグ可能にする）
+    const handle = document.createElement('span')
+    handle.className = 'lib-drag'
+    handle.innerHTML = ICON_DRAG
+    handle.title = t('lib.reorder')
+    handle.setAttribute('aria-label', t('lib.reorder'))
+    handle.addEventListener('mousedown', () => {
+      li.draggable = true
+    })
+    handle.addEventListener('mouseup', () => {
+      li.draggable = false
+    })
+    handle.addEventListener('click', (ev) => ev.stopPropagation())
+
+    li.addEventListener('dragstart', (ev) => {
+      draggingEl = li
+      li.classList.add('dragging')
+      if (ev.dataTransfer) ev.dataTransfer.effectAllowed = 'move'
+    })
+    li.addEventListener('dragend', async () => {
+      li.classList.remove('dragging')
+      li.draggable = false
+      draggingEl = null
+      // 現在のDOM順を保存する
+      const ids = (Array.from(libList.children) as HTMLElement[])
+        .map((c) => c.dataset.id)
+        .filter((id): id is string => !!id)
+      await api.reorderLibrary(ids)
+    })
+
     li.addEventListener('click', () => selectItem(e.id))
-    li.append(thumb, meta, edit, del)
+    li.append(handle, thumb, meta, edit, del)
     libList.appendChild(li)
   }
   markSelected()

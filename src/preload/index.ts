@@ -72,6 +72,8 @@ const api = {
   deleteLibraryItem: (id: string): Promise<boolean> => ipcRenderer.invoke('library:delete', id),
   renameLibraryItem: (id: string, name: string): Promise<boolean> =>
     ipcRenderer.invoke('library:rename', id, name),
+  reorderLibrary: (ids: string[]): Promise<boolean> =>
+    ipcRenderer.invoke('library:reorder', ids),
   getThumb: (id: string): Promise<string | null> => ipcRenderer.invoke('library:thumb', id),
   exportItem: (
     id: string,

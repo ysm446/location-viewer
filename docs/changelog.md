@@ -3,6 +3,12 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-05-30
+- ライブラリ：行を左端のハンドル（⠿）でドラッグして表示順を入れ替え可能に。順序は `library.json` の `order` フィールドへ永続化（`library:reorder` IPC / `reorderLibrary` を追加）。手動並べ替え後は新規生成分を先頭に挿入。未並べ替え時は従来通り新着順。
+- 3Dビュー：衛星画像チェックボックスの ON/OFF（および衛星テクスチャ適用）でカメラ視点がリセットされる問題を修正。`setData(payload, fitCamera=false)` を追加し、見た目だけの再構築では視点を維持。
+- 3Dビュー：「高さ強調」スライダーを削除（常に実寸=1.0 表示）。`setExaggeration`・`exaggeration` フィールド・i18n キー（`view3d.exaggeration`）も併せて削除。
+- 3Dビュー：グリッドの中心軸（東西=X / 南北=Z）の端に、中心からの距離(km)を小さめのラベルで表示（E/W/N/S + km）。メッシュ再構築時に作り直し・破棄。
+- 位置選択：「表示範囲を選択」ボタンを削除（矩形描画で選択するため不要）。関連の i18n キー（`map.useView`）も削除。
+- 位置選択：地図オーバーレイの「地図の種類」プルダウンを一番左へ移動。
 - リファクタリング（挙動変更なし）：
   - Web Mercator 座標変換式を `src/shared/mercator.ts` に集約し、メイン（`tiles.ts`）とレンダラー（`main.ts` の解像度推定・スナップ）の重複を解消。`tiles.ts` は互換のため再エクスポート。
   - `heightmap.ts` の `buildMeshData` と `meshFromValues16` のほぼ同一なダウンサンプリング処理を内部ヘルパ `downsampleToMesh`（サンプラ関数で差分吸収）へ共通化。

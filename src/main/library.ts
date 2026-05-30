@@ -26,6 +26,8 @@ export interface LibraryEntry {
   maxEle: number
   /** 衛星テクスチャ（<id>.satellite.png）を保存しているか */
   hasSatellite?: boolean
+  /** 手動並べ替え後の表示順（小さいほど上）。未設定なら createdAt 降順で並べる */
+  order?: number
 }
 
 function indexPath(dir: string): string {
@@ -45,7 +47,9 @@ export async function readIndex(dir: string): Promise<LibraryEntry[]> {
   try {
     const txt = await fs.readFile(indexPath(dir), 'utf-8')
     const arr = JSON.parse(txt) as LibraryEntry[]
-    // 新しい順
+    // 全件に手動並べ替えの order があればそれに従う。なければ従来通り新着順。
+    const allOrdered = arr.length > 0 && arr.every((e) => typeof e.order === 'number')
+    if (allOrdered) return arr.sort((a, b) => a.order! - b.order!)
     return arr.sort((a, b) => b.createdAt - a.createdAt)
   } catch {
     return []
@@ -69,8 +73,25 @@ export async function addEntry(
   await fs.writeFile(previewPath(dir, entry.id), previewPng)
 
   const entries = await readIndex(dir)
+  // 既に手動並べ替え済み（全件 order あり）なら、新規は先頭（最小 order - 1）に置く
+  const allOrdered = entries.length > 0 && entries.every((e) => typeof e.order === 'number')
+  if (allOrdered) {
+    entry.order = Math.min(...entries.map((e) => e.order!)) - 1
+  }
   entries.push(entry)
   await writeIndex(dir, entries)
+}
+
+/** ライブラリの表示順を、与えられた id 配列の順に並べ替えて保存する */
+export async function reorderEntries(dir: string, ids: string[]): Promise<boolean> {
+  const entries = await readIndex(dir)
+  const rank = new Map(ids.map((id, i) => [id, i]))
+  for (const e of entries) {
+    // 与えられた配列にない id は末尾へ
+    e.order = rank.has(e.id) ? rank.get(e.id)! : ids.length
+  }
+  await writeIndex(dir, entries)
+  return true
 }
 
 /** 合成済み衛星 PNG を保存し、索引の hasSatellite を立てる */

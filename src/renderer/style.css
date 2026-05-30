@@ -315,6 +315,26 @@ button.primary:hover {
   border-color: #1177bb;
   background: #1b2a36;
 }
+.lib-item.dragging {
+  opacity: 0.5;
+  border-color: #1177bb;
+}
+/* ドラッグ用ハンドル（掴んで行を並べ替える） */
+.lib-drag {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  color: #777;
+  cursor: grab;
+}
+.lib-drag:hover {
+  color: #ccc;
+}
+.lib-item.dragging .lib-drag {
+  cursor: grabbing;
+}
 .lib-thumb {
   width: 44px;
   height: 44px;

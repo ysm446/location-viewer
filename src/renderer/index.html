@@ -52,10 +52,6 @@
           <div id="view-map" class="view">
             <div id="map"></div>
             <div id="map-overlay">
-              <button id="btn-draw" data-i18n="map.draw" data-i18n-title="map.draw.title">
-                🖊 矩形を描く
-              </button>
-              <button id="btn-use-view" data-i18n="map.useView">表示範囲を選択</button>
               <select id="map-style" data-i18n-title="map.style.title">
                 <option value="satellite" data-i18n="style.satellite">衛星写真</option>
                 <option value="satellite-streets" data-i18n="style.satellite-streets">
@@ -64,6 +60,9 @@
                 <option value="streets" data-i18n="style.streets">地図（地名）</option>
                 <option value="outdoors" data-i18n="style.outdoors">地形図</option>
               </select>
+              <button id="btn-draw" data-i18n="map.draw" data-i18n-title="map.draw.title">
+                🖊 矩形を描く
+              </button>
               <label id="snap-pow2-label" data-i18n-title="map.snap.title"
                 ><input id="snap-pow2" type="checkbox" style="width: auto" />
                 <span data-i18n="map.snap">2のべき乗</span></label
@@ -87,10 +86,7 @@
             <div id="viewer3d"></div>
             <div id="viewer3d-info" class="muted"></div>
             <div id="viewer3d-controls">
-              <label data-i18n="view3d.exaggeration">高さ強調 (1.0=実寸)</label>
-              <input id="exaggeration" type="range" min="1" max="10" step="0.5" value="1" />
-              <span id="exaggeration-val" class="muted">1.0×</span>
-              <label style="margin-left: 14px"
+              <label
                 ><input id="use-satellite" type="checkbox" checked style="width: auto" />
                 <span data-i18n="view3d.satellite">衛星画像</span></label
               >

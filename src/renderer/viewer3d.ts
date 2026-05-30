@@ -11,14 +11,14 @@ export class TerrainViewer {
   private controls: OrbitControls
   private mesh: THREE.Mesh | null = null
   private grid: THREE.GridHelper | null = null
+  // グリッド中心軸の端に置く距離ラベル（中心から端までの km）
+  private axisLabels: THREE.Sprite[] = []
   private container: HTMLElement
   private raf = 0
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
   private gizmoCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 10)
-  /** 高さ強調倍率（1.0 = 実寸） */
-  private exaggeration = 1.0
   /** 衛星テクスチャ（読み込み済み）と表示 ON/OFF */
   private satelliteTex: THREE.Texture | null = null
   private useSatellite = true
@@ -84,12 +84,6 @@ export class TerrainViewer {
     this.gizmoCamera.position.set(0, 0, 3)
   }
 
-  setExaggeration(v: number) {
-    this.exaggeration = v
-    // 既存メッシュがあれば作り直すのが簡単（頂点数は少ないので軽い）
-    if (this.lastPayload) this.setData(this.lastPayload)
-  }
-
   /** 衛星テクスチャを設定（dataURL）。null でテクスチャなしに戻す。 */
   setSatelliteTexture(dataUrl: string | null) {
     // 既存テクスチャを破棄
@@ -99,20 +93,21 @@ export class TerrainViewer {
     }
     if (dataUrl) {
       const tex = new THREE.TextureLoader().load(dataUrl, () => {
-        // 読み込み完了後に再構築（マテリアルに反映）
-        if (this.lastPayload) this.setData(this.lastPayload)
+        // 読み込み完了後に再構築（マテリアルに反映）。見た目のみの更新なのでカメラは維持。
+        if (this.lastPayload) this.setData(this.lastPayload, false)
       })
       tex.colorSpace = THREE.SRGBColorSpace
       this.satelliteTex = tex
     } else if (this.lastPayload) {
-      this.setData(this.lastPayload)
+      this.setData(this.lastPayload, false)
     }
   }
 
   /** 衛星テクスチャの表示 ON/OFF（テクスチャ未設定時は頂点色のまま） */
   setUseSatellite(on: boolean) {
     this.useSatellite = on
-    if (this.lastPayload) this.setData(this.lastPayload)
+    // 見た目のみの更新なのでカメラ位置は維持する
+    if (this.lastPayload) this.setData(this.lastPayload, false)
   }
 
   hasSatellite(): boolean {
@@ -121,8 +116,12 @@ export class TerrainViewer {
 
   private lastPayload: MeshPayload | null = null
 
-  /** 生成結果のメッシュデータを表示する */
-  setData(payload: MeshPayload) {
+  /**
+   * 生成結果のメッシュデータを表示する。
+   * fitCamera=false のときはカメラ位置・注視点を維持する（衛星表示の切替など、
+   * 見た目だけを更新する再構築で視点がリセットされるのを防ぐ）。
+   */
+  setData(payload: MeshPayload, fitCamera = true) {
     this.lastPayload = payload
     const { cols, rows, minEle, maxEle, widthMeters, heightMeters } = payload
     const heights = new Float32Array(payload.heights)
@@ -140,6 +139,12 @@ export class TerrainViewer {
       ;(this.grid.material as THREE.Material).dispose()
       this.grid = null
     }
+    for (const sp of this.axisLabels) {
+      this.scene.remove(sp)
+      sp.material.map?.dispose()
+      sp.material.dispose()
+    }
+    this.axisLabels = []
 
     // ジオメトリは「地表メートル」で作る（X=東西, Z=南北, Y=高さ[m]）。
     // 高さも同じメートル単位なので、全軸を同じ倍率でスケールすれば実寸比率になる。
@@ -151,8 +156,8 @@ export class TerrainViewer {
     const colors = new Float32Array(pos.count * 3)
     for (let i = 0; i < pos.count; i++) {
       const ele = heights[i] ?? minEle
-      // 実標高(メートル)。base を 0 に合わせ、exaggeration は高さのみに掛ける（1.0=実寸）
-      pos.setY(i, (ele - minEle) * this.exaggeration)
+      // 実標高(メートル)。base を 0 に合わせて押し出す（実寸）
+      pos.setY(i, ele - minEle)
       const t = (ele - minEle) / span
       const col = ramp(t)
       colors[i * 3] = col[0]
@@ -190,11 +195,33 @@ export class TerrainViewer {
     // GridHelper は XZ 平面・原点中心。地形も原点中心なので位置はそのままでよい。
     this.scene.add(this.grid)
 
-    // --- カメラのフィッティング ---
+    // 中心軸（東西=X / 南北=Z）の端に「中心からの距離(km)」を小さく表示する。
+    // 北を -Z に取っているので、N は -Z 側。
+    const halfWorld = (gridSpan * k) / 2
+    const halfKm = gridSpan / 2 / 1000
+    const kmText = `${halfKm >= 10 ? halfKm.toFixed(0) : halfKm >= 1 ? halfKm.toFixed(1) : halfKm.toFixed(2)} km`
+    const ends: [string, THREE.Vector3][] = [
+      [`E ${kmText}`, new THREE.Vector3(halfWorld, 0, 0)],
+      [`W ${kmText}`, new THREE.Vector3(-halfWorld, 0, 0)],
+      [`N ${kmText}`, new THREE.Vector3(0, 0, -halfWorld)],
+      [`S ${kmText}`, new THREE.Vector3(0, 0, halfWorld)]
+    ]
+    for (const [text, pos] of ends) {
+      const sp = makeLabelSprite(text)
+      sp.position.copy(pos)
+      this.scene.add(sp)
+      this.axisLabels.push(sp)
+    }
+
+    // --- カメラのフィッティング（新規データ時のみ。見た目更新では視点を維持） ---
+    if (!fitCamera) {
+      this.controls.update()
+      return
+    }
     // 地形のバウンディングボックス（スケール後）。X=東西, Z=南北, Y=高さ。
     const halfX = (widthMeters * k) / 2
     const halfZ = (heightMeters * k) / 2
-    const sizeY = (maxEle - minEle) * this.exaggeration * k
+    const sizeY = (maxEle - minEle) * k
     const centerY = sizeY / 2
 
     // 注視点はボックス中心（底を中心に回らないように高さ方向中心へ）
@@ -262,8 +289,48 @@ export class TerrainViewer {
     cancelAnimationFrame(this.raf)
     this.resizeObs.disconnect()
     this.satelliteTex?.dispose()
+    for (const sp of this.axisLabels) {
+      sp.material.map?.dispose()
+      sp.material.dispose()
+    }
     this.renderer.dispose()
   }
+}
+
+/**
+ * テキストを描いた小さなラベル板（Sprite）を作る。文字幅に合わせて canvas を
+ * サイズ調整し、ワールド上では小さめに表示する。color は 0xRRGGBB。
+ */
+function makeLabelSprite(text: string, color = 0x9fc2e8): THREE.Sprite {
+  const fontPx = 48
+  const pad = 10
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  const font = `${fontPx}px Segoe UI, sans-serif`
+  ctx.font = font
+  const w = Math.ceil(ctx.measureText(text).width) + pad * 2
+  const h = fontPx + pad * 2
+  canvas.width = w
+  canvas.height = h
+  // canvas をリサイズすると context がクリアされるので font を再設定する
+  ctx.font = font
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  // 縁取り（黒）で視認性を確保
+  ctx.lineWidth = 6
+  ctx.strokeStyle = 'rgba(0,0,0,0.85)'
+  ctx.strokeText(text, w / 2, h / 2)
+  ctx.fillStyle = '#' + color.toString(16).padStart(6, '0')
+  ctx.fillText(text, w / 2, h / 2)
+
+  const tex = new THREE.CanvasTexture(canvas)
+  tex.colorSpace = THREE.SRGBColorSpace
+  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true })
+  const sp = new THREE.Sprite(mat)
+  // ワールドでの高さ（小さめ）。文字のアスペクト比を保って横幅を決める。
+  const worldH = 0.06
+  sp.scale.set(worldH * (w / h), worldH, 1)
+  return sp
 }
 
 /** 値を 1/2/5×10^n の「きりの良い」距離に丸める（グリッド間隔用） */
