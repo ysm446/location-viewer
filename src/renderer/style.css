@@ -483,6 +483,11 @@ button.primary:hover {
   border-color: var(--danger-border);
   color: var(--danger-text);
 }
+.lib-enter:hover {
+  background: var(--accent);
+  border-color: var(--accent-bright);
+  color: #fff;
+}
 
 /* ワークスペース ドリルイン（詳細モード） */
 .back-link {

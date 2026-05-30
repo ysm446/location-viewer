@@ -26,6 +26,8 @@ const ICON_DELETE =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>'
 const ICON_DRAG =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>'
+const ICON_ENTER =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>'
 
 declare global {
   interface Window {
@@ -754,12 +756,17 @@ function showPreview(
   // 3Dビューポート上の寸法情報を更新
   updateViewer3dInfo(mesh, h)
 
-  // このワークスペースのランドマークを反映し、詳細モード（中の階層）へ
+  // このワークスペースのランドマークを反映（詳細モードへは入らない＝選択のみ）
   setPlaceMode(false)
   landmarks = workspace.landmarks
   viewer?.setLandmarks(landmarks)
-  showWorkspaceDetail(true)
   renderLandmarkPanel()
+}
+
+/** ワークスペースの中（詳細モード）へ入る。未選択なら先に読み込む */
+async function enterWorkspace(id: string) {
+  if (selectedId !== id) await selectItem(id)
+  showWorkspaceDetail(true)
 }
 
 /** 3Dビューポート左上に 縦横(km) / 高さ(標高差) / px を表示する */
@@ -940,6 +947,7 @@ $('btn-generate').addEventListener('click', async () => {
     const zoom = parseInt(zoomInput.value)
     const res = await api.createWorkspace({ bbox: b, zoom, sourceId: sourceSel.value })
     showPreview(res.previewDataUrl, null, res.mesh, res.workspace)
+    showWorkspaceDetail(true) // 生成直後はその中へ
     progress.textContent = `${res.tileCount} ${t('gen.tiles')} — ${t('gen.savedToData')}`
     await refreshLibrary()
     showTab('3d') // 生成後は3Dで確認
@@ -968,6 +976,7 @@ btnUpdateTerrain.addEventListener('click', async () => {
     const zoom = parseInt(zoomInput.value)
     const res = await api.updateHeightmap(selectedId, { bbox: b, zoom, sourceId: sourceSel.value })
     showPreview(res.previewDataUrl, null, res.mesh, res.workspace)
+    showWorkspaceDetail(true)
     progress.textContent = `${res.tileCount} ${t('gen.tiles')} — ${t('gen.savedToData')}`
     await refreshLibrary()
     showTab('3d')
@@ -1167,8 +1176,21 @@ async function refreshLibrary() {
       await api.reorderWorkspaces(ids)
     })
 
+    // 「中に入る」ボタン（詳細＝地点リストへドリルイン）
+    const enter = document.createElement('button')
+    enter.className = 'lib-icon lib-enter'
+    enter.innerHTML = ICON_ENTER
+    enter.title = t('lib.enter')
+    enter.setAttribute('aria-label', t('lib.enter'))
+    enter.addEventListener('click', (ev) => {
+      ev.stopPropagation()
+      enterWorkspace(e.id)
+    })
+
+    // 1クリック=選択（地形を表示）、ダブルクリック=中に入る
     li.addEventListener('click', () => selectItem(e.id))
-    li.append(handle, thumb, meta, edit, del)
+    li.addEventListener('dblclick', () => enterWorkspace(e.id))
+    li.append(handle, thumb, meta, edit, del, enter)
     libList.appendChild(li)
   }
   markSelected()

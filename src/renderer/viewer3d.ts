@@ -330,7 +330,7 @@ export class TerrainViewer {
       group.add(line)
 
       // ラベル（名前＋標高）
-      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.055)
+      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.042)
       label.position.set(x, topY + 0.06, z)
       label.renderOrder = 11
       group.add(label)
