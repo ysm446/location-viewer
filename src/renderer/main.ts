@@ -370,6 +370,45 @@ map.on('mouseup', () => {
   map.getCanvas().style.cursor = ''
 })
 
+// ---- 矩形本体（塗り）を左ドラッグして全体移動 ----
+// サイズは変えずに平行移動するので、2のべき乗サイズも保たれる。
+let movingBox = false
+let moveLast: maplibregl.LngLat | null = null
+
+map.on('mouseenter', 'bbox-fill', () => {
+  if (!drawMode && !dragCorner) map.getCanvas().style.cursor = 'grab'
+})
+map.on('mouseleave', 'bbox-fill', () => {
+  if (!drawMode && !dragCorner && !movingBox) map.getCanvas().style.cursor = ''
+})
+
+map.on('mousedown', 'bbox-fill', (e) => {
+  if (drawMode || dragCorner) return
+  if (e.originalEvent.button !== 0) return // 左ボタンのみ
+  movingBox = true
+  moveLast = e.lngLat
+  map.dragPan.disable() // 地図のパンを止めて矩形だけ動かす
+  map.getCanvas().style.cursor = 'grabbing'
+  e.preventDefault()
+})
+
+map.on('mousemove', (e) => {
+  if (!movingBox || !moveLast) return
+  const dLng = e.lngLat.lng - moveLast.lng
+  const dLat = e.lngLat.lat - moveLast.lat
+  const b = currentBBox()
+  setBBoxFields(b.west + dLng, b.south + dLat, b.east + dLng, b.north + dLat)
+  moveLast = e.lngLat
+})
+
+map.on('mouseup', () => {
+  if (!movingBox) return
+  movingBox = false
+  moveLast = null
+  map.dragPan.enable()
+  map.getCanvas().style.cursor = ''
+})
+
 for (const el of [westI, eastI, southI, northI]) {
   el.addEventListener('change', () => {
     const b = currentBBox()
