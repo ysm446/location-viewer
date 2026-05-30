@@ -481,7 +481,7 @@ export class TerrainViewer {
       [`S ${kmText}`, new THREE.Vector3(0, 0, halfWorld)]
     ]
     for (const [text, pos] of ends) {
-      const sp = makeLabelSprite(text)
+      const sp = makeLabelSprite(text) // 深度テストなし＝常にフル描画（見切れ防止）。
       sp.position.copy(pos)
       this.scene.add(sp)
       this.axisLabels.push(sp)
@@ -600,10 +600,29 @@ export class TerrainViewer {
     }
   }
 
+  /**
+   * グリッド端の距離ラベルが地形の裏に回り込んだら、ラベルごと丸ごと隠す。
+   * 深度テストだと文字が途中で見切れるため、アンカー点のオクルージョンを
+   * レイキャストで判定して all-or-nothing で表示/非表示する。
+   */
+  private updateAxisLabelOcclusion() {
+    if (!this.mesh || this.axisLabels.length === 0) return
+    const cam = this.camera.position
+    const dir = new THREE.Vector3()
+    for (const sp of this.axisLabels) {
+      const distToLabel = cam.distanceTo(sp.position)
+      dir.copy(sp.position).sub(cam).normalize()
+      this.raycaster.set(cam, dir)
+      const hit = this.raycaster.intersectObject(this.mesh)[0]
+      sp.visible = !(hit && hit.distance < distToLabel - 0.02)
+    }
+  }
+
   private animate = () => {
     this.raf = requestAnimationFrame(this.animate)
     this.controls.update()
     this.declutterLabels()
+    this.updateAxisLabelOcclusion()
 
     // メインシーン
     this.renderer.setViewport(0, 0, this.container.clientWidth, this.container.clientHeight)
@@ -648,8 +667,14 @@ export class TerrainViewer {
  * テキストを描いた小さなラベル板（Sprite）を作る。"\n" で複数行に対応。
  * 文字幅・行数に合わせて canvas をサイズ調整し、ワールド上では小さめに表示する。
  * color は 0xRRGGBB、worldH は1行あたりのワールド高さ。
+ * depthTest=true にすると地形に隠れる（オクルージョンする）。
  */
-function makeLabelSprite(text: string, color = 0x9fc2e8, worldH = 0.06): THREE.Sprite {
+function makeLabelSprite(
+  text: string,
+  color = 0x9fc2e8,
+  worldH = 0.06,
+  depthTest = false
+): THREE.Sprite {
   const fontPx = 48
   const pad = 10
   const lineH = fontPx * 1.15
@@ -677,7 +702,7 @@ function makeLabelSprite(text: string, color = 0x9fc2e8, worldH = 0.06): THREE.S
 
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
-  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true })
+  const mat = new THREE.SpriteMaterial({ map: tex, depthTest, transparent: true })
   const sp = new THREE.Sprite(mat)
   // 文字のアスペクト比を保って横幅を決める（worldH は1行ぶんの高さ基準）
   const totalH = worldH * lines.length
