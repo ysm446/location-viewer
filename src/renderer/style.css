@@ -100,6 +100,23 @@ body {
 #viewer3d canvas {
   display: block;
 }
+/* 3Dビューポート左上の寸法情報オーバーレイ */
+#viewer3d-info {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  background: rgba(30, 30, 30, 0.8);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #d0d0d0;
+  pointer-events: none;
+}
+#viewer3d-info:empty {
+  display: none;
+}
 #viewer3d-controls {
   position: absolute;
   left: 12px;

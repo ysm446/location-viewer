@@ -26,7 +26,10 @@
       "Bash(echo \"===TSC $?===\")",
       "Bash(echo \"===BUILD $?===\")",
       "Bash(grep -iE \"^EOF$|tile_|\\\\.log$\")",
-      "Bash(grep -c 'id=\"__TRACKED_VAR__\"' src/renderer/index.html)"
+      "Bash(grep -c 'id=\"__TRACKED_VAR__\"' src/renderer/index.html)",
+      "Bash(awk 'NR>=85 && NR<=96' src/renderer/style.css)",
+      "Bash(echo \"BUILD=$?\")",
+      "Bash(echo \"BUILD_EXIT=$?\")"
     ]
   }
 }

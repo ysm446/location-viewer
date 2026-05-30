@@ -33,6 +33,7 @@ const estimate = $('estimate')
 const bboxReadout = $('bbox-readout')
 const previewImg = $<HTMLImageElement>('preview')
 const previewEmpty = $('preview-empty')
+const viewer3dInfo = $('viewer3d-info')
 const progress = $('progress')
 const btnExportPng = $<HTMLButtonElement>('btn-export-png')
 const btnExportRaw = $<HTMLButtonElement>('btn-export-raw')
@@ -722,6 +723,22 @@ function showPreview(
   btnExportPng.disabled = false
   btnExportRaw.disabled = false
   markSelected()
+
+  // 3Dビューポート上の寸法情報を更新
+  updateViewer3dInfo(mesh, entry)
+}
+
+/** 3Dビューポート左上に 縦横(km) / 高さ(標高差) / px を表示する */
+function updateViewer3dInfo(mesh: MeshPayload, entry: LibraryEntry) {
+  const wKm = mesh.widthMeters / 1000
+  const hKm = mesh.heightMeters / 1000
+  const relief = mesh.maxEle - mesh.minEle // 標高差(m)
+  viewer3dInfo.innerHTML =
+    `<div>${t('view3d.size')}: ${wKm.toFixed(2)} × ${hKm.toFixed(2)} km</div>` +
+    `<div>${t('view3d.height')}: ${relief.toFixed(0)} m (${(relief / 1000).toFixed(
+      2
+    )} km) / ${mesh.minEle.toFixed(0)}〜${mesh.maxEle.toFixed(0)} m</div>` +
+    `<div>${t('view3d.pixels')}: ${entry.width} × ${entry.height} px</div>`
 }
 
 // ---- 生成 ----
