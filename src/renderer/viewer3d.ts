@@ -64,20 +64,22 @@ export class TerrainViewer {
     this.animate()
   }
 
-  /** 左下に表示する小さな軸ギズモを組み立てる（東=X赤 / 上=Y緑 / 北=Z青） */
+  /** 左下に表示する小さな軸ギズモを組み立てる（東=X赤 / 上=Y緑(矢印のみ) / 北=Z青） */
   private buildGizmo() {
     const len = 0.8
-    const mk = (dir: THREE.Vector3, color: number, label: string) => {
+    const mk = (dir: THREE.Vector3, color: number, label?: string) => {
       const arrow = new THREE.ArrowHelper(dir, new THREE.Vector3(0, 0, 0), len, color, 0.25, 0.15)
       this.gizmoScene.add(arrow)
-      const sp = makeTextSprite(label, color)
-      sp.position.copy(dir.clone().multiplyScalar(len + 0.25))
-      sp.scale.set(0.5, 0.5, 0.5)
-      this.gizmoScene.add(sp)
+      if (label) {
+        const sp = makeTextSprite(label, color)
+        sp.position.copy(dir.clone().multiplyScalar(len + 0.25))
+        sp.scale.set(0.5, 0.5, 0.5)
+        this.gizmoScene.add(sp)
+      }
     }
     // 北を -Z にしているので、ギズモの「N」も -Z に置く
     mk(new THREE.Vector3(1, 0, 0), 0xff5555, 'E')
-    mk(new THREE.Vector3(0, 1, 0), 0x55ff55, 'Up')
+    mk(new THREE.Vector3(0, 1, 0), 0x55ff55) // 上方向は矢印のみ（ラベルなし）
     mk(new THREE.Vector3(0, 0, -1), 0x5599ff, 'N')
     this.gizmoCamera.position.set(0, 0, 3)
   }
