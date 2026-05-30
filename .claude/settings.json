@@ -18,7 +18,9 @@
       "PowerShell(cd \"d:/GitHub/mapbox-importer\"; npx tsc --noEmit; Write-Output \"TSC_EXIT=$LASTEXITCODE\")",
       "Bash(echo \"===TSC_EXIT $?===\")",
       "Bash(echo \"===BUILD_EXIT $?===\")",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(echo \"TSC=$?\")",
+      "Bash(echo \"TSC_EXIT=$?\")"
     ]
   }
 }

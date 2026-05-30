@@ -128,18 +128,34 @@ function refreshDynamicTexts() {
   refreshLibrary()
 }
 
-// 選択範囲の矩形を描画する
+// 選択範囲の矩形を描画する（四隅のリサイズ用ハンドルも描画）
 function drawBBoxRect(w: number, s: number, e: number, n: number) {
-  const geojson: GeoJSON.Feature = {
+  const poly: GeoJSON.Feature = {
     type: 'Feature',
     properties: {},
     geometry: { type: 'Polygon', coordinates: [[[w, n], [e, n], [e, s], [w, s], [w, n]]] }
   }
+  // 四隅ハンドル（corner プロパティで識別）
+  const handles: GeoJSON.FeatureCollection = {
+    type: 'FeatureCollection',
+    features: [
+      { corner: 'nw', lng: w, lat: n },
+      { corner: 'ne', lng: e, lat: n },
+      { corner: 'se', lng: e, lat: s },
+      { corner: 'sw', lng: w, lat: s }
+    ].map((c) => ({
+      type: 'Feature',
+      properties: { corner: c.corner },
+      geometry: { type: 'Point', coordinates: [c.lng, c.lat] }
+    }))
+  }
+
   const src = map.getSource('bbox') as maplibregl.GeoJSONSource | undefined
   if (src) {
-    src.setData(geojson)
+    src.setData(poly)
+    ;(map.getSource('bbox-handles') as maplibregl.GeoJSONSource).setData(handles)
   } else {
-    map.addSource('bbox', { type: 'geojson', data: geojson })
+    map.addSource('bbox', { type: 'geojson', data: poly })
     map.addLayer({
       id: 'bbox-fill',
       type: 'fill',
@@ -151,6 +167,18 @@ function drawBBoxRect(w: number, s: number, e: number, n: number) {
       type: 'line',
       source: 'bbox',
       paint: { 'line-color': '#3aa0ff', 'line-width': 2 }
+    })
+    map.addSource('bbox-handles', { type: 'geojson', data: handles })
+    map.addLayer({
+      id: 'bbox-handles',
+      type: 'circle',
+      source: 'bbox-handles',
+      paint: {
+        'circle-radius': 6,
+        'circle-color': '#ffffff',
+        'circle-stroke-color': '#1177bb',
+        'circle-stroke-width': 2
+      }
     })
   }
 }
@@ -221,6 +249,51 @@ map.on('mouseup', (e) => {
     setBBoxFields(w, s, east, n)
   }
   setDrawMode(false) // 1回描いたら通常モードに戻す
+})
+
+// ---- 四隅ハンドルをドラッグして矩形をリサイズ ----
+let dragCorner: string | null = null
+
+// ハンドルにカーソルを乗せたらポインタ表示
+map.on('mouseenter', 'bbox-handles', () => {
+  if (!drawMode) map.getCanvas().style.cursor = 'move'
+})
+map.on('mouseleave', 'bbox-handles', () => {
+  if (!drawMode && !dragCorner) map.getCanvas().style.cursor = ''
+})
+
+map.on('mousedown', 'bbox-handles', (e) => {
+  if (drawMode) return
+  const f = e.features?.[0]
+  if (!f) return
+  dragCorner = f.properties?.corner as string
+  map.dragPan.disable() // 地図移動を止めてハンドルだけ動かす
+  e.preventDefault()
+})
+
+map.on('mousemove', (e) => {
+  if (!dragCorner) return
+  const b = currentBBox()
+  // ドラッグ中の角の経度・緯度を更新（反対側の角は固定）
+  let { west, south, east, north } = b
+  if (dragCorner.includes('w')) west = e.lngLat.lng
+  if (dragCorner.includes('e')) east = e.lngLat.lng
+  if (dragCorner.includes('n')) north = e.lngLat.lat
+  if (dragCorner.includes('s')) south = e.lngLat.lat
+  // 左右・上下が反転しても破綻しないよう min/max で正規化
+  setBBoxFields(
+    Math.min(west, east),
+    Math.min(south, north),
+    Math.max(west, east),
+    Math.max(south, north)
+  )
+})
+
+map.on('mouseup', () => {
+  if (!dragCorner) return
+  dragCorner = null
+  map.dragPan.enable()
+  map.getCanvas().style.cursor = ''
 })
 
 for (const el of [westI, eastI, southI, northI]) {
