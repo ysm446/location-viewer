@@ -5,6 +5,12 @@ import type { Api, MeshPayload, LibraryEntry, SatelliteTilesPayload } from '../p
 import { TerrainViewer } from './viewer3d'
 import { t, setLang, getLang, applyDom, type Lang } from './i18n'
 
+// ライブラリ操作のアイコン（インラインSVG, currentColor で配色）
+const ICON_EDIT =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>'
+const ICON_DELETE =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>'
+
 declare global {
   interface Window {
     api: Api
@@ -664,17 +670,20 @@ async function refreshLibrary() {
     })
 
     const edit = document.createElement('button')
-    edit.className = 'lib-edit'
-    edit.textContent = t('lib.rename')
+    edit.className = 'lib-icon lib-edit'
+    edit.innerHTML = ICON_EDIT
     edit.title = t('lib.rename')
+    edit.setAttribute('aria-label', t('lib.rename'))
     edit.addEventListener('click', (ev) => {
       ev.stopPropagation()
       startRename()
     })
 
     const del = document.createElement('button')
-    del.className = 'lib-del'
-    del.textContent = t('lib.delete')
+    del.className = 'lib-icon lib-del'
+    del.innerHTML = ICON_DELETE
+    del.title = t('lib.delete')
+    del.setAttribute('aria-label', t('lib.delete'))
     del.addEventListener('click', async (ev) => {
       ev.stopPropagation()
       if (!confirm(`「${e.name}」${t('lib.deleteConfirm')}`)) return

@@ -328,16 +328,25 @@ button.primary:hover {
   font-size: 11px;
   color: #888;
 }
-.lib-edit,
-.lib-del {
+/* ライブラリのアイコンボタン（rename / delete） */
+.lib-icon {
   flex: 0 0 auto;
-  padding: 4px 8px;
-  font-size: 11px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #444;
+  color: #b0b0b0;
 }
-.lib-del {
-  background: #3a2d2d;
-  border-color: #5a3a3a;
+.lib-icon:hover {
+  background: #3a3d41;
+  color: #e0e0e0;
 }
 .lib-del:hover {
   background: #5a3030;
+  border-color: #5a3a3a;
+  color: #ffd0d0;
 }
