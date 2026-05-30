@@ -527,9 +527,73 @@ export class TerrainViewer {
     this.camera.updateProjectionMatrix()
   }
 
+  /**
+   * ランドマークのラベル同士がスクリーン上で重なるとき、リーダー線を伸ばして
+   * ラベルを上へずらし、重なりを避ける（隠さない）。マーカーは地表に固定のまま。
+   * 手前（カメラに近い）を基準位置に、奥側ほど上へ逃がす。
+   */
+  private declutterLabels() {
+    const group = this.landmarkGroup
+    if (!group || !group.visible || this.landmarkObjs.size === 0) return
+    const w = this.container.clientWidth || 1
+    const h = this.container.clientHeight || 1
+    const fovR = (this.camera.fov * Math.PI) / 180
+    const cam = this.camera.position
+    const v = new THREE.Vector3()
+    const baseStem = 0.4 // 既定のリーダー線長（ワールド）
+    const gap = 0.05 // 線の先端からラベル中心までの隙間
+    const step = 0.04 // 上へ逃がす1ステップ（ワールド）
+    const maxStem = 1.6
+    const pad = 2
+
+    // マーカー（地表）からの距離が近い順に基準配置 → 奥は上へ逃がす
+    const entries = [...this.landmarkObjs.values()].map((o) => ({
+      o,
+      base: o.marker.position,
+      dist: cam.distanceTo(o.marker.position)
+    }))
+    entries.sort((a, b) => a.dist - b.dist)
+
+    const placed: [number, number, number, number][] = []
+    const overlaps = (a: number[], b: number[]) =>
+      a[0] < b[0] + b[2] + pad && a[0] + a[2] + pad > b[0] && a[1] < b[1] + b[3] + pad && a[1] + a[3] + pad > b[1]
+
+    for (const { o, base } of entries) {
+      const labelDist = cam.distanceTo(o.label.position)
+      const pxPerWorld = h / (2 * Math.tan(fovR / 2) * Math.max(labelDist, 1e-3))
+      const sw = o.label.scale.x * pxPerWorld
+      const sh = o.label.scale.y * pxPerWorld
+
+      let stem = baseStem
+      let rect: [number, number, number, number] = [0, 0, sw, sh]
+      let onScreen = false
+      // 重ならない高さが見つかるまで少しずつ上へ
+      for (let i = 0; ; i++) {
+        v.set(base.x, base.y + stem + gap, base.z).project(this.camera)
+        onScreen = v.z < 1 && v.x >= -1.3 && v.x <= 1.3 && v.y >= -1.3 && v.y <= 1.3
+        const sx = (v.x * 0.5 + 0.5) * w
+        const sy = (-v.y * 0.5 + 0.5) * h
+        rect = [sx - sw / 2, sy - sh / 2, sw, sh]
+        if (!onScreen || stem >= maxStem || !placed.some((r) => overlaps(rect, r))) break
+        stem += step
+      }
+
+      // 反映：線の先端とラベルを stem に合わせる
+      const topY = base.y + stem
+      const pos = o.line.geometry.attributes.position as THREE.BufferAttribute
+      pos.setXYZ(0, base.x, base.y, base.z)
+      pos.setXYZ(1, base.x, topY, base.z)
+      pos.needsUpdate = true
+      o.label.position.set(base.x, topY + gap, base.z)
+      o.label.visible = onScreen
+      if (onScreen) placed.push(rect)
+    }
+  }
+
   private animate = () => {
     this.raf = requestAnimationFrame(this.animate)
     this.controls.update()
+    this.declutterLabels()
 
     // メインシーン
     this.renderer.setViewport(0, 0, this.container.clientWidth, this.container.clientHeight)
