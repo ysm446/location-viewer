@@ -177,7 +177,7 @@ input[type='range']::-webkit-slider-thumb {
 }
 /* サイドバー（ズーム）のスライダーは幅を控えめに */
 #zoom {
-  width: 70%;
+  width: 50%;
 }
 .row {
   display: flex;
