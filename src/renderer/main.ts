@@ -708,7 +708,13 @@ async function refreshLibrary() {
     const sub = document.createElement('div')
     sub.className = 'lib-sub'
     sub.textContent = `${e.width}×${e.height} / ${e.minEle.toFixed(0)}〜${e.maxEle.toFixed(0)}m`
-    meta.append(name, sub)
+    // 緯度・経度（bbox 中心）の行を追加
+    const geo = document.createElement('div')
+    geo.className = 'lib-sub'
+    const clat = (e.bbox.north + e.bbox.south) / 2
+    const clon = (e.bbox.east + e.bbox.west) / 2
+    geo.textContent = `lat ${clat.toFixed(4)}, lon ${clon.toFixed(4)}`
+    meta.append(name, sub, geo)
 
     // 名前をその場で編集する（input に差し替え → Enter/blur で確定）
     const startRename = () => {
