@@ -10,7 +10,8 @@ MVP + 3D ビューワ + `data/` ライブラリまで動作。型チェック・
 - [x] Electron + TS 雛形（electron-vite）、`start.bat`（ASCII）
 - [x] タイル座標計算・並列ダウンロード（`src/main/tiles.ts`）
 - [x] タイル合成・標高デコード・16bit/raw 出力・メッシュ生成（`src/main/heightmap.ts`）
-- [x] 2D 地図（MapLibre）での範囲選択、解像度推定表示
+- [x] 2D 地図（MapLibre）での範囲選択（表示範囲／矩形ドラッグ）、地図スタイル切替、解像度推定（px/MP/タイル数）
+- [x] ライブラリ選択で対象 bbox へ地図移動（fitBounds）・ズーム復元
 - [x] 2D グレースケールプレビュー（ズーム/パン/ダブルクリックでフィット）
 - [x] 3D 地形ビューワ（Three.js、実寸高さ・グリッド・地形配色・中ボタン=パン・高さ強調1〜10×・衛星テクスチャ貼り付け）（`src/renderer/viewer3d.ts`）
 - [x] 衛星画像を `data/<id>.satellite.png` に保存し 3D メッシュに貼り付け、チェックボックスで切替（WebP をレンダラー Canvas で合成）
@@ -19,7 +20,6 @@ MVP + 3D ビューワ + `data/` ライブラリまで動作。型チェック・
 - [x] トークンを userData に保存、`data/` を `.gitignore`
 
 ## 未着手 / 次の一手
-- [ ] 3D ビューに衛星テクスチャ貼り付け（次の最有力候補）
 - [ ] Web Mercator 緯度歪み補正
 - [ ] 標高レンジ手動指定 / TIFF・EXR 出力 / 配布インストーラ
 

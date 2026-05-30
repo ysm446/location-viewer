@@ -20,7 +20,14 @@
           <div id="view-map" class="view">
             <div id="map"></div>
             <div id="map-overlay">
-              <button id="btn-use-view">この表示範囲を選択</button>
+              <button id="btn-draw" title="ドラッグで矩形を描いて範囲選択">🖊 矩形を描く</button>
+              <button id="btn-use-view">表示範囲を選択</button>
+              <select id="map-style" title="地図の種類">
+                <option value="satellite">衛星写真</option>
+                <option value="satellite-streets">衛星＋地名</option>
+                <option value="streets">地図（地名）</option>
+                <option value="outdoors">地形図</option>
+              </select>
               <span id="bbox-readout" class="muted">範囲未選択</span>
             </div>
           </div>

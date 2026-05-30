@@ -54,6 +54,13 @@ body {
   padding: 8px 12px;
   border-radius: 6px;
 }
+#map-overlay select {
+  width: auto;
+}
+#btn-draw.active {
+  background: #0e639c;
+  border-color: #1177bb;
+}
 
 /* 2D プレビュー（ズーム/パン対応） */
 #preview-2d-wrap {
