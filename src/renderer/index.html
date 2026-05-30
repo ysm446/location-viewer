@@ -109,35 +109,38 @@
           <button id="rtab-settings" class="tab" data-i18n="rtab.settings">環境設定</button>
         </div>
 
-        <!-- ワークスペース -->
+        <!-- ワークスペース（クリックでドリルイン：選択以外を隠し、中身を下に並べる） -->
         <div id="rview-library" class="rview">
-          <!-- 一覧ビュー -->
-          <section class="card" id="ws-list-view">
-            <div class="row" style="justify-content: space-between">
+          <section class="card">
+            <!-- 一覧モードのヘッダ -->
+            <div class="row" id="ws-list-header" style="justify-content: space-between">
               <label style="margin: 0" data-i18n="side.library">ワークスペース</label>
               <span class="muted" id="lib-count"></span>
             </div>
-            <ul id="library-list"></ul>
-          </section>
-
-          <!-- 詳細ビュー（ワークスペースの中：地点リスト等） -->
-          <section class="card hidden" id="ws-detail-view">
+            <!-- 詳細モードの戻るリンク -->
             <a id="ws-back" class="back-link" data-i18n="ws.back">← ワークスペース一覧</a>
-            <div class="ws-detail-name" id="ws-detail-name"></div>
-            <p class="muted" id="selected-info" data-i18n="selected.none">選択なし</p>
-            <div class="row">
-              <button id="btn-export-png" disabled data-i18n="btn.exportPng">PNG16 書き出し</button>
-              <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
-            </div>
 
-            <div class="row" style="justify-content: space-between; margin-top: 12px">
-              <label style="margin: 0" data-i18n="landmark.title">ランドマーク</label>
-              <button id="btn-add-landmark" data-i18n="landmark.add">📍 地点を追加</button>
+            <ul id="library-list"></ul>
+
+            <!-- 選択ワークスペースの中身（詳細モードでのみ表示） -->
+            <div id="ws-detail">
+              <p class="muted" id="selected-info" data-i18n="selected.none">選択なし</p>
+              <div class="row">
+                <button id="btn-export-png" disabled data-i18n="btn.exportPng">
+                  PNG16 書き出し
+                </button>
+                <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
+              </div>
+
+              <div class="row" style="justify-content: space-between; margin-top: 12px">
+                <label style="margin: 0" data-i18n="landmark.title">ランドマーク</label>
+                <button id="btn-add-landmark" data-i18n="landmark.add">📍 地点を追加</button>
+              </div>
+              <p class="muted" id="landmark-hint" data-i18n="landmark.hint" hidden>
+                3Dビューで地形をクリックして地点を追加
+              </p>
+              <ul id="landmark-list"></ul>
             </div>
-            <p class="muted" id="landmark-hint" data-i18n="landmark.hint" hidden>
-              3Dビューで地形をクリックして地点を追加
-            </p>
-            <ul id="landmark-list"></ul>
           </section>
         </div>
 

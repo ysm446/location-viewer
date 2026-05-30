@@ -484,10 +484,8 @@ button.primary:hover {
   color: var(--danger-text);
 }
 
-/* ワークスペース詳細ビューの戻るリンク・名前 */
+/* ワークスペース ドリルイン（詳細モード） */
 .back-link {
-  display: inline-block;
-  margin-bottom: 8px;
   color: var(--accent-bright);
   font-size: 12px;
   cursor: pointer;
@@ -495,11 +493,24 @@ button.primary:hover {
 .back-link:hover {
   text-decoration: underline;
 }
-.ws-detail-name {
-  font-weight: 600;
-  font-size: 13px;
-  margin-bottom: 4px;
-  word-break: break-word;
+/* 既定（一覧モード）では戻るリンクと中身は隠す */
+#ws-back,
+#ws-detail {
+  display: none;
+}
+/* 詳細モード：選択以外のワークスペースと一覧ヘッダを隠し、戻るリンク・中身を表示 */
+#rview-library.detail #ws-list-header {
+  display: none;
+}
+#rview-library.detail #ws-back {
+  display: inline-block;
+  margin-bottom: 8px;
+}
+#rview-library.detail .lib-item:not(.selected) {
+  display: none;
+}
+#rview-library.detail #ws-detail {
+  display: block;
 }
 
 /* ランドマーク（地点）編集パネル */

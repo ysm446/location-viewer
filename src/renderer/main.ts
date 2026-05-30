@@ -57,18 +57,18 @@ const btnUpdateTerrain = $<HTMLButtonElement>('btn-update-terrain')
 const libList = $<HTMLUListElement>('library-list')
 const libCount = $('lib-count')
 const selectedInfo = $('selected-info')
-const wsListView = $('ws-list-view')
-const wsDetailView = $('ws-detail-view')
+const rviewLibraryEl = $('rview-library')
 const wsBack = $('ws-back')
-const wsDetailName = $('ws-detail-name')
 const landmarkList = $<HTMLUListElement>('landmark-list')
 const landmarkHint = $('landmark-hint')
 const btnAddLandmark = $<HTMLButtonElement>('btn-add-landmark')
 
-/** 右ペインを 一覧⇔詳細（ワークスペースの中）で切り替える */
+/**
+ * 右ペインを 一覧⇔詳細 で切り替える。詳細モードでは CSS で選択以外の
+ * ワークスペースを隠し、選択行の下に中身（地点等）を表示する。
+ */
 function showWorkspaceDetail(on: boolean) {
-  wsListView.classList.toggle('hidden', on)
-  wsDetailView.classList.toggle('hidden', !on)
+  rviewLibraryEl.classList.toggle('detail', on)
 }
 wsBack.addEventListener('click', () => {
   setPlaceMode(false)
@@ -746,11 +746,10 @@ function showPreview(
   // 3Dビューポート上の寸法情報を更新
   updateViewer3dInfo(mesh, h)
 
-  // このワークスペースのランドマークを反映し、詳細ビュー（中の階層）へ
+  // このワークスペースのランドマークを反映し、詳細モード（中の階層）へ
   setPlaceMode(false)
   landmarks = workspace.landmarks
   viewer?.setLandmarks(landmarks)
-  wsDetailName.textContent = workspace.name
   showWorkspaceDetail(true)
   renderLandmarkPanel()
 }

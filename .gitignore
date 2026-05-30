@@ -3,6 +3,8 @@ out/
 dist/
 *.log
 .DS_Store
+# Claude Code のローカル設定（個人環境ごと。共有しない）
+.claude/
 # 個人のMapboxトークンを保存する場所（コミットしない）
 config.json
 # 生成したハイトマップなどの出力物
