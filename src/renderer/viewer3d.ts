@@ -43,6 +43,7 @@ export class TerrainViewer {
   // 地点ごとの描画オブジェクト（ドラッグ移動時に位置を更新する）
   private landmarkObjs = new Map<string, { marker: THREE.Mesh; line: THREE.Line; label: THREE.Sprite }>()
   private markerMeshes: THREE.Mesh[] = [] // レイキャスト用（クリック判定）
+  private labelStem = new Map<string, number>() // 地点ごとのリーダー線の現在長（スムーズ移動用）
   // 3Dクリックで地点を配置するモード
   private raycaster = new THREE.Raycaster()
   private placeMode = false
@@ -547,7 +548,8 @@ export class TerrainViewer {
     const pad = 2
 
     // マーカー（地表）からの距離が近い順に基準配置 → 奥は上へ逃がす
-    const entries = [...this.landmarkObjs.values()].map((o) => ({
+    const entries = [...this.landmarkObjs.entries()].map(([id, o]) => ({
+      id,
       o,
       base: o.marker.position,
       dist: cam.distanceTo(o.marker.position)
@@ -558,35 +560,41 @@ export class TerrainViewer {
     const overlaps = (a: number[], b: number[]) =>
       a[0] < b[0] + b[2] + pad && a[0] + a[2] + pad > b[0] && a[1] < b[1] + b[3] + pad && a[1] + a[3] + pad > b[1]
 
-    for (const { o, base } of entries) {
+    for (const { id, o, base } of entries) {
       const labelDist = cam.distanceTo(o.label.position)
       const pxPerWorld = h / (2 * Math.tan(fovR / 2) * Math.max(labelDist, 1e-3))
       const sw = o.label.scale.x * pxPerWorld
       const sh = o.label.scale.y * pxPerWorld
 
-      let stem = baseStem
+      // 重ならない目標の高さ（target stem）を求める
+      let target = baseStem
       let rect: [number, number, number, number] = [0, 0, sw, sh]
       let onScreen = false
-      // 重ならない高さが見つかるまで少しずつ上へ
-      for (let i = 0; ; i++) {
-        v.set(base.x, base.y + stem + gap, base.z).project(this.camera)
+      for (;;) {
+        v.set(base.x, base.y + target + gap, base.z).project(this.camera)
         onScreen = v.z < 1 && v.x >= -1.3 && v.x <= 1.3 && v.y >= -1.3 && v.y <= 1.3
         const sx = (v.x * 0.5 + 0.5) * w
         const sy = (-v.y * 0.5 + 0.5) * h
         rect = [sx - sw / 2, sy - sh / 2, sw, sh]
-        if (!onScreen || stem >= maxStem || !placed.some((r) => overlaps(rect, r))) break
-        stem += step
+        if (!onScreen || target >= maxStem || !placed.some((r) => overlaps(rect, r))) break
+        target += step
       }
+      if (onScreen) placed.push(rect)
 
-      // 反映：線の先端とラベルを stem に合わせる
-      const topY = base.y + stem
+      // 現在長を目標へスムーズに近づける（初回は即座に合わせる）
+      const cur = this.labelStem.has(id)
+        ? this.labelStem.get(id)! + (target - this.labelStem.get(id)!) * 0.15
+        : target
+      this.labelStem.set(id, cur)
+
+      // 反映：線の先端とラベルを現在長に合わせる
+      const topY = base.y + cur
       const pos = o.line.geometry.attributes.position as THREE.BufferAttribute
       pos.setXYZ(0, base.x, base.y, base.z)
       pos.setXYZ(1, base.x, topY, base.z)
       pos.needsUpdate = true
       o.label.position.set(base.x, topY + gap, base.z)
       o.label.visible = onScreen
-      if (onScreen) placed.push(rect)
     }
   }
 
