@@ -22,7 +22,9 @@
       "Bash(echo \"TSC=$?\")",
       "Bash(echo \"TSC_EXIT=$?\")",
       "Bash(git commit -m 'fix: 3カラム化で右に残った旧設定パネル\\(ID重複\\)を除去し右はライブラリのみに統一 *)",
-      "Bash(rm -f EOF)"
+      "Bash(rm -f EOF)",
+      "Bash(echo \"===TSC $?===\")",
+      "Bash(echo \"===BUILD $?===\")"
     ]
   }
 }

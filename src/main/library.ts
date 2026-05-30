@@ -84,6 +84,16 @@ export async function saveSatellite(dir: string, id: string, png: Buffer): Promi
   }
 }
 
+/** アイテムの表示名を変更する */
+export async function renameEntry(dir: string, id: string, name: string): Promise<boolean> {
+  const entries = await readIndex(dir)
+  const e = findEntry(entries, id)
+  if (!e) return false
+  e.name = name
+  await writeIndex(dir, entries)
+  return true
+}
+
 /** アイテムを削除（ファイル＋索引） */
 export async function deleteEntry(dir: string, id: string): Promise<boolean> {
   const entries = await readIndex(dir)

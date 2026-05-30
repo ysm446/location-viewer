@@ -16,6 +16,7 @@ import {
   readIndex,
   addEntry,
   deleteEntry,
+  renameEntry,
   readValues16,
   readPreviewDataUrl,
   readSatelliteDataUrl,
@@ -81,8 +82,9 @@ async function saveConfig(cfg: Config): Promise<void> {
 
 function createWindow(): void {
   const win = new BrowserWindow({
-    width: 1400,
+    width: 1600,
     height: 900,
+    useContentSize: true, // タイトルバーを含めず、描画領域を 1600x900 にする
     title: 'Mapbox Heightmap Importer',
     webPreferences: {
       preload: join(__dirname, '../preload/index.cjs'),
@@ -261,6 +263,12 @@ app.whenReady().then(() => {
     const satelliteDataUrl = await readSatelliteDataUrl(dir, id)
     const mesh = meshFromValues16(values16, entry.width, entry.height, entry.minEle, entry.maxEle)
     return { entry, previewDataUrl, satelliteDataUrl, mesh: meshToPayload(mesh, entry.bbox) }
+  })
+
+  // --- ライブラリ: 名前変更 ---
+  ipcMain.handle('library:rename', async (_e, id: string, name: string) => {
+    const dir = await ensureDataDir()
+    return renameEntry(dir, id, name)
   })
 
   // --- ライブラリ: 削除 ---

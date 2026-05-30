@@ -607,10 +607,52 @@ async function refreshLibrary() {
     const name = document.createElement('div')
     name.className = 'lib-name'
     name.textContent = e.name
+    name.title = e.name
     const sub = document.createElement('div')
     sub.className = 'lib-sub'
     sub.textContent = `${e.width}×${e.height} / ${e.minEle.toFixed(0)}〜${e.maxEle.toFixed(0)}m`
     meta.append(name, sub)
+
+    // 名前をその場で編集する（input に差し替え → Enter/blur で確定）
+    const startRename = () => {
+      const input = document.createElement('input')
+      input.className = 'lib-name-input'
+      input.value = e.name
+      name.replaceWith(input)
+      input.focus()
+      input.select()
+      let done = false
+      const commit = async (save: boolean) => {
+        if (done) return
+        done = true
+        const newName = input.value.trim()
+        if (save && newName && newName !== e.name) {
+          await api.renameLibraryItem(e.id, newName)
+        }
+        await refreshLibrary()
+      }
+      input.addEventListener('keydown', (ev) => {
+        ev.stopPropagation()
+        if (ev.key === 'Enter') commit(true)
+        else if (ev.key === 'Escape') commit(false)
+      })
+      input.addEventListener('blur', () => commit(true))
+      input.addEventListener('click', (ev) => ev.stopPropagation())
+    }
+    // 名前ダブルクリックで編集開始
+    name.addEventListener('dblclick', (ev) => {
+      ev.stopPropagation()
+      startRename()
+    })
+
+    const edit = document.createElement('button')
+    edit.className = 'lib-edit'
+    edit.textContent = t('lib.rename')
+    edit.title = t('lib.rename')
+    edit.addEventListener('click', (ev) => {
+      ev.stopPropagation()
+      startRename()
+    })
 
     const del = document.createElement('button')
     del.className = 'lib-del'
@@ -631,7 +673,7 @@ async function refreshLibrary() {
     })
 
     li.addEventListener('click', () => selectItem(e.id))
-    li.append(thumb, meta, del)
+    li.append(thumb, meta, edit, del)
     libList.appendChild(li)
   }
   markSelected()

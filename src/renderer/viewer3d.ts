@@ -241,10 +241,12 @@ export class TerrainViewer {
     // 左下に軸ギズモを重ねて描画（メインカメラの向きに同期）
     const size = 110
     const margin = 8
-    this.renderer.clearDepth()
+    // 色クリアを止めて背景を透明に（地形の上に重ねる）。深度だけクリア。
+    this.renderer.autoClear = false
     this.renderer.setScissorTest(true)
     this.renderer.setScissor(margin, margin, size, size)
     this.renderer.setViewport(margin, margin, size, size)
+    this.renderer.clearDepth()
     // メインカメラの回転だけを反映し、一定距離から見る
     const dirToCam = new THREE.Vector3()
       .subVectors(this.camera.position, this.controls.target)
@@ -253,6 +255,7 @@ export class TerrainViewer {
     this.gizmoCamera.lookAt(0, 0, 0)
     this.renderer.render(this.gizmoScene, this.gizmoCamera)
     this.renderer.setScissorTest(false)
+    this.renderer.autoClear = true // 次フレームのメイン描画用に戻す
   }
 
   dispose() {

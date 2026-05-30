@@ -69,6 +69,8 @@ const api = {
   listLibrary: (): Promise<LibraryEntry[]> => ipcRenderer.invoke('library:list'),
   getLibraryItem: (id: string): Promise<LibraryItem> => ipcRenderer.invoke('library:get', id),
   deleteLibraryItem: (id: string): Promise<boolean> => ipcRenderer.invoke('library:delete', id),
+  renameLibraryItem: (id: string, name: string): Promise<boolean> =>
+    ipcRenderer.invoke('library:rename', id, name),
   exportItem: (
     id: string,
     format: 'png16' | 'raw16'

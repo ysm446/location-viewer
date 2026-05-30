@@ -311,14 +311,24 @@ button.primary:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: text;
+}
+.lib-name-input {
+  font-size: 12px;
+  width: 100%;
+  padding: 2px 4px;
 }
 .lib-sub {
   font-size: 11px;
   color: #888;
 }
+.lib-edit,
 .lib-del {
   flex: 0 0 auto;
   padding: 4px 8px;
+  font-size: 11px;
+}
+.lib-del {
   background: #3a2d2d;
   border-color: #5a3a3a;
 }
