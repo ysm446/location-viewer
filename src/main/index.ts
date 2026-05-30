@@ -45,9 +45,10 @@ async function ensureDataDir(): Promise<string> {
   return dir
 }
 
-// data/settings.json … アプリの環境設定（地図スタイルなど）
+// data/settings.json … アプリの環境設定（地図スタイル・言語など）
 interface Settings {
   mapStyle?: string
+  lang?: 'ja' | 'en'
 }
 function settingsPath(dir: string): string {
   return join(dir, 'settings.json')

@@ -10,9 +10,9 @@
       <!-- 左: 大きいビュー領域（位置選択 / 2D / 3D をタブ切替） -->
       <div id="main-pane">
         <div id="left-tabs" class="tabs">
-          <button id="tab-map" class="tab active">🗺 位置選択</button>
-          <button id="tab-2d" class="tab">2D ハイトマップ</button>
-          <button id="tab-3d" class="tab">3D ビュー</button>
+          <button id="tab-map" class="tab active" data-i18n="tab.map">🗺 位置選択</button>
+          <button id="tab-2d" class="tab" data-i18n="tab.2d">2D ハイトマップ</button>
+          <button id="tab-3d" class="tab" data-i18n="tab.3d">3D ビュー</button>
         </div>
 
         <div id="view-area">
@@ -20,15 +20,19 @@
           <div id="view-map" class="view">
             <div id="map"></div>
             <div id="map-overlay">
-              <button id="btn-draw" title="ドラッグで矩形を描いて範囲選択">🖊 矩形を描く</button>
-              <button id="btn-use-view">表示範囲を選択</button>
-              <select id="map-style" title="地図の種類">
-                <option value="satellite">衛星写真</option>
-                <option value="satellite-streets">衛星＋地名</option>
-                <option value="streets">地図（地名）</option>
-                <option value="outdoors">地形図</option>
+              <button id="btn-draw" data-i18n="map.draw" data-i18n-title="map.draw.title">
+                🖊 矩形を描く
+              </button>
+              <button id="btn-use-view" data-i18n="map.useView">表示範囲を選択</button>
+              <select id="map-style" data-i18n-title="map.style.title">
+                <option value="satellite" data-i18n="style.satellite">衛星写真</option>
+                <option value="satellite-streets" data-i18n="style.satellite-streets">
+                  衛星＋地名
+                </option>
+                <option value="streets" data-i18n="style.streets">地図（地名）</option>
+                <option value="outdoors" data-i18n="style.outdoors">地形図</option>
               </select>
-              <span id="bbox-readout" class="muted">範囲未選択</span>
+              <span id="bbox-readout" class="muted" data-i18n="bbox.none">範囲未選択</span>
             </div>
           </div>
 
@@ -36,7 +40,9 @@
           <div id="view-2d" class="view hidden">
             <div id="preview-2d-wrap">
               <img id="preview" alt="プレビュー" />
-              <p class="muted" id="preview-empty">まだ生成・選択されていません</p>
+              <p class="muted" id="preview-empty" data-i18n="preview.empty">
+                まだ生成・選択されていません
+              </p>
             </div>
           </div>
 
@@ -44,13 +50,14 @@
           <div id="view-3d" class="view hidden">
             <div id="viewer3d"></div>
             <div id="viewer3d-controls">
-              <label>高さ強調 (1.0=実寸)</label>
+              <label data-i18n="view3d.exaggeration">高さ強調 (1.0=実寸)</label>
               <input id="exaggeration" type="range" min="1" max="10" step="0.5" value="1" />
               <span id="exaggeration-val" class="muted">1.0×</span>
               <label style="margin-left: 14px"
-                ><input id="use-satellite" type="checkbox" checked style="width: auto" /> 衛星画像</label
+                ><input id="use-satellite" type="checkbox" checked style="width: auto" />
+                <span data-i18n="view3d.satellite">衛星画像</span></label
               >
-              <span class="muted" style="margin-left: auto"
+              <span class="muted" style="margin-left: auto" data-i18n="view3d.hint"
                 >ドラッグ=回転 / ホイール=ズーム / 中・右ドラッグ=パン</span
               >
             </div>
@@ -63,22 +70,30 @@
         <h2>Mapbox Heightmap Importer</h2>
 
         <section class="card">
-          <label>Mapbox アクセストークン</label>
+          <label data-i18n="side.language">言語 / Language</label>
+          <select id="lang-select">
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+          </select>
+        </section>
+
+        <section class="card">
+          <label data-i18n="side.token">Mapbox アクセストークン</label>
           <div class="row">
             <input id="token" type="password" placeholder="pk.xxxxx" />
-            <button id="btn-save-token">保存</button>
+            <button id="btn-save-token" data-i18n="btn.save">保存</button>
           </div>
           <p class="muted" id="token-status"></p>
         </section>
 
         <section class="card">
-          <label>標高ソース</label>
+          <label data-i18n="side.source">標高ソース</label>
           <select id="source">
-            <option value="terrain-dem">Mapbox Terrain-DEM v1 (推奨)</option>
-            <option value="terrain-rgb">Mapbox Terrain-RGB v1 (旧)</option>
+            <option value="terrain-dem" data-i18n="source.dem">Mapbox Terrain-DEM v1 (推奨)</option>
+            <option value="terrain-rgb" data-i18n="source.rgb">Mapbox Terrain-RGB v1 (旧)</option>
           </select>
 
-          <label>ズームレベル (解像度): <span id="zoom-val">12</span></label>
+          <label><span data-i18n="side.zoom">ズームレベル (解像度):</span> <span id="zoom-val">12</span></label>
           <input id="zoom" type="range" min="6" max="15" value="12" />
 
           <div class="grid2">
@@ -88,20 +103,22 @@
             <div><label>North</label><input id="north" type="number" step="0.0001" /></div>
           </div>
 
-          <p class="muted" id="estimate">推定: -</p>
-          <button id="btn-generate" class="primary">ハイトマップ生成（data/ に保存）</button>
+          <p class="muted" id="estimate" data-i18n="estimate.initial">推定: -</p>
+          <button id="btn-generate" class="primary" data-i18n="btn.generate">
+            ハイトマップ生成（data/ に保存）
+          </button>
           <div id="progress" class="muted"></div>
         </section>
 
         <section class="card">
           <div class="row" style="justify-content: space-between">
-            <label style="margin: 0">ライブラリ（data/）</label>
+            <label style="margin: 0" data-i18n="side.library">ライブラリ（data/）</label>
             <span class="muted" id="lib-count"></span>
           </div>
-          <p class="muted" id="selected-info">選択なし</p>
+          <p class="muted" id="selected-info" data-i18n="selected.none">選択なし</p>
           <div class="row">
-            <button id="btn-export-png" disabled>PNG16 書き出し</button>
-            <button id="btn-export-raw" disabled>R16 書き出し</button>
+            <button id="btn-export-png" disabled data-i18n="btn.exportPng">PNG16 書き出し</button>
+            <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
           </div>
           <ul id="library-list"></ul>
         </section>

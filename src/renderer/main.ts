@@ -3,6 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import './style.css'
 import type { Api, MeshPayload, LibraryEntry, SatelliteTilesPayload } from '../preload/index'
 import { TerrainViewer } from './viewer3d'
+import { t, setLang, getLang, applyDom, type Lang } from './i18n'
 
 declare global {
   interface Window {
@@ -51,13 +52,15 @@ let currentStyleKey = 'satellite'
 function makeStyle(tk: string, styleKey: string): maplibregl.StyleSpecification {
   if (tk) {
     const s = MAPBOX_STYLES[styleKey] ?? MAPBOX_STYLES.satellite
+    // 地図ラベルを UI 言語に合わせる（衛星のみは地名なしなので影響なし）
+    const lang = getLang()
     return {
       version: 8,
       sources: {
         base: {
           type: 'raster',
           tiles: [
-            `https://api.mapbox.com/styles/v1/${s.id}/tiles/512/{z}/{x}/{y}@2x?access_token=${tk}`
+            `https://api.mapbox.com/styles/v1/${s.id}/tiles/512/{z}/{x}/{y}@2x?language=${lang}&access_token=${tk}`
           ],
           tileSize: 512,
           attribution: '© Mapbox © Maxar'
@@ -104,6 +107,24 @@ mapStyleSel.addEventListener('change', () => {
   map.setStyle(makeStyle(token, currentStyleKey))
   api.setSettings({ mapStyle: currentStyleKey })
 })
+
+// 言語切替（UI 文言 + 地図ラベル。data/settings.json に保存）
+const langSel = $<HTMLSelectElement>('lang-select')
+langSel.addEventListener('change', () => {
+  const lang = langSel.value as Lang
+  setLang(lang)
+  refreshDynamicTexts()
+  // 地図ラベルも言語に合わせて再読み込み
+  map.setStyle(makeStyle(token, currentStyleKey))
+  api.setSettings({ lang })
+})
+
+/** data-i18n では扱えない動的テキストを現在言語で更新する */
+function refreshDynamicTexts() {
+  updateEstimate()
+  if (!selectedId) selectedInfo.textContent = t('selected.none')
+  refreshLibrary()
+}
 
 // 選択範囲の矩形を描画する
 function drawBBoxRect(w: number, s: number, e: number, n: number) {
@@ -223,7 +244,7 @@ function updateEstimate() {
   const b = currentBBox()
   const z = parseInt(zoomInput.value)
   if ([b.west, b.south, b.east, b.north].some((v) => isNaN(v))) {
-    estimate.textContent = '推定: 範囲を選択してください'
+    estimate.textContent = t('estimate.needRange')
     return
   }
   const w = Math.round(lonPx(b.east, z) - lonPx(b.west, z))
@@ -232,8 +253,10 @@ function updateEstimate() {
   const ty = Math.floor(latPx(b.south, z) / TILE) - Math.floor(latPx(b.north, z) / TILE) + 1
   const tiles = tx * ty
   const mpx = ((w * h) / 1e6).toFixed(1)
-  const warn = tiles > 400 ? ' ⚠タイル上限超過' : ''
-  estimate.textContent = `推定出力: ${w}×${h}px (${mpx}MP) / タイル ${tiles}枚${warn}`
+  const warn = tiles > 400 ? ' ' + t('estimate.tileOver') : ''
+  estimate.textContent = `${t('estimate.output')} ${w}×${h}px (${mpx}MP) / ${tiles} ${t(
+    'gen.tiles'
+  )}${warn}`
 }
 
 zoomInput.addEventListener('input', () => {
@@ -245,7 +268,7 @@ zoomInput.addEventListener('input', () => {
 $('btn-save-token').addEventListener('click', async () => {
   token = tokenInput.value.trim()
   await api.setToken(token)
-  tokenStatus.textContent = token ? 'トークンを保存しました。' : 'トークンが空です。'
+  tokenStatus.textContent = token ? t('token.saved') : t('token.empty')
   map.setStyle(makeStyle(token, currentStyleKey))
 })
 
@@ -395,9 +418,10 @@ function showPreview(
   useSatellite.disabled = !satelliteDataUrl
 
   selectedId = entry.id
-  selectedInfo.textContent = `${entry.width}×${entry.height}px / 標高 ${entry.minEle.toFixed(
+  const satMark = satelliteDataUrl ? ` / ${t('view3d.satellite')}` : ''
+  selectedInfo.textContent = `${entry.width}×${entry.height}px / ${entry.minEle.toFixed(
     1
-  )}〜${entry.maxEle.toFixed(1)}m${satelliteDataUrl ? ' / 衛星画像あり' : ''}`
+  )}〜${entry.maxEle.toFixed(1)}m${satMark}`
   btnExportPng.disabled = false
   btnExportRaw.disabled = false
   markSelected()
@@ -405,20 +429,20 @@ function showPreview(
 
 // ---- 生成 ----
 api.onProgress((p) => {
-  progress.textContent = `ダウンロード中… ${p.done}/${p.total} タイル`
+  progress.textContent = `${t('gen.downloading')} ${p.done}/${p.total} ${t('gen.tiles')}`
 })
 
 $('btn-generate').addEventListener('click', async () => {
   const b = currentBBox()
   if ([b.west, b.south, b.east, b.north].some((v) => isNaN(v))) {
-    alert('先に範囲を選択してください。')
+    alert(t('alert.selectRange'))
     return
   }
   if (!token) {
-    alert('Mapbox トークンを保存してください。')
+    alert(t('alert.saveToken'))
     return
   }
-  progress.textContent = '準備中…'
+  progress.textContent = t('gen.preparing')
   try {
     const bbox = b
     const res = await api.generate({
@@ -427,13 +451,13 @@ $('btn-generate').addEventListener('click', async () => {
       sourceId: sourceSel.value
     })
     showPreview(res.previewDataUrl, null, res.mesh, res.entry)
-    progress.textContent = `完了（${res.tileCount}タイル）→ data/ に保存`
+    progress.textContent = `${res.tileCount} ${t('gen.tiles')} — ${t('gen.savedToData')}`
     await refreshLibrary()
     showTab('3d') // 生成後は3Dで確認
 
     // 衛星画像を取得・合成・保存（失敗してもハイトマップは保存済み）
     try {
-      progress.textContent = '衛星画像を取得中…'
+      progress.textContent = t('gen.fetchingSatellite')
       const sat = await api.fetchSatellite(bbox, parseInt(zoomInput.value))
       const pngDataUrl = await compositeSatellite(sat)
       await api.saveSatellite(res.entry.id, pngDataUrl)
@@ -441,13 +465,13 @@ $('btn-generate').addEventListener('click', async () => {
         viewer?.setSatelliteTexture(pngDataUrl)
         useSatellite.disabled = false
       }
-      progress.textContent = '完了（衛星画像つき）→ data/ に保存'
+      progress.textContent = t('gen.doneWithSatellite')
     } catch (e) {
-      progress.textContent = '完了（標高のみ）。衛星画像の取得に失敗: ' + (e as Error).message
+      progress.textContent = t('gen.doneNoSatellite') + (e as Error).message
     }
   } catch (err) {
     progress.textContent = ''
-    alert('生成に失敗しました: ' + (err as Error).message)
+    alert(t('gen.failed') + (err as Error).message)
   }
 })
 
@@ -483,7 +507,7 @@ function markSelected() {
 
 async function refreshLibrary() {
   const entries = await api.listLibrary()
-  libCount.textContent = `${entries.length}件`
+  libCount.textContent = `${entries.length}${t('count.items')}`
   libList.innerHTML = ''
   for (const e of entries) {
     const li = document.createElement('li')
@@ -507,14 +531,14 @@ async function refreshLibrary() {
 
     const del = document.createElement('button')
     del.className = 'lib-del'
-    del.textContent = '削除'
+    del.textContent = t('lib.delete')
     del.addEventListener('click', async (ev) => {
       ev.stopPropagation()
-      if (!confirm(`「${e.name}」を削除しますか？（data/ から削除されます）`)) return
+      if (!confirm(`「${e.name}」${t('lib.deleteConfirm')}`)) return
       await api.deleteLibraryItem(e.id)
       if (selectedId === e.id) {
         selectedId = null
-        selectedInfo.textContent = '選択なし'
+        selectedInfo.textContent = t('selected.none')
         previewImg.style.display = 'none'
         previewEmpty.style.display = 'block'
         btnExportPng.disabled = true
@@ -531,7 +555,7 @@ async function refreshLibrary() {
 }
 
 async function selectItem(id: string) {
-  progress.textContent = '読み込み中…'
+  progress.textContent = t('load.loading')
   try {
     const item = await api.getLibraryItem(id)
     showPreview(item.previewDataUrl, item.satelliteDataUrl, item.mesh, item.entry)
@@ -553,7 +577,7 @@ async function selectItem(id: string) {
     progress.textContent = ''
   } catch (err) {
     progress.textContent = ''
-    alert('読み込みに失敗しました: ' + (err as Error).message)
+    alert(t('load.failed') + (err as Error).message)
   }
 }
 
@@ -561,18 +585,25 @@ async function selectItem(id: string) {
 btnExportPng.addEventListener('click', async () => {
   if (!selectedId) return
   const r = await api.exportItem(selectedId, 'png16')
-  if (r.saved) progress.textContent = `書き出し: ${r.filePath}`
+  if (r.saved) progress.textContent = t('export.saved') + r.filePath
 })
 btnExportRaw.addEventListener('click', async () => {
   if (!selectedId) return
   const r = await api.exportItem(selectedId, 'raw16')
-  if (r.saved) progress.textContent = `書き出し: ${r.filePath}`
+  if (r.saved) progress.textContent = t('export.saved') + r.filePath
 })
 
 // ---- 起動時 ----
 ;(async () => {
-  // 環境設定（地図スタイル）を先に読み込む
+  // 環境設定（言語・地図スタイル）を先に読み込む
   const settings = await api.getSettings()
+  if (settings.lang === 'ja' || settings.lang === 'en') {
+    setLang(settings.lang)
+    langSel.value = settings.lang
+  } else {
+    setLang(getLang())
+  }
+  applyDom() // HTML の data-i18n を現在言語で適用
   if (settings.mapStyle && MAPBOX_STYLES[settings.mapStyle]) {
     currentStyleKey = settings.mapStyle
     mapStyleSel.value = currentStyleKey
@@ -582,9 +613,10 @@ btnExportRaw.addEventListener('click', async () => {
   if (cfg.token) {
     token = cfg.token
     tokenInput.value = cfg.token
-    tokenStatus.textContent = '保存済みトークンを読み込みました。'
+    tokenStatus.textContent = t('token.loaded')
   }
   // トークン有無に関わらず、保存済みスタイルでスタイルを適用
   map.setStyle(makeStyle(token, currentStyleKey))
+  updateEstimate()
   await refreshLibrary()
 })()

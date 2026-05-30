@@ -9,7 +9,15 @@
       "Bash(echo \"build-exit:$?\")",
       "Bash(git ls-files *)",
       "Bash(git check-ignore *)",
-      "Bash(echo \"exit:$?\")"
+      "Bash(echo \"exit:$?\")",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(rm -f tsc.log)",
+      "Bash(rm -f build.log)",
+      "PowerShell(cd \"d:/GitHub/mapbox-importer\"; npx tsc --noEmit; \"TSC_EXIT=$LASTEXITCODE\")",
+      "PowerShell(cd \"d:/GitHub/mapbox-importer\"; npx electron-vite build; \"BUILD_EXIT=$LASTEXITCODE\")",
+      "PowerShell(cd \"d:/GitHub/mapbox-importer\"; npx tsc --noEmit; Write-Output \"TSC_EXIT=$LASTEXITCODE\")",
+      "Bash(echo \"===TSC_EXIT $?===\")",
+      "Bash(echo \"===BUILD_EXIT $?===\")"
     ]
   }
 }

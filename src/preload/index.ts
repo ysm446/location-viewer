@@ -54,6 +54,7 @@ export interface SatelliteTilesPayload {
 
 export interface AppSettings {
   mapStyle?: string
+  lang?: 'ja' | 'en'
 }
 
 const api = {
