@@ -104,7 +104,8 @@ map.on('styledata', () => {
 const mapStyleSel = $<HTMLSelectElement>('map-style')
 mapStyleSel.addEventListener('change', () => {
   currentStyleKey = mapStyleSel.value
-  map.setStyle(makeStyle(token, currentStyleKey))
+  // diff:false で完全リロード（言語パラメータだけの変更でもタイルを再取得させる）
+  map.setStyle(makeStyle(token, currentStyleKey), { diff: false })
   api.setSettings({ mapStyle: currentStyleKey })
 })
 
@@ -115,7 +116,8 @@ langSel.addEventListener('change', () => {
   setLang(lang)
   refreshDynamicTexts()
   // 地図ラベルも言語に合わせて再読み込み
-  map.setStyle(makeStyle(token, currentStyleKey))
+  // diff:false で完全リロード（言語パラメータだけの変更でもタイルを再取得させる）
+  map.setStyle(makeStyle(token, currentStyleKey), { diff: false })
   api.setSettings({ lang })
 })
 
@@ -269,7 +271,8 @@ $('btn-save-token').addEventListener('click', async () => {
   token = tokenInput.value.trim()
   await api.setToken(token)
   tokenStatus.textContent = token ? t('token.saved') : t('token.empty')
-  map.setStyle(makeStyle(token, currentStyleKey))
+  // diff:false で完全リロード（言語パラメータだけの変更でもタイルを再取得させる）
+  map.setStyle(makeStyle(token, currentStyleKey), { diff: false })
 })
 
 // ---- 左タブ（位置選択 / 2D / 3D） ----
@@ -616,7 +619,8 @@ btnExportRaw.addEventListener('click', async () => {
     tokenStatus.textContent = t('token.loaded')
   }
   // トークン有無に関わらず、保存済みスタイルでスタイルを適用
-  map.setStyle(makeStyle(token, currentStyleKey))
+  // diff:false で完全リロード（言語パラメータだけの変更でもタイルを再取得させる）
+  map.setStyle(makeStyle(token, currentStyleKey), { diff: false })
   updateEstimate()
   await refreshLibrary()
 })()

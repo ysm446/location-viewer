@@ -17,7 +17,8 @@
       "PowerShell(cd \"d:/GitHub/mapbox-importer\"; npx electron-vite build; \"BUILD_EXIT=$LASTEXITCODE\")",
       "PowerShell(cd \"d:/GitHub/mapbox-importer\"; npx tsc --noEmit; Write-Output \"TSC_EXIT=$LASTEXITCODE\")",
       "Bash(echo \"===TSC_EXIT $?===\")",
-      "Bash(echo \"===BUILD_EXIT $?===\")"
+      "Bash(echo \"===BUILD_EXIT $?===\")",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
