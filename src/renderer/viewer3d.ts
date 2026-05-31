@@ -353,7 +353,7 @@ export class TerrainViewer {
     const group = new THREE.Group()
     const s = this.annotScale // 注釈倍率（地形スケール連動 or 固定）
     const stem = 0.4 * s // リーダー線の長さ（ワールド単位。基準は最大辺=2）
-    const markerGeo = new THREE.SphereGeometry(0.013 * s, 12, 12)
+    const markerGeo = new THREE.SphereGeometry(0.01 * s, 12, 12)
     for (const lm of this.landmarks) {
       if (lm.visible === false) continue // 個別に非表示の地点はスキップ
       const u = (lm.lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
@@ -388,7 +388,7 @@ export class TerrainViewer {
       group.add(line)
 
       // ラベル（名前＋標高）
-      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.042 * s)
+      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.034 * s)
       label.position.set(x, topY + 0.06 * s, z)
       label.renderOrder = 11
       group.add(label)
