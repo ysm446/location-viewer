@@ -40,30 +40,52 @@ export class TerrainViewer {
   private zoomTmp = new THREE.Vector3()
   // ワークスペース切替時に、全体が収まる距離へカメラを自動でフィット（寄せ/引き両方）。
   private autoFit = false
-  // 地形切替の演出。none=即時 / slide=旧地形を横へスライド / wipe=ワールド平面でワイプ。
-  // いずれも旧地形メッシュをワールド空間に生かしたまま動かす（3D）。
-  private transition: 'none' | 'slide' | 'wipe' = 'none'
+  // 地形切替の演出。none=即時 / slide=横スライド / wipe=ワールド平面でワイプ /
+  // morph=標高を旧→新へ補間して地形が変形（1メッシュの頂点を毎フレーム補間）。
+  private transition: 'none' | 'slide' | 'wipe' | 'morph' = 'none'
   // 現在の地形プレゼンテーション（mesh + grid + 軸ラベル）をまとめたグループ。
   private terrainGroup: THREE.Group | null = null
   // setSatelliteTexture が退避した旧衛星テクスチャ（旧メッシュが消えるまで破棄を遅延）。
   private pendingDisposeTex: THREE.Texture | null = null
   // 進行中のトランジション状態（animate() で毎フレーム更新）。
-  private trans: {
-    kind: 'slide' | 'wipe'
-    oldGroup: THREE.Group
-    newGroup: THREE.Group
-    oldTex: THREE.Texture | null
-    start: number
-    dur: number
-    slideDist: number
-    xExt: number
-    oldPlane: THREE.Plane | null
-    newPlane: THREE.Plane | null
-    newMats: THREE.Material[]
-    // ラベル（軸km表示＋地名）のスプライト。slide=opacityクロスフェード / wipe=seam同期で表示切替。
-    oldSprites: THREE.Sprite[]
-    newSprites: THREE.Sprite[]
-  } | null = null
+  private trans:
+    | {
+        kind: 'slide' | 'wipe'
+        oldGroup: THREE.Group
+        newGroup: THREE.Group
+        oldTex: THREE.Texture | null
+        start: number
+        dur: number
+        slideDist: number
+        xExt: number
+        oldPlane: THREE.Plane | null
+        newPlane: THREE.Plane | null
+        newMats: THREE.Material[]
+        // ラベル（軸km表示＋地名）。slide=opacityクロスフェード / wipe=seam同期で表示切替。
+        oldSprites: THREE.Sprite[]
+        newSprites: THREE.Sprite[]
+      }
+    | {
+        // ハイト・モーフ：新メッシュの頂点Yを旧→新へ補間し、X/Z スケール（広さ）も補間。
+        // 衛星モードでは旧テクスチャ用メッシュを重ねて opacity で旧→新へクロスフェード。
+        kind: 'morph'
+        newGroup: THREE.Group
+        start: number
+        dur: number
+        geo: THREE.BufferGeometry
+        oldY: Float32Array // 旧地形の起伏（新グリッドへリサンプル, base 0）
+        newY: Float32Array // 新地形の起伏（base 0）
+        span: number // 新地形の標高差（頂点色用）
+        grayscale: boolean
+        useTex: boolean
+        mesh: THREE.Mesh // 新メッシュ（X/Zスケール・テクスチャのフェードイン）
+        oldTexMesh: THREE.Mesh | null // 旧テクスチャ用（クロスフェード。なければ null）
+        oldTex: THREE.Texture | null // 完了時に破棄する旧テクスチャ
+        rx: number // 旧/新の東西比（X スケール = k*lerp(rx,1,e)）
+        rz: number // 旧/新の南北比（Z スケール = k*lerp(rz,1,e)）
+        hidden: THREE.Object3D[] // 演出中に隠す（grid/軸ラベル/地点）→ 完了時に表示
+      }
+    | null = null
   // 演出中に来た「見た目だけの再描画」（衛星テクスチャ読込など）は、完了後にまとめて反映する。
   private pendingRedraw = false
   // 注釈（地点マーカー・リーダー線・ラベル・軸ラベル）を地形スケールに合わせて拡縮するか。
@@ -258,8 +280,8 @@ export class TerrainViewer {
     }
   }
 
-  /** 地形切替の演出を設定（none / slide / wipe）。 */
-  setTransition(mode: 'none' | 'slide' | 'wipe') {
+  /** 地形切替の演出を設定（none / slide / wipe / morph）。 */
+  setTransition(mode: 'none' | 'slide' | 'wipe' | 'morph') {
     this.transition = mode
   }
 
@@ -317,6 +339,93 @@ export class TerrainViewer {
     this.updateTransition() // 初期状態を確定（wipe の visible は seam 基準で上書き）
   }
 
+  /**
+   * ハイト・モーフ開始。新メッシュの頂点Yを「旧地形の起伏（新グリッドへリサンプル）」から
+   * 「新地形の起伏」へ補間し、X/Z スケール（広さ）も旧→新へ補間する。衛星モードでは
+   * 旧テクスチャ用メッシュを上に重ね、opacity で旧→新テクスチャをクロスフェードする。
+   */
+  private startMorph(
+    oldPayload: MeshPayload,
+    newGroup: THREE.Group,
+    geo: THREE.BufferGeometry,
+    cols: number,
+    rows: number,
+    span: number,
+    grayscale: boolean,
+    useTex: boolean,
+    newWidth: number,
+    newHeight: number,
+    oldTex: THREE.Texture | null
+  ) {
+    const pos = geo.attributes.position as THREE.BufferAttribute
+    const n = pos.count
+    const newY = new Float32Array(n)
+    for (let i = 0; i < n; i++) newY[i] = pos.getY(i) // 構築時に設定済みの新起伏（base 0）
+
+    // 旧起伏を新グリッドの (u,v) でバイリニア・サンプル（base 0）。
+    const oldY = new Float32Array(n)
+    const oh = new Float32Array(oldPayload.heights) // ArrayBuffer をビュー化
+    const oc = oldPayload.cols
+    const orr = oldPayload.rows
+    const omin = oldPayload.minEle
+    for (let i = 0; i < n; i++) {
+      const u = cols > 1 ? (i % cols) / (cols - 1) : 0
+      const v = rows > 1 ? Math.floor(i / cols) / (rows - 1) : 0
+      oldY[i] = bilinearSample(oh, oc, orr, u, v) - omin
+    }
+
+    // 旧/新の広さ比（X=東西, Z=南北）。X/Z スケールを k*lerp(r,1,e) で補間する。
+    const rx = (oldPayload.widthMeters || newWidth) / (newWidth || 1)
+    const rz = (oldPayload.heightMeters || newHeight) / (newHeight || 1)
+
+    const mesh = this.mesh! // 新メッシュ（構築済み）
+
+    // 衛星モードで旧テクスチャがあれば、同じ変形ジオメトリを共有する旧テクスチャ用メッシュを
+    // 上に重ね、opacity 1→0 でフェードアウト（下に新テクスチャの新メッシュが見えてくる）。
+    let oldTexMesh: THREE.Mesh | null = null
+    if (useTex && oldTex) {
+      const mat = new THREE.MeshStandardMaterial({
+        map: oldTex,
+        transparent: true,
+        depthTest: false, // 新メッシュと同一面なので常に手前に重ねて見せる
+        depthWrite: false,
+        roughness: 0.95,
+        metalness: 0
+      })
+      oldTexMesh = new THREE.Mesh(geo, mat) // ジオメトリ共有＝同じ変形
+      oldTexMesh.scale.copy(mesh.scale)
+      oldTexMesh.renderOrder = 1
+      newGroup.add(oldTexMesh)
+    }
+
+    // 変形中はフットプリントが変わるので grid/軸ラベル/地点を隠し、完了時に表示する。
+    const hidden: THREE.Object3D[] = []
+    if (this.grid) hidden.push(this.grid)
+    for (const sp of this.axisLabels) hidden.push(sp)
+    if (this.landmarkGroup) hidden.push(this.landmarkGroup)
+    for (const o of hidden) o.visible = false
+
+    this.trans = {
+      kind: 'morph',
+      newGroup,
+      start: performance.now(),
+      dur: 700,
+      geo,
+      oldY,
+      newY,
+      span,
+      grayscale,
+      useTex,
+      mesh,
+      oldTexMesh,
+      oldTex,
+      rx,
+      rz,
+      hidden
+    }
+    this.updateTransition() // 初期状態（旧起伏・旧広さ）を確定
+  }
+
   /** グループ内の mesh / line マテリアルにクリップ平面を設定（out に新側マテリアルを集める）。 */
   private applyClip(g: THREE.Group, plane: THREE.Plane, out?: THREE.Material[]) {
     g.traverse((o) => {
@@ -344,7 +453,32 @@ export class TerrainViewer {
     if (!tr) return
     const t = Math.min(1, (performance.now() - tr.start) / tr.dur)
     const e = t * t * (3 - 2 * t) // smoothstep
-    if (tr.kind === 'slide') {
+    if (tr.kind === 'morph') {
+      // 頂点Yを旧→新へ補間（＋高さ依存の頂点色・法線を更新）。
+      const pos = tr.geo.attributes.position as THREE.BufferAttribute
+      const col = tr.geo.attributes.color as THREE.BufferAttribute | undefined
+      const updateCol = !tr.useTex && !!col
+      for (let i = 0; i < pos.count; i++) {
+        const y = tr.oldY[i] + (tr.newY[i] - tr.oldY[i]) * e
+        pos.setY(i, y)
+        if (updateCol) {
+          const tt = y / tr.span
+          const c = tr.grayscale ? [tt, tt, tt] : ramp(tt)
+          col!.setXYZ(i, c[0], c[1], c[2])
+        }
+      }
+      pos.needsUpdate = true
+      if (updateCol) col!.needsUpdate = true
+      tr.geo.computeVertexNormals()
+      // 横方向（X/Z）の広さを旧→新へ補間。Y は常に実寸（k）。
+      const sx = WORLD_SCALE * (tr.rx + (1 - tr.rx) * e)
+      const sz = WORLD_SCALE * (tr.rz + (1 - tr.rz) * e)
+      tr.mesh.scale.set(sx, WORLD_SCALE, sz)
+      if (tr.oldTexMesh) {
+        tr.oldTexMesh.scale.set(sx, WORLD_SCALE, sz)
+        ;(tr.oldTexMesh.material as THREE.Material).opacity = 1 - e // 旧テクスチャをフェードアウト
+      }
+    } else if (tr.kind === 'slide') {
       // 旧は左へ抜け、新は右から入る（途中は左=新 / 右=旧 で比較できる）。
       tr.oldGroup.position.x = -tr.slideDist * e
       tr.newGroup.position.x = tr.slideDist * (1 - e)
@@ -372,16 +506,44 @@ export class TerrainViewer {
     const tr = this.trans
     if (!tr) return
     this.trans = null
-    this.disposeGroup(tr.oldGroup)
-    tr.oldTex?.dispose()
-    tr.newGroup.position.set(0, 0, 0)
-    for (const m of tr.newMats) {
-      m.clippingPlanes = []
-      m.needsUpdate = true
-    }
-    for (const sp of tr.newSprites) {
-      sp.visible = true // wipe で隠していた分を表示に戻す
-      sp.material.opacity = 1 // slide で下げた不透明度を戻す
+    if (tr.kind === 'morph') {
+      // 最終形（新起伏）へ確定し、地点表示を戻す。
+      const pos = tr.geo.attributes.position as THREE.BufferAttribute
+      const col = tr.geo.attributes.color as THREE.BufferAttribute | undefined
+      const updateCol = !tr.useTex && !!col
+      for (let i = 0; i < pos.count; i++) {
+        pos.setY(i, tr.newY[i])
+        if (updateCol) {
+          const tt = tr.newY[i] / tr.span
+          const c = tr.grayscale ? [tt, tt, tt] : ramp(tt)
+          col!.setXYZ(i, c[0], c[1], c[2])
+        }
+      }
+      pos.needsUpdate = true
+      if (updateCol) col!.needsUpdate = true
+      tr.geo.computeVertexNormals()
+      tr.mesh.scale.setScalar(WORLD_SCALE) // 広さを新（等倍）へ戻す
+      if (tr.oldTexMesh) {
+        tr.newGroup.remove(tr.oldTexMesh)
+        ;(tr.oldTexMesh.material as THREE.Material).dispose() // ジオメトリは共有なので破棄しない
+      }
+      tr.oldTex?.dispose()
+      // 隠していた grid/軸ラベル/地点を表示に戻す。
+      for (const o of tr.hidden) o.visible = true
+      if (this.landmarkGroup) this.landmarkGroup.visible = this.landmarksVisible
+    } else {
+      // slide / wipe：旧グループ・旧テクスチャを破棄、新を正位置・クリップ解除・表示復帰。
+      this.disposeGroup(tr.oldGroup)
+      tr.oldTex?.dispose()
+      tr.newGroup.position.set(0, 0, 0)
+      for (const m of tr.newMats) {
+        m.clippingPlanes = []
+        m.needsUpdate = true
+      }
+      for (const sp of tr.newSprites) {
+        sp.visible = true // wipe で隠していた分を表示に戻す
+        sp.material.opacity = 1 // slide で下げた不透明度を戻す
+      }
     }
     if (applyPending && this.pendingRedraw) {
       this.pendingRedraw = false
@@ -651,11 +813,15 @@ export class TerrainViewer {
       this.finishTransition(false)
     }
     const animate3D = isNewData && this.transition !== 'none' && this.terrainGroup !== null
+    // morph は 1メッシュの頂点を補間するので旧グループは残さず破棄。slide/wipe は旧を生かす。
+    const isMorph = animate3D && this.transition === 'morph'
+    const keepOld = animate3D && !isMorph
+    const oldPayload = this.lastPayload // morph 用に旧の標高を保持
     this.lastPayload = payload
     const { cols, rows, minEle, maxEle, widthMeters, heightMeters } = payload
     const heights = new Float32Array(payload.heights)
 
-    // 旧グループの扱い：演出するなら残して後で破棄、しなければ即破棄。
+    // 旧グループの扱い：slide/wipe は残して後で破棄、それ以外は即破棄。
     const oldGroup = this.terrainGroup
     const oldTex = this.pendingDisposeTex // setSatelliteTexture が退避した旧テクスチャ
     this.pendingDisposeTex = null
@@ -664,9 +830,9 @@ export class TerrainViewer {
     this.landmarkGroup = null
     // 新地点データがあれば renderLandmarks より前に反映（演出のフェード対象に含めるため）。
     if (landmarks) this.landmarks = landmarks
-    if (oldGroup && !animate3D) {
+    if (oldGroup && !keepOld) {
       this.disposeGroup(oldGroup)
-      oldTex?.dispose()
+      if (!isMorph) oldTex?.dispose() // morph は旧テクスチャをクロスフェードに使うので保持（完了時に破棄）
     }
     // 新しいプレゼンテーションをまとめるグループ。
     const group = new THREE.Group()
@@ -765,9 +931,11 @@ export class TerrainViewer {
       this.axisLabels.push(sp)
     }
 
-    // グループをシーンへ追加。演出する場合は旧グループを生かしたまま 3D で切替。
+    // グループをシーンへ追加。演出する場合は旧グループを生かしたまま 3D で切替（morph は頂点補間）。
     this.scene.add(group)
-    if (animate3D && oldGroup) this.startTransition3D(oldGroup, group, oldTex)
+    if (keepOld && oldGroup) this.startTransition3D(oldGroup, group, oldTex)
+    else if (isMorph && oldPayload)
+      this.startMorph(oldPayload, group, geo, cols, rows, span, grayscale, useTex, widthMeters, heightMeters, oldTex)
 
     // --- カメラのフィッティング ---
     // 「縦いっぱい」に収まる距離を画角（垂直FOV）から求める（fitDistFor）。
@@ -984,11 +1152,11 @@ export class TerrainViewer {
   dispose() {
     cancelAnimationFrame(this.raf)
     this.resizeObs.disconnect()
-    if (this.trans) {
-      this.disposeGroup(this.trans.oldGroup)
+    if (this.trans && this.trans.kind !== 'morph') {
+      this.disposeGroup(this.trans.oldGroup) // morph は旧グループ破棄済み（新は terrainGroup として下で破棄）
       this.trans.oldTex?.dispose()
-      this.trans = null
     }
+    this.trans = null
     if (this.terrainGroup) this.disposeGroup(this.terrainGroup)
     this.pendingDisposeTex?.dispose()
     this.satelliteTex?.dispose()
@@ -1053,6 +1221,25 @@ function niceStep(x: number): number {
   const f = x / base
   const nice = f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10
   return nice * base
+}
+
+/** 高さグリッド h(cols×rows, row-major) を (u,v)∈[0,1] でバイリニア補間する（モーフのリサンプル用）。 */
+function bilinearSample(h: ArrayLike<number>, cols: number, rows: number, u: number, v: number): number {
+  const x = u * (cols - 1)
+  const y = v * (rows - 1)
+  const x0 = Math.floor(x)
+  const y0 = Math.floor(y)
+  const x1 = Math.min(cols - 1, x0 + 1)
+  const y1 = Math.min(rows - 1, y0 + 1)
+  const fx = x - x0
+  const fy = y - y0
+  const h00 = h[y0 * cols + x0]
+  const h10 = h[y0 * cols + x1]
+  const h01 = h[y1 * cols + x0]
+  const h11 = h[y1 * cols + x1]
+  const a = h00 + (h10 - h00) * fx
+  const b = h01 + (h11 - h01) * fx
+  return a + (b - a) * fy
 }
 
 /** 文字を描いた板（Sprite）を作る。color は 0xRRGGBB */

@@ -62,7 +62,7 @@ interface Settings {
   autoFit?: boolean
   scaleAnnotations?: boolean
   cameraFov?: number
-  transition?: 'none' | 'slide' | 'wipe'
+  transition?: 'none' | 'slide' | 'wipe' | 'morph'
 }
 function settingsPath(dir: string): string {
   return join(dir, 'settings.json')

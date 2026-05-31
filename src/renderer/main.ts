@@ -110,7 +110,7 @@ $<HTMLButtonElement>('btn-fov-reset').addEventListener('click', () => {
 // 地形切替トランジション（なし / 横スライド / ワイプ）
 const transitionSel = $<HTMLSelectElement>('transition-mode')
 transitionSel.addEventListener('change', () => {
-  const m = transitionSel.value as 'none' | 'slide' | 'wipe'
+  const m = transitionSel.value as 'none' | 'slide' | 'wipe' | 'morph'
   viewer?.setTransition(m)
   api.setSettings({ transition: m })
 })
@@ -679,7 +679,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setAutoFit(chkAutoFit.checked)
       viewer.setScaleAnnotations(chkScaleAnnotations.checked)
       viewer.setFov(Number(fovInput.value))
-      viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe')
+      viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe' | 'morph')
     }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
@@ -1339,7 +1339,11 @@ btnExportRaw.addEventListener('click', async () => {
     fovInput.value = String(settings.cameraFov)
     fovVal.textContent = String(settings.cameraFov)
   }
-  if (settings.transition === 'slide' || settings.transition === 'wipe') {
+  if (
+    settings.transition === 'slide' ||
+    settings.transition === 'wipe' ||
+    settings.transition === 'morph'
+  ) {
     transitionSel.value = settings.transition
   }
 
