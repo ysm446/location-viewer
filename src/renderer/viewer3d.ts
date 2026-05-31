@@ -60,9 +60,9 @@ export class TerrainViewer {
     oldPlane: THREE.Plane | null
     newPlane: THREE.Plane | null
     newMats: THREE.Material[]
-    // ラベル（軸km表示＋地名）のフェード材質。旧=フェードアウト / 新=フェードイン。
-    oldSprites: THREE.SpriteMaterial[]
-    newSprites: THREE.SpriteMaterial[]
+    // ラベル（軸km表示＋地名）のスプライト。slide=opacityクロスフェード / wipe=seam同期で表示切替。
+    oldSprites: THREE.Sprite[]
+    newSprites: THREE.Sprite[]
   } | null = null
   // 演出中に来た「見た目だけの再描画」（衛星テクスチャ読込など）は、完了後にまとめて反映する。
   private pendingRedraw = false
@@ -265,9 +265,10 @@ export class TerrainViewer {
 
   /** 旧地形グループを生かしたまま、3D 空間で slide / wipe の演出を開始する。 */
   private startTransition3D(oldGroup: THREE.Group, newGroup: THREE.Group, oldTex: THREE.Texture | null) {
-    const newHalfX = (newGroup.userData.halfX as number) ?? 1
-    const oldHalfX = (oldGroup.userData.halfX as number) ?? newHalfX
-    const xExt = Math.max(newHalfX, oldHalfX) * 1.05 || 1
+    // グリッド/軸ラベルまで含めた東西の最大半幅（境界の振り幅）。なければ halfX で代用。
+    const ext = (g: THREE.Group) =>
+      (g.userData.halfExtent as number) ?? (g.userData.halfX as number) ?? 1
+    const xExt = Math.max(ext(newGroup), ext(oldGroup)) * 1.05 || 1
 
     // スライドで画面外まで送る距離（カメラから見て横幅の倍を確保）。
     const dist = this.camera.position.distanceTo(this.controls.target)
@@ -284,11 +285,16 @@ export class TerrainViewer {
       this.applyClip(oldGroup, oldPlane)
       this.applyClip(newGroup, newPlane, newMats)
     }
-    // ラベル（軸km＋地名スプライト）は演出中にフェード（旧=アウト / 新=イン）。
-    // 地点グループは地形グループの子なので、これで地名ラベルも一緒にフェードする。
-    const oldSprites = this.collectSpriteMats(oldGroup)
-    const newSprites = this.collectSpriteMats(newGroup)
-    for (const m of newSprites) m.opacity = 0 // 新ラベルは透明から始める
+    // ラベル（軸km＋地名スプライト）。slide=opacityクロスフェード / wipe=seam同期で表示切替。
+    // 地点グループは地形グループの子なので、地名ラベルも一緒に扱われる。
+    const oldSprites = this.collectSprites(oldGroup)
+    const newSprites = this.collectSprites(newGroup)
+    if (this.transition === 'wipe') {
+      // 新ラベルは境界が通過した位置から出すので、初期は全部隠す。
+      for (const sp of newSprites) sp.visible = false
+    } else {
+      for (const sp of newSprites) sp.material.opacity = 0 // 新ラベルは透明から
+    }
 
     this.trans = {
       kind: this.transition === 'wipe' ? 'wipe' : 'slide',
@@ -320,11 +326,11 @@ export class TerrainViewer {
     })
   }
 
-  /** グループ内のラベル（スプライト＝軸km・地名）の材質を集める（フェード制御用）。 */
-  private collectSpriteMats(g: THREE.Group): THREE.SpriteMaterial[] {
-    const out: THREE.SpriteMaterial[] = []
+  /** グループ内のラベル（スプライト＝軸km・地名）を集める（フェード/表示切替用）。 */
+  private collectSprites(g: THREE.Group): THREE.Sprite[] {
+    const out: THREE.Sprite[] = []
     g.traverse((o) => {
-      if ((o as THREE.Sprite).isSprite) out.push((o as THREE.Sprite).material)
+      if ((o as THREE.Sprite).isSprite) out.push(o as THREE.Sprite)
     })
     return out
   }
@@ -339,16 +345,19 @@ export class TerrainViewer {
       // 旧は左へ抜け、新は右から入る（途中は左=新 / 右=旧 で比較できる）。
       tr.oldGroup.position.x = -tr.slideDist * e
       tr.newGroup.position.x = tr.slideDist * (1 - e)
+      // ラベルのフェード（opacity）：前半で旧アウト、後半で新イン（画面に入る側で見せる）。
+      for (const sp of tr.oldSprites) sp.material.opacity = Math.min(1, Math.max(0, 1 - 2 * e))
+      for (const sp of tr.newSprites) sp.material.opacity = Math.min(1, Math.max(0, 2 * e - 1))
     } else {
       // 境界 seam を -xExt→+xExt へ動かし、左から新地形を露出。
       const seam = tr.xExt * (2 * e - 1)
       if (tr.oldPlane) tr.oldPlane.constant = -seam // 旧: x>=seam
       if (tr.newPlane) tr.newPlane.constant = seam // 新: x<=seam
+      // ラベル（スプライト）はクリップ非対応なので、境界が x を通過したら表示を切り替える
+      // （マーカー・線はクリップで同期して出る/消えるので、地点一式が境界と同時に出現/消滅）。
+      for (const sp of tr.oldSprites) sp.visible = sp.position.x >= seam
+      for (const sp of tr.newSprites) sp.visible = sp.position.x <= seam
     }
-    // ラベルのフェード（opacity のみ）：前半で旧をアウト、後半で新をイン。
-    // スライドだと新グループは前半まだ画面外なので、後半（画面に入る）で 0→1 にする方が見える。
-    for (const m of tr.oldSprites) m.opacity = Math.min(1, Math.max(0, 1 - 2 * e))
-    for (const m of tr.newSprites) m.opacity = Math.min(1, Math.max(0, 2 * e - 1))
     if (t >= 1) this.finishTransition()
   }
 
@@ -367,7 +376,10 @@ export class TerrainViewer {
       m.clippingPlanes = []
       m.needsUpdate = true
     }
-    for (const m of tr.newSprites) m.opacity = 1 // 新ラベルを完全表示に戻す
+    for (const sp of tr.newSprites) {
+      sp.visible = true // wipe で隠していた分を表示に戻す
+      sp.material.opacity = 1 // slide で下げた不透明度を戻す
+    }
     if (applyPending && this.pendingRedraw) {
       this.pendingRedraw = false
       if (this.lastPayload) this.setData(this.lastPayload, false) // 保留した見た目更新を反映
@@ -733,6 +745,7 @@ export class TerrainViewer {
     // 中心軸（東西=X / 南北=Z）の端に「中心からの距離(km)」を小さく表示する。
     // 北を -Z に取っているので、N は -Z 側。
     const halfWorld = (gridSpan * k) / 2
+    group.userData.halfExtent = halfWorld // ワイプ/スライドの境界振り幅（グリッド端まで含む）
     const halfKm = gridSpan / 2 / 1000
     const kmText = `${halfKm >= 10 ? halfKm.toFixed(0) : halfKm >= 1 ? halfKm.toFixed(1) : halfKm.toFixed(2)} km`
     const ends: [string, THREE.Vector3][] = [
