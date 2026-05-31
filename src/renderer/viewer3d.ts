@@ -28,6 +28,10 @@ export class TerrainViewer {
   private axisLabels: THREE.Sprite[] = []
   private container: HTMLElement
   private raf = 0
+  // スムーズズーム: ホイールで目標距離(注視点からの半径)を設定し、毎フレーム補間で寄せる。
+  // null のときはズーム停止中。
+  private zoomTarget: number | null = null
+  private zoomTmp = new THREE.Vector3()
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
@@ -68,7 +72,24 @@ export class TerrainViewer {
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
     this.controls.enableDamping = true
+    // ホイールズームは OrbitControls の即時適用ではなく、自前のスムーズズームで行う。
+    this.controls.enableZoom = false
     this.controls.target.set(0, 0, 0)
+    this.renderer.domElement.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault()
+        if (!this.controls.enabled) return
+        const cur = this.camera.position.distanceTo(this.controls.target)
+        const base = this.zoomTarget ?? cur
+        // OrbitControls と同じ刻み（zoomSpeed=1 で 1ノッチ約5%）。
+        const step = Math.pow(0.95, this.controls.zoomSpeed * Math.abs(e.deltaY * 0.01))
+        const next = e.deltaY < 0 ? base * step : base / step
+        // 注視点に貫通しない最小距離だけ確保（上限は設けない）。
+        this.zoomTarget = Math.max(0.01, next)
+      },
+      { passive: false }
+    )
     // マウスボタン割り当て: 左=回転 / 中=パン / 右=パン
     this.controls.mouseButtons = {
       LEFT: THREE.MOUSE.ROTATE,
@@ -380,13 +401,20 @@ export class TerrainViewer {
   }
 
   private lastPayload: MeshPayload | null = null
+  // 一度でもカメラをフィットしたか。地形は常に同じワールド倍率（最大辺→2）に
+  // 正規化されるため、初回のみフィットし、以降のワークスペース切替では視点を維持する。
+  private hasFittedCamera = false
 
   /**
    * 生成結果のメッシュデータを表示する。
    * fitCamera=false のときはカメラ位置・注視点を維持する（衛星表示の切替など、
    * 見た目だけを更新する再構築で視点がリセットされるのを防ぐ）。
+   * fitCamera=true でも、既に一度フィット済みなら視点は維持する
+   * （ワークスペース切替でカメラがリセットされないように）。
    */
   setData(payload: MeshPayload, fitCamera = true) {
+    // 初回のみフィットし、以降は視点を維持する
+    const doFit = fitCamera && !this.hasFittedCamera
     this.lastPayload = payload
     const { cols, rows, minEle, maxEle, widthMeters, heightMeters } = payload
     const heights = new Float32Array(payload.heights)
@@ -493,11 +521,13 @@ export class TerrainViewer {
       this.axisLabels.push(sp)
     }
 
-    // --- カメラのフィッティング（新規データ時のみ。見た目更新では視点を維持） ---
-    if (!fitCamera) {
+    // --- カメラのフィッティング（初回データ時のみ。以降・見た目更新では視点を維持） ---
+    if (!doFit) {
       this.controls.update()
       return
     }
+    this.hasFittedCamera = true
+    this.zoomTarget = null // フィットでカメラを置き直すので進行中のズームは破棄
     // 地形のバウンディングボックス（スケール後）。X=東西, Z=南北, Y=高さ。
     const halfX = (widthMeters * k) / 2
     const halfZ = (heightMeters * k) / 2
@@ -624,9 +654,29 @@ export class TerrainViewer {
     }
   }
 
+  /** ホイールで設定した目標距離へカメラを毎フレーム少しずつ寄せる（スムーズズーム）。 */
+  private updateSmoothZoom() {
+    if (this.zoomTarget === null) return
+    const offset = this.zoomTmp.subVectors(this.camera.position, this.controls.target)
+    const cur = offset.length()
+    if (cur < 1e-6) {
+      this.zoomTarget = null
+      return
+    }
+    let next = THREE.MathUtils.lerp(cur, this.zoomTarget, 0.2)
+    // 目標にほぼ到達したらスナップして停止。
+    if (Math.abs(next - this.zoomTarget) < this.zoomTarget * 0.002) {
+      next = this.zoomTarget
+      this.zoomTarget = null
+    }
+    offset.multiplyScalar(next / cur)
+    this.camera.position.copy(this.controls.target).add(offset)
+  }
+
   private animate = () => {
     this.raf = requestAnimationFrame(this.animate)
     this.controls.update()
+    this.updateSmoothZoom()
     this.declutterLabels()
     this.updateAxisLabelOcclusion()
 
