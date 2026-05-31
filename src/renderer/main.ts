@@ -84,6 +84,28 @@ chkScaleAnnotations.addEventListener('change', () => {
   api.setSettings({ scaleAnnotations: chkScaleAnnotations.checked })
 })
 
+// カメラの画角（FOV, 度）。ドラッグ中はライブ反映し、離したときに保存する
+const DEFAULT_FOV = 50
+const fovInput = $<HTMLInputElement>('camera-fov')
+const fovVal = $('fov-val')
+function applyFov(deg: number) {
+  fovInput.value = String(deg)
+  fovVal.textContent = String(deg)
+  viewer?.setFov(deg)
+}
+fovInput.addEventListener('input', () => {
+  fovVal.textContent = fovInput.value
+  viewer?.setFov(Number(fovInput.value))
+})
+fovInput.addEventListener('change', () => {
+  api.setSettings({ cameraFov: Number(fovInput.value) })
+})
+// 初期値（既定の画角）に戻すリセットボタン
+$<HTMLButtonElement>('btn-fov-reset').addEventListener('click', () => {
+  applyFov(DEFAULT_FOV)
+  api.setSettings({ cameraFov: DEFAULT_FOV })
+})
+
 // カメラ自動回転トグル（押すたびに ON/OFF）
 const btnRotate = $<HTMLButtonElement>('btn-rotate')
 let autoRotate = false
@@ -647,6 +669,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setAutoRotate(autoRotate)
       viewer.setAutoFit(chkAutoFit.checked)
       viewer.setScaleAnnotations(chkScaleAnnotations.checked)
+      viewer.setFov(Number(fovInput.value))
     }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
@@ -1296,6 +1319,10 @@ btnExportRaw.addEventListener('click', async () => {
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
   if (settings.autoFit) chkAutoFit.checked = true
   if (settings.scaleAnnotations) chkScaleAnnotations.checked = true
+  if (typeof settings.cameraFov === 'number') {
+    fovInput.value = String(settings.cameraFov)
+    fovVal.textContent = String(settings.cameraFov)
+  }
 
   const cfg = await api.getConfig()
   if (cfg.token) {

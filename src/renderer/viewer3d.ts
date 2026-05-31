@@ -216,6 +216,21 @@ export class TerrainViewer {
     this.gizmoCamera.position.set(0, 0, 3)
   }
 
+  /** カメラの画角（垂直 FOV, 度）を設定する。視点（位置・注視点）は維持。 */
+  setFov(deg: number) {
+    this.camera.fov = Math.min(120, Math.max(10, deg))
+    this.camera.updateProjectionMatrix()
+    // 自動フィット中は画角変更にも追従して「縦いっぱい」の距離へスムーズに寄せ直す。
+    if (this.autoFit && this.lastPayload) {
+      const fitDist = this.fitDistFor(this.lastPayload)
+      this.zoomTarget = fitDist
+      const dist = this.camera.position.distanceTo(this.controls.target)
+      this.camera.near = Math.min(this.camera.near, Math.max(0.001, fitDist / 100))
+      this.camera.far = Math.max(this.camera.far, fitDist * 10, dist * 1.2)
+      this.camera.updateProjectionMatrix()
+    }
+  }
+
   /** カメラの自動回転（縦軸まわり）の ON/OFF。約2°/秒。 */
   setAutoRotate(on: boolean) {
     this.controls.autoRotate = on
@@ -557,15 +572,10 @@ export class TerrainViewer {
     }
 
     // --- カメラのフィッティング ---
-    // バウンディングボックス（スケール後）から「全体が収まる距離」を求める。
-    // X=東西, Z=南北, Y=高さ。ボックスを内包する球の半径で距離を決める。
-    const halfX = (widthMeters * k) / 2
-    const halfZ = (heightMeters * k) / 2
+    // 「縦いっぱい」に収まる距離を画角（垂直FOV）から求める（fitDistFor）。
     const sizeY = (maxEle - minEle) * k
-    const centerY = sizeY / 2
-    const radius = Math.hypot(halfX, halfZ, sizeY / 2)
-    const fov = (this.camera.fov * Math.PI) / 180
-    const fitDist = (radius / Math.sin(fov / 2)) * 1.15 // 余白15%
+    const centerY = sizeY / 2 // 注視点の高さ（ボックス中心）
+    const fitDist = this.fitDistFor(payload)
 
     if (doFit) {
       // 初回データ時は必ず全体にフィット（位置・注視点・クリップを置き直す）。
@@ -592,6 +602,20 @@ export class TerrainViewer {
       this.camera.updateProjectionMatrix()
     }
     this.controls.update()
+  }
+
+  /**
+   * 地形が画面の「縦いっぱい」に収まるカメラ距離（注視点からの半径）を返す。
+   * 画面の縦方向に効くのは南北(Z)と高さ(Y)なので、東西(X)幅は距離に含めない。
+   * 垂直 FOV を使うので画角の変更にそのまま追従する。
+   */
+  private fitDistFor(p: MeshPayload): number {
+    const k = WORLD_SCALE
+    const halfZ = (p.heightMeters * k) / 2 // 南北の半分
+    const sizeY = (p.maxEle - p.minEle) * k // 高さ
+    const vRadius = Math.hypot(halfZ, sizeY / 2) // 縦方向（南北＋高さ）の包絡半径
+    const fov = (this.camera.fov * Math.PI) / 180
+    return vRadius / Math.sin(fov / 2)
   }
 
   /** ワークスペース切替時に全体が収まる距離へカメラを自動でフィットするか。 */

@@ -64,6 +64,7 @@ export interface AppSettings {
   showLandmarks?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
+  cameraFov?: number
 }
 
 const api = {

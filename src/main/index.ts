@@ -61,6 +61,7 @@ interface Settings {
   showLandmarks?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
+  cameraFov?: number
 }
 function settingsPath(dir: string): string {
   return join(dir, 'settings.json')
