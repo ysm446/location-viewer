@@ -311,7 +311,10 @@ export class TerrainViewer {
       oldSprites,
       newSprites
     }
-    this.updateTransition() // 初期状態を確定
+    // 新ラベルを最初から重なり回避済みの位置に置く（演出後に declutter が急に作動して跳ねるのを防ぐ）。
+    // 新地点は ID が変わり初回は即スナップされるので、ここで一度実行してから演出を始める。
+    this.declutterLabels()
+    this.updateTransition() // 初期状態を確定（wipe の visible は seam 基準で上書き）
   }
 
   /** グループ内の mesh / line マテリアルにクリップ平面を設定（out に新側マテリアルを集める）。 */

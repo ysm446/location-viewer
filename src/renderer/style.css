@@ -180,10 +180,32 @@ body {
 #viewer3d canvas {
   display: block;
 }
-/* 3Dビューポート左上の寸法情報オーバーレイ */
-#viewer3d-info {
+/* 3Dビューポート左上：ロケーション名タイトル */
+#viewer3d-title {
   position: absolute;
   top: 12px;
+  left: 12px;
+  z-index: 10;
+  max-width: 60%;
+  background: var(--overlay-bg);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#viewer3d-title:empty {
+  display: none;
+}
+/* 3Dビューポート左上の寸法情報オーバーレイ（タイトルの下に重ねる） */
+#viewer3d-info {
+  position: absolute;
+  top: 72px;
   left: 12px;
   z-index: 10;
   background: var(--overlay-bg-2);

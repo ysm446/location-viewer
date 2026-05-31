@@ -52,6 +52,7 @@ const bboxReadout = $('bbox-readout')
 const previewImg = $<HTMLImageElement>('preview')
 const previewEmpty = $('preview-empty')
 const viewer3dInfo = $('viewer3d-info')
+const viewer3dTitle = $('viewer3d-title')
 const progress = $('progress')
 const btnExportPng = $<HTMLButtonElement>('btn-export-png')
 const btnExportRaw = $<HTMLButtonElement>('btn-export-raw')
@@ -818,7 +819,8 @@ function showPreview(
   btnUpdateTerrain.disabled = false
   markSelected()
 
-  // 3Dビューポート上の寸法情報を更新
+  // 3Dビューポート上のタイトル（ロケーション名）・寸法情報を更新
+  viewer3dTitle.textContent = workspace.name
   updateViewer3dInfo(mesh, h)
 
   // このワークスペースのランドマークを反映（詳細モードへは入らない＝選択のみ）。
@@ -853,6 +855,7 @@ function clearAnnotations() {
   setPlaceMode(false)
   landmarks = []
   viewer?.setLandmarks([])
+  viewer3dTitle.textContent = '' // 3Dビューポートのロケーション名タイトルを消す
   showWorkspaceDetail(false)
   renderLandmarkPanel()
 }
@@ -1162,6 +1165,8 @@ async function refreshLibrary() {
         const newName = input.value.trim()
         if (save && newName && newName !== e.name) {
           await api.renameWorkspace(e.id, newName)
+          // 選択中ロケーションなら 3D タイトルも更新
+          if (e.id === selectedId) viewer3dTitle.textContent = newName
         }
         await refreshLibrary()
       }
