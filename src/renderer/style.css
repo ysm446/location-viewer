@@ -214,6 +214,21 @@ body {
   margin: 0;
   flex: 0 0 auto;
 }
+/* ビューポートのアイコンボタン（自動回転など） */
+.vp-icon {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.vp-icon.active {
+  background: var(--accent);
+  border-color: var(--accent-bright);
+  color: #fff;
+}
 /* 操作ヘルプ：右下（左下はギズモ用に空ける） */
 #viewer3d-help {
   position: absolute;

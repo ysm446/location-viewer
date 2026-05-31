@@ -178,6 +178,12 @@ export class TerrainViewer {
     this.gizmoCamera.position.set(0, 0, 3)
   }
 
+  /** カメラの自動回転（縦軸まわり）の ON/OFF。約2°/秒。 */
+  setAutoRotate(on: boolean) {
+    this.controls.autoRotate = on
+    this.controls.autoRotateSpeed = 0.333 // 6×speed[deg/s] ≒ 2°/秒（60fps想定）
+  }
+
   /** ランドマーク一覧を設定して描画する */
   setLandmarks(landmarks: Landmark[]) {
     this.landmarks = landmarks

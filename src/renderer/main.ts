@@ -70,6 +70,15 @@ chkShowLandmarks.addEventListener('change', () => {
   api.setSettings({ showLandmarks: chkShowLandmarks.checked })
 })
 
+// カメラ自動回転トグル（押すたびに ON/OFF）
+const btnRotate = $<HTMLButtonElement>('btn-rotate')
+let autoRotate = false
+btnRotate.addEventListener('click', () => {
+  autoRotate = !autoRotate
+  btnRotate.classList.toggle('active', autoRotate)
+  viewer?.setAutoRotate(autoRotate)
+})
+
 /**
  * 右ペインを 一覧⇔詳細 で切り替える。詳細モードでは CSS で選択以外の
  * ワークスペースを隠し、選択行の下に中身（地点等）を表示する。
@@ -616,6 +625,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setLandmarkMoveHandler(onMoveLandmark)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
       viewer.setRenderMode(renderModeSel.value as 'default' | 'heightmap' | 'satellite')
+      viewer.setAutoRotate(autoRotate)
     }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
