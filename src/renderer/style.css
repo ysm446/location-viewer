@@ -278,6 +278,10 @@ h2 {
   padding: 12px;
   margin-bottom: 14px;
 }
+/* 環境設定タブ：枠なしのグループ（間隔だけ確保） */
+.settings-group {
+  margin-bottom: 16px;
+}
 label {
   display: block;
   font-size: 12px;

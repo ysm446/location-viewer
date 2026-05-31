@@ -126,6 +126,14 @@ export async function createWorkspace(
   values16: Uint16Array,
   previewPng: Buffer
 ): Promise<void> {
+  // 既存に手動並び順（order）があれば、末尾（最大+1）を付与して並びを保つ
+  if (ws.order === undefined) {
+    const existing = await listWorkspaces(dir)
+    const orders = existing
+      .map((e) => e.order)
+      .filter((o): o is number => typeof o === 'number')
+    if (orders.length) ws.order = Math.max(...orders) + 1
+  }
   await fs.mkdir(wsDir(dir, ws.id), { recursive: true })
   await writeU16(dir, ws.id, values16)
   await fs.writeFile(previewPath(dir, ws.id), previewPng)

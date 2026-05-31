@@ -117,7 +117,7 @@
 
         <!-- ワークスペース（クリックでドリルイン：選択以外を隠し、中身を下に並べる） -->
         <div id="rview-library" class="rview">
-          <section class="card">
+          <section id="ws-panel">
             <!-- 一覧モードのヘッダ -->
             <div class="row" id="ws-list-header" style="justify-content: space-between">
               <label style="margin: 0" data-i18n="side.library">ワークスペース</label>
@@ -152,7 +152,7 @@
 
         <!-- 環境設定 -->
         <div id="rview-settings" class="rview hidden">
-          <section class="card">
+          <section class="settings-group">
             <label data-i18n="side.language">言語 / Language</label>
             <select id="lang-select">
               <option value="ja">日本語</option>
@@ -160,7 +160,7 @@
             </select>
           </section>
 
-          <section class="card">
+          <section class="settings-group">
             <label data-i18n="side.token">Mapbox アクセストークン</label>
             <div class="row">
               <input id="token" type="password" placeholder="pk.xxxxx" />
