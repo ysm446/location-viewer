@@ -7,46 +7,6 @@
   </head>
   <body>
     <div id="app">
-      <!-- 左: 生成パネル -->
-      <div id="left-pane">
-        <h2>Mapbox Heightmap Importer</h2>
-
-        <section class="card">
-          <label data-i18n="side.source">標高ソース</label>
-          <select id="source">
-            <option value="terrain-dem" data-i18n="source.dem">Mapbox Terrain-DEM v1 (推奨)</option>
-            <option value="terrain-rgb" data-i18n="source.rgb">Mapbox Terrain-RGB v1 (旧)</option>
-          </select>
-
-          <label
-            ><span data-i18n="side.zoom">ズームレベル (解像度):</span>
-            <span id="zoom-val">12</span></label
-          >
-          <input id="zoom" type="range" min="6" max="15" value="12" />
-
-          <div class="grid2">
-            <div><label>West</label><input id="west" type="number" step="0.0001" /></div>
-            <div><label>East</label><input id="east" type="number" step="0.0001" /></div>
-            <div><label>South</label><input id="south" type="number" step="0.0001" /></div>
-            <div><label>North</label><input id="north" type="number" step="0.0001" /></div>
-          </div>
-
-          <label id="snap-pow2-label" class="checkbox-row" data-i18n-title="map.snap.title">
-            <input id="snap-pow2" type="checkbox" />
-            <span data-i18n="map.snap">2のべき乗</span>
-          </label>
-
-          <p class="muted" id="estimate" data-i18n="estimate.initial">推定: -</p>
-          <button id="btn-generate" class="primary" data-i18n="btn.generate">
-            新規ワークスペース作成
-          </button>
-          <button id="btn-update-terrain" disabled data-i18n="terrain.update">
-            選択中の地形を更新
-          </button>
-          <div id="progress" class="muted"></div>
-        </section>
-      </div>
-
       <!-- 中央: 大きいビュー領域（位置選択 / 2D / 3D をタブ切替） -->
       <div id="main-pane">
         <div id="left-tabs" class="tabs">
@@ -59,6 +19,45 @@
           <!-- 位置選択（地図） -->
           <div id="view-map" class="view">
             <div id="map"></div>
+            <!-- 生成パネル（位置選択タブのときだけ地図上にオーバーレイ表示） -->
+            <div id="left-pane">
+              <h2>Mapbox Heightmap Importer</h2>
+
+              <section class="card">
+                <label data-i18n="side.source">標高ソース</label>
+                <select id="source">
+                  <option value="terrain-dem" data-i18n="source.dem">Mapbox Terrain-DEM v1 (推奨)</option>
+                  <option value="terrain-rgb" data-i18n="source.rgb">Mapbox Terrain-RGB v1 (旧)</option>
+                </select>
+
+                <label
+                  ><span data-i18n="side.zoom">ズームレベル (解像度):</span>
+                  <span id="zoom-val">12</span></label
+                >
+                <input id="zoom" type="range" min="6" max="15" value="12" />
+
+                <div class="grid2">
+                  <div><label>West</label><input id="west" type="number" step="0.0001" /></div>
+                  <div><label>East</label><input id="east" type="number" step="0.0001" /></div>
+                  <div><label>South</label><input id="south" type="number" step="0.0001" /></div>
+                  <div><label>North</label><input id="north" type="number" step="0.0001" /></div>
+                </div>
+
+                <label id="snap-pow2-label" class="checkbox-row" data-i18n-title="map.snap.title">
+                  <input id="snap-pow2" type="checkbox" />
+                  <span data-i18n="map.snap">2のべき乗</span>
+                </label>
+
+                <p class="muted" id="estimate" data-i18n="estimate.initial">推定: -</p>
+                <button id="btn-generate" class="primary" data-i18n="btn.generate">
+                  新規ロケーション作成
+                </button>
+                <button id="btn-update-terrain" disabled data-i18n="terrain.update">
+                  選択中の地形を更新
+                </button>
+                <div id="progress" class="muted"></div>
+              </section>
+            </div>
             <div id="map-overlay">
               <select id="map-style" data-i18n-title="map.style.title">
                 <option value="satellite" data-i18n="style.satellite">衛星写真</option>
@@ -123,11 +122,11 @@
           <section id="ws-panel">
             <!-- 一覧モードのヘッダ -->
             <div class="row" id="ws-list-header" style="justify-content: space-between">
-              <label style="margin: 0" data-i18n="side.library">ワークスペース</label>
+              <label style="margin: 0" data-i18n="side.library">ロケーション</label>
               <span class="muted" id="lib-count"></span>
             </div>
             <!-- 詳細モードの戻るリンク -->
-            <a id="ws-back" class="back-link" data-i18n="ws.back">← ワークスペース一覧</a>
+            <a id="ws-back" class="back-link" data-i18n="ws.back">← ロケーション一覧</a>
 
             <ul id="library-list"></ul>
 
@@ -170,6 +169,22 @@
               <button id="btn-save-token" data-i18n="btn.save">保存</button>
             </div>
             <p class="muted" id="token-status"></p>
+          </section>
+
+          <section class="settings-group">
+            <label data-i18n="settings.view3d">3D ビュー</label>
+            <label class="checkbox-row">
+              <input id="chk-auto-fit" type="checkbox" />
+              <span data-i18n="settings.autoFit"
+                >ロケーション切替時に自動でフィット（全体が収まるように）</span
+              >
+            </label>
+            <label class="checkbox-row">
+              <input id="chk-scale-annotations" type="checkbox" />
+              <span data-i18n="settings.scaleAnnotations"
+                >地点マーカー・線・ラベルを地形スケールに合わせて拡縮</span
+              >
+            </label>
           </section>
         </div>
       </div>

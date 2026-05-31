@@ -62,6 +62,8 @@ export interface AppSettings {
   snapPow2?: boolean
   renderMode?: 'default' | 'heightmap' | 'satellite'
   showLandmarks?: boolean
+  autoFit?: boolean
+  scaleAnnotations?: boolean
 }
 
 const api = {

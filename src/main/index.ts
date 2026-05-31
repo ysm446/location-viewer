@@ -59,6 +59,8 @@ interface Settings {
   snapPow2?: boolean
   renderMode?: 'default' | 'heightmap' | 'satellite'
   showLandmarks?: boolean
+  autoFit?: boolean
+  scaleAnnotations?: boolean
 }
 function settingsPath(dir: string): string {
   return join(dir, 'settings.json')

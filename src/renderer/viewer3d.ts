@@ -4,6 +4,12 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import type { MeshPayload, Landmark } from '../preload/index'
 
+// 全地形で共通の表示スケール（メートル→ワールド単位）。地形ごとに正規化せず
+// 固定倍率で表示するので、ワークスペースを切り替えると実サイズの差がそのまま見える。
+// 1ワールド単位 = この実距離(m)。約10km四方の地形が最大辺 2 ワールド単位に収まる目安。
+const METERS_PER_WORLD_UNIT = 5000
+const WORLD_SCALE = 1 / METERS_PER_WORLD_UNIT
+
 /** lng/lat → メッシュのローカル座標変換に必要な情報 */
 interface GeoContext {
   bbox: { west: number; south: number; east: number; north: number }
@@ -32,6 +38,13 @@ export class TerrainViewer {
   // null のときはズーム停止中。
   private zoomTarget: number | null = null
   private zoomTmp = new THREE.Vector3()
+  // ワークスペース切替時に、全体が収まる距離へカメラを自動でフィット（寄せ/引き両方）。
+  private autoFit = false
+  // 注釈（地点マーカー・リーダー線・ラベル・軸ラベル）を地形スケールに合わせて拡縮するか。
+  private scaleAnnotations = false
+  // 注釈サイズの倍率。基準は旧正規化の「最大辺=2」。scaleAnnotations が ON のとき
+  // 地形の実ワールドサイズに比例させ、OFF なら常に 1（絶対サイズ固定）。
+  private annotScale = 1
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
@@ -45,6 +58,8 @@ export class TerrainViewer {
   private landmarks: Landmark[] = []
   private landmarkGroup: THREE.Group | null = null
   private landmarksVisible = true
+  // 地点編集（詳細）モードのときだけ true。false の間はピンをドラッグ移動できない（誤操作防止）。
+  private landmarksEditable = false
   // 地点ごとの描画オブジェクト（ドラッグ移動時に位置を更新する）
   private landmarkObjs = new Map<string, { marker: THREE.Mesh; line: THREE.Line; label: THREE.Sprite }>()
   private markerMeshes: THREE.Mesh[] = [] // レイキャスト用（クリック判定）
@@ -110,7 +125,9 @@ export class TerrainViewer {
     dom.addEventListener(
       'pointerdown',
       (e) => {
-        if (e.button !== 0 || this.placeMode || !this.landmarksVisible) return
+        // 編集モード外・配置モード中・非表示時はドラッグ開始しない（誤操作防止）
+        if (e.button !== 0 || this.placeMode || !this.landmarksVisible || !this.landmarksEditable)
+          return
         const id = this.markerHitId(e)
         if (!id) return
         // OrbitControls（回転）へ渡さない
@@ -139,9 +156,9 @@ export class TerrainViewer {
         if (p) this.moveLandmarkObjects(this.draggingId, p)
         return
       }
-      // ホバー時のカーソル（配置モードは crosshair のまま）
+      // ホバー時のカーソル（配置モードは crosshair のまま）。編集モード時のみ grab を出す。
       if (!this.placeMode) {
-        dom.style.cursor = this.markerHitId(e) ? 'grab' : ''
+        dom.style.cursor = this.landmarksEditable && this.markerHitId(e) ? 'grab' : ''
       }
     })
     dom.addEventListener('pointerup', (e) => {
@@ -215,6 +232,17 @@ export class TerrainViewer {
   setLandmarksVisible(on: boolean) {
     this.landmarksVisible = on
     if (this.landmarkGroup) this.landmarkGroup.visible = on
+  }
+
+  /** 地点編集（詳細）モードの ON/OFF。OFF の間はピンのドラッグ移動を禁止する。 */
+  setLandmarksEditable(on: boolean) {
+    this.landmarksEditable = on
+    // 編集解除時に進行中のドラッグがあれば打ち切り、操作系を通常へ戻す。
+    if (!on && this.draggingId) {
+      this.draggingId = null
+      this.controls.enabled = true
+      this.renderer.domElement.style.cursor = ''
+    }
   }
 
   /** 地点をドラッグ移動して確定したときのコールバックを登録する */
@@ -323,8 +351,9 @@ export class TerrainViewer {
     if (!g || this.landmarks.length === 0) return
 
     const group = new THREE.Group()
-    const stem = 0.4 // リーダー線の長さ（ワールド単位。シーンの最大辺=2基準）
-    const markerGeo = new THREE.SphereGeometry(0.013, 12, 12)
+    const s = this.annotScale // 注釈倍率（地形スケール連動 or 固定）
+    const stem = 0.4 * s // リーダー線の長さ（ワールド単位。基準は最大辺=2）
+    const markerGeo = new THREE.SphereGeometry(0.013 * s, 12, 12)
     for (const lm of this.landmarks) {
       if (lm.visible === false) continue // 個別に非表示の地点はスキップ
       const u = (lm.lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
@@ -359,8 +388,8 @@ export class TerrainViewer {
       group.add(line)
 
       // ラベル（名前＋標高）
-      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.042)
-      label.position.set(x, topY + 0.06, z)
+      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.042 * s)
+      label.position.set(x, topY + 0.06 * s, z)
       label.renderOrder = 11
       group.add(label)
 
@@ -476,11 +505,16 @@ export class TerrainViewer {
     })
     this.mesh = new THREE.Mesh(geo, mat)
 
-    // 表示用に全体を一様スケール（最大辺が 2 になるように）。一様なので実寸比率は保たれる。
+    // 表示用に全体を一様スケール（全地形で共通の固定倍率）。一様なので実寸比率は保たれ、
+    // 地形ごとに正規化しないのでワークスペース切替で実サイズの差がそのまま比較できる。
     const maxDim = Math.max(widthMeters, heightMeters) || 1
-    const k = 2 / maxDim
+    const k = WORLD_SCALE
     this.mesh.scale.setScalar(k)
     this.scene.add(this.mesh)
+
+    // 注釈サイズの倍率を更新。ON のときは地形の実ワールドサイズ（最大辺 maxDim*k）を
+    // 基準値 2 で割った比に。OFF なら 1（絶対サイズ固定）。renderLandmarks より前に確定させる。
+    this.annotScale = this.scaleAnnotations ? (maxDim * k) / 2 : 1
 
     // ランドマークの座標変換コンテキストを更新し、再描画する
     this.geo = {
@@ -515,45 +549,60 @@ export class TerrainViewer {
       [`S ${kmText}`, new THREE.Vector3(0, 0, halfWorld)]
     ]
     for (const [text, pos] of ends) {
-      const sp = makeLabelSprite(text) // 深度テストなし＝常にフル描画（見切れ防止）。
+      // 深度テストなし＝常にフル描画（見切れ防止）。worldH は注釈倍率を反映。
+      const sp = makeLabelSprite(text, 0x9fc2e8, 0.06 * this.annotScale)
       sp.position.copy(pos)
       this.scene.add(sp)
       this.axisLabels.push(sp)
     }
 
-    // --- カメラのフィッティング（初回データ時のみ。以降・見た目更新では視点を維持） ---
-    if (!doFit) {
-      this.controls.update()
-      return
-    }
-    this.hasFittedCamera = true
-    this.zoomTarget = null // フィットでカメラを置き直すので進行中のズームは破棄
-    // 地形のバウンディングボックス（スケール後）。X=東西, Z=南北, Y=高さ。
+    // --- カメラのフィッティング ---
+    // バウンディングボックス（スケール後）から「全体が収まる距離」を求める。
+    // X=東西, Z=南北, Y=高さ。ボックスを内包する球の半径で距離を決める。
     const halfX = (widthMeters * k) / 2
     const halfZ = (heightMeters * k) / 2
     const sizeY = (maxEle - minEle) * k
     const centerY = sizeY / 2
-
-    // 注視点はボックス中心（底を中心に回らないように高さ方向中心へ）
-    this.controls.target.set(0, centerY, 0)
-
-    // ボックスを内包する球の半径で距離を決める → 全体が必ず収まる
     const radius = Math.hypot(halfX, halfZ, sizeY / 2)
     const fov = (this.camera.fov * Math.PI) / 180
     const fitDist = (radius / Math.sin(fov / 2)) * 1.15 // 余白15%
 
-    // 斜め上から見下ろす方向（水平から約30°）。
-    const elev = (30 * Math.PI) / 180
-    this.camera.position.set(
-      0,
-      centerY + fitDist * Math.sin(elev),
-      fitDist * Math.cos(elev)
-    )
-    // 近遠クリップも距離に合わせて調整
-    this.camera.near = Math.max(0.001, fitDist / 100)
-    this.camera.far = fitDist * 10
-    this.camera.updateProjectionMatrix()
+    if (doFit) {
+      // 初回データ時は必ず全体にフィット（位置・注視点・クリップを置き直す）。
+      this.hasFittedCamera = true
+      this.zoomTarget = null // フィットでカメラを置き直すので進行中のズームは破棄
+      this.controls.target.set(0, centerY, 0) // 注視点はボックス中心（高さ方向中心）
+      const elev = (30 * Math.PI) / 180 // 斜め上から見下ろす（水平から約30°）
+      this.camera.position.set(0, centerY + fitDist * Math.sin(elev), fitDist * Math.cos(elev))
+      this.camera.near = Math.max(0.001, fitDist / 100)
+      this.camera.far = fitDist * 10
+      this.camera.updateProjectionMatrix()
+      this.controls.update()
+      return
+    }
+
+    // 2回目以降は視点を維持。ただし自動フィットが有効なら、全体が収まる距離へ
+    // スムーズに寄せる/引く（ズームイン・アウト両方）。
+    if (this.autoFit) {
+      const dist = this.camera.position.distanceTo(this.controls.target)
+      this.zoomTarget = fitDist
+      // 寄せ・引きどちらでも切れないようクリップ面を確保（near は縮小のみ、far は拡大のみ）。
+      this.camera.near = Math.min(this.camera.near, Math.max(0.001, fitDist / 100))
+      this.camera.far = Math.max(this.camera.far, fitDist * 10, dist * 1.2)
+      this.camera.updateProjectionMatrix()
+    }
     this.controls.update()
+  }
+
+  /** ワークスペース切替時に全体が収まる距離へカメラを自動でフィットするか。 */
+  setAutoFit(v: boolean) {
+    this.autoFit = v
+  }
+
+  /** 注釈（地点マーカー・線・ラベル・軸ラベル）を地形スケールに合わせて拡縮するか。 */
+  setScaleAnnotations(v: boolean) {
+    this.scaleAnnotations = v
+    if (this.lastPayload) this.setData(this.lastPayload, false) // 見た目のみ更新（視点維持）
   }
 
   private resize() {
@@ -579,10 +628,11 @@ export class TerrainViewer {
     const fovR = (this.camera.fov * Math.PI) / 180
     const cam = this.camera.position
     const v = new THREE.Vector3()
-    const baseStem = 0.4 // 既定のリーダー線長（ワールド）
-    const gap = 0.05 // 線の先端からラベル中心までの隙間
-    const step = 0.04 // 上へ逃がす1ステップ（ワールド）
-    const maxStem = 1.6
+    const s = this.annotScale // 注釈倍率（renderLandmarks と一致させる）
+    const baseStem = 0.4 * s // 既定のリーダー線長（ワールド）
+    const gap = 0.05 * s // 線の先端からラベル中心までの隙間
+    const step = 0.04 * s // 上へ逃がす1ステップ（ワールド）
+    const maxStem = 1.6 * s
     const pad = 2
 
     // マーカー（地表）からの距離が近い順に基準配置 → 奥は上へ逃がす

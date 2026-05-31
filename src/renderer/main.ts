@@ -70,6 +70,20 @@ chkShowLandmarks.addEventListener('change', () => {
   api.setSettings({ showLandmarks: chkShowLandmarks.checked })
 })
 
+// ワークスペース切替時の自動フィット（環境設定）
+const chkAutoFit = $<HTMLInputElement>('chk-auto-fit')
+chkAutoFit.addEventListener('change', () => {
+  viewer?.setAutoFit(chkAutoFit.checked)
+  api.setSettings({ autoFit: chkAutoFit.checked })
+})
+
+// 注釈（地点マーカー・線・ラベル・軸ラベル）を地形スケールに合わせる（環境設定）
+const chkScaleAnnotations = $<HTMLInputElement>('chk-scale-annotations')
+chkScaleAnnotations.addEventListener('change', () => {
+  viewer?.setScaleAnnotations(chkScaleAnnotations.checked)
+  api.setSettings({ scaleAnnotations: chkScaleAnnotations.checked })
+})
+
 // カメラ自動回転トグル（押すたびに ON/OFF）
 const btnRotate = $<HTMLButtonElement>('btn-rotate')
 let autoRotate = false
@@ -83,8 +97,12 @@ btnRotate.addEventListener('click', () => {
  * 右ペインを 一覧⇔詳細 で切り替える。詳細モードでは CSS で選択以外の
  * ワークスペースを隠し、選択行の下に中身（地点等）を表示する。
  */
+let detailMode = false
 function showWorkspaceDetail(on: boolean) {
+  detailMode = on
   rviewLibraryEl.classList.toggle('detail', on)
+  // 詳細（地点編集）モードのときだけ 3D のピンをドラッグ可能にする（誤操作防止）
+  viewer?.setLandmarksEditable(on)
 }
 wsBack.addEventListener('click', () => {
   setPlaceMode(false)
@@ -624,8 +642,11 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer = new TerrainViewer($('viewer3d'))
       viewer.setLandmarkMoveHandler(onMoveLandmark)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
+      viewer.setLandmarksEditable(detailMode)
       viewer.setRenderMode(renderModeSel.value as 'default' | 'heightmap' | 'satellite')
       viewer.setAutoRotate(autoRotate)
+      viewer.setAutoFit(chkAutoFit.checked)
+      viewer.setScaleAnnotations(chkScaleAnnotations.checked)
     }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
@@ -1273,6 +1294,8 @@ btnExportRaw.addEventListener('click', async () => {
     renderModeSel.value = settings.renderMode
   }
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
+  if (settings.autoFit) chkAutoFit.checked = true
+  if (settings.scaleAnnotations) chkScaleAnnotations.checked = true
 
   const cfg = await api.getConfig()
   if (cfg.token) {
