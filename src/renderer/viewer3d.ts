@@ -40,6 +40,32 @@ export class TerrainViewer {
   private zoomTmp = new THREE.Vector3()
   // ワークスペース切替時に、全体が収まる距離へカメラを自動でフィット（寄せ/引き両方）。
   private autoFit = false
+  // 地形切替の演出。none=即時 / slide=旧地形を横へスライド / wipe=ワールド平面でワイプ。
+  // いずれも旧地形メッシュをワールド空間に生かしたまま動かす（3D）。
+  private transition: 'none' | 'slide' | 'wipe' = 'none'
+  // 現在の地形プレゼンテーション（mesh + grid + 軸ラベル）をまとめたグループ。
+  private terrainGroup: THREE.Group | null = null
+  // setSatelliteTexture が退避した旧衛星テクスチャ（旧メッシュが消えるまで破棄を遅延）。
+  private pendingDisposeTex: THREE.Texture | null = null
+  // 進行中のトランジション状態（animate() で毎フレーム更新）。
+  private trans: {
+    kind: 'slide' | 'wipe'
+    oldGroup: THREE.Group
+    newGroup: THREE.Group
+    oldTex: THREE.Texture | null
+    start: number
+    dur: number
+    slideDist: number
+    xExt: number
+    oldPlane: THREE.Plane | null
+    newPlane: THREE.Plane | null
+    newMats: THREE.Material[]
+    // ラベル（軸km表示＋地名）のフェード材質。旧=フェードアウト / 新=フェードイン。
+    oldSprites: THREE.SpriteMaterial[]
+    newSprites: THREE.SpriteMaterial[]
+  } | null = null
+  // 演出中に来た「見た目だけの再描画」（衛星テクスチャ読込など）は、完了後にまとめて反映する。
+  private pendingRedraw = false
   // 注釈（地点マーカー・リーダー線・ラベル・軸ラベル）を地形スケールに合わせて拡縮するか。
   private scaleAnnotations = false
   // 注釈サイズの倍率。基準は旧正規化の「最大辺=2」。scaleAnnotations が ON のとき
@@ -76,6 +102,7 @@ export class TerrainViewer {
     this.container = container
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
+    this.renderer.localClippingEnabled = true // ワイプ演出でクリップ平面を使う
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setClearColor(0x111417)
     container.appendChild(this.renderer.domElement)
@@ -231,6 +258,140 @@ export class TerrainViewer {
     }
   }
 
+  /** 地形切替の演出を設定（none / slide / wipe）。 */
+  setTransition(mode: 'none' | 'slide' | 'wipe') {
+    this.transition = mode
+  }
+
+  /** 旧地形グループを生かしたまま、3D 空間で slide / wipe の演出を開始する。 */
+  private startTransition3D(oldGroup: THREE.Group, newGroup: THREE.Group, oldTex: THREE.Texture | null) {
+    const newHalfX = (newGroup.userData.halfX as number) ?? 1
+    const oldHalfX = (oldGroup.userData.halfX as number) ?? newHalfX
+    const xExt = Math.max(newHalfX, oldHalfX) * 1.05 || 1
+
+    // スライドで画面外まで送る距離（カメラから見て横幅の倍を確保）。
+    const dist = this.camera.position.distanceTo(this.controls.target)
+    const halfW = dist * Math.tan((this.camera.fov * Math.PI) / 180 / 2) * this.camera.aspect
+    const slideDist = Math.max(halfW * 2, xExt * 2)
+
+    let oldPlane: THREE.Plane | null = null
+    let newPlane: THREE.Plane | null = null
+    const newMats: THREE.Material[] = []
+    if (this.transition === 'wipe') {
+      // 旧=右側(x>=seam) / 新=左側(x<=seam) をクリップ平面（ワールド空間）で見せ分ける。
+      oldPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), xExt)
+      newPlane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), xExt)
+      this.applyClip(oldGroup, oldPlane)
+      this.applyClip(newGroup, newPlane, newMats)
+    }
+    // ラベル（軸km＋地名スプライト）は演出中にフェード（旧=アウト / 新=イン）。
+    // 地点グループは地形グループの子なので、これで地名ラベルも一緒にフェードする。
+    const oldSprites = this.collectSpriteMats(oldGroup)
+    const newSprites = this.collectSpriteMats(newGroup)
+    for (const m of newSprites) m.opacity = 0 // 新ラベルは透明から始める
+
+    this.trans = {
+      kind: this.transition === 'wipe' ? 'wipe' : 'slide',
+      oldGroup,
+      newGroup,
+      oldTex,
+      start: performance.now(),
+      dur: 600,
+      slideDist,
+      xExt,
+      oldPlane,
+      newPlane,
+      newMats,
+      oldSprites,
+      newSprites
+    }
+    this.updateTransition() // 初期状態を確定
+  }
+
+  /** グループ内の mesh / line マテリアルにクリップ平面を設定（out に新側マテリアルを集める）。 */
+  private applyClip(g: THREE.Group, plane: THREE.Plane, out?: THREE.Material[]) {
+    g.traverse((o) => {
+      const m = (o as THREE.Mesh).material as THREE.Material | undefined
+      if (m && ((o as THREE.Mesh).isMesh || (o as THREE.Line).isLine)) {
+        m.clippingPlanes = [plane]
+        m.needsUpdate = true // クリップ面数の変化でシェーダ再コンパイルを促す
+        out?.push(m)
+      }
+    })
+  }
+
+  /** グループ内のラベル（スプライト＝軸km・地名）の材質を集める（フェード制御用）。 */
+  private collectSpriteMats(g: THREE.Group): THREE.SpriteMaterial[] {
+    const out: THREE.SpriteMaterial[] = []
+    g.traverse((o) => {
+      if ((o as THREE.Sprite).isSprite) out.push((o as THREE.Sprite).material)
+    })
+    return out
+  }
+
+  /** 毎フレーム、経過時間に応じて旧/新グループの位置（slide）または境界（wipe）を更新。 */
+  private updateTransition() {
+    const tr = this.trans
+    if (!tr) return
+    const t = Math.min(1, (performance.now() - tr.start) / tr.dur)
+    const e = t * t * (3 - 2 * t) // smoothstep
+    if (tr.kind === 'slide') {
+      // 旧は左へ抜け、新は右から入る（途中は左=新 / 右=旧 で比較できる）。
+      tr.oldGroup.position.x = -tr.slideDist * e
+      tr.newGroup.position.x = tr.slideDist * (1 - e)
+    } else {
+      // 境界 seam を -xExt→+xExt へ動かし、左から新地形を露出。
+      const seam = tr.xExt * (2 * e - 1)
+      if (tr.oldPlane) tr.oldPlane.constant = -seam // 旧: x>=seam
+      if (tr.newPlane) tr.newPlane.constant = seam // 新: x<=seam
+    }
+    // ラベルのフェード（opacity のみ）：前半で旧をアウト、後半で新をイン。
+    // スライドだと新グループは前半まだ画面外なので、後半（画面に入る）で 0→1 にする方が見える。
+    for (const m of tr.oldSprites) m.opacity = Math.min(1, Math.max(0, 1 - 2 * e))
+    for (const m of tr.newSprites) m.opacity = Math.min(1, Math.max(0, 2 * e - 1))
+    if (t >= 1) this.finishTransition()
+  }
+
+  /**
+   * 演出完了：旧グループ・旧テクスチャを破棄し、新グループを正位置・クリップ解除・表示復帰。
+   * applyPending=true（自然終了時）なら、演出中に保留した見た目再描画をここで反映する。
+   */
+  private finishTransition(applyPending = true) {
+    const tr = this.trans
+    if (!tr) return
+    this.trans = null
+    this.disposeGroup(tr.oldGroup)
+    tr.oldTex?.dispose()
+    tr.newGroup.position.set(0, 0, 0)
+    for (const m of tr.newMats) {
+      m.clippingPlanes = []
+      m.needsUpdate = true
+    }
+    for (const m of tr.newSprites) m.opacity = 1 // 新ラベルを完全表示に戻す
+    if (applyPending && this.pendingRedraw) {
+      this.pendingRedraw = false
+      if (this.lastPayload) this.setData(this.lastPayload, false) // 保留した見た目更新を反映
+    } else {
+      this.pendingRedraw = false
+    }
+  }
+
+  /** 地形グループをシーンから外して破棄（衛星テクスチャ=mesh.map は別管理なので触らない）。 */
+  private disposeGroup(g: THREE.Group) {
+    this.scene.remove(g)
+    g.traverse((o) => {
+      if ((o as THREE.Sprite).isSprite) {
+        const m = (o as THREE.Sprite).material
+        m.map?.dispose()
+        m.dispose()
+      } else if ((o as THREE.Mesh).isMesh || (o as THREE.Line).isLine) {
+        const any = o as THREE.Mesh & THREE.Line
+        any.geometry?.dispose()
+        ;(any.material as THREE.Material)?.dispose()
+      }
+    })
+  }
+
   /** カメラの自動回転（縦軸まわり）の ON/OFF。約2°/秒。 */
   setAutoRotate(on: boolean) {
     this.controls.autoRotate = on
@@ -348,7 +509,7 @@ export class TerrainViewer {
   /** 現在の geo と landmarks からマーカー（リーダー線＋ラベル）を作り直す */
   private renderLandmarks() {
     if (this.landmarkGroup) {
-      this.scene.remove(this.landmarkGroup)
+      this.landmarkGroup.removeFromParent() // 親（地形グループ or scene）から外す
       this.landmarkGroup.traverse((o) => {
         const any = o as THREE.Mesh & THREE.Sprite
         any.geometry?.dispose?.()
@@ -411,15 +572,18 @@ export class TerrainViewer {
       this.landmarkObjs.set(lm.id, { marker, line, label })
     }
     group.visible = this.landmarksVisible
-    this.scene.add(group)
+    // 地点グループは地形グループの子にする（地形と一緒にスライド/ワイプ・フェードさせるため）。
+    ;(this.terrainGroup ?? this.scene).add(group)
     this.landmarkGroup = group
   }
 
   /** 衛星テクスチャを設定（dataURL）。null でテクスチャなしに戻す。 */
   setSatelliteTexture(dataUrl: string | null) {
-    // 既存テクスチャを破棄
+    // 既存テクスチャは即破棄しない：トランジション中も旧メッシュが使うため、
+    // 旧メッシュが破棄されるタイミング（setData / finishTransition）まで遅延させる。
     if (this.satelliteTex) {
-      this.satelliteTex.dispose()
+      this.pendingDisposeTex?.dispose() // さらに前の退避ぶんは不要なのでここで破棄
+      this.pendingDisposeTex = this.satelliteTex
       this.satelliteTex = null
     }
     if (dataUrl) {
@@ -455,32 +619,45 @@ export class TerrainViewer {
    * 見た目だけを更新する再構築で視点がリセットされるのを防ぐ）。
    * fitCamera=true でも、既に一度フィット済みなら視点は維持する
    * （ワークスペース切替でカメラがリセットされないように）。
+   * landmarks を渡すと、この地形に対応する地点を構築時点で反映する（演出のフェード対象に含める）。
    */
-  setData(payload: MeshPayload, fitCamera = true) {
+  setData(payload: MeshPayload, fitCamera = true, landmarks?: Landmark[]) {
     // 初回のみフィットし、以降は視点を維持する
     const doFit = fitCamera && !this.hasFittedCamera
+    // 別データへの切替（≠ 同一payloadの見た目再描画）かつ演出ありなら 3D トランジションする。
+    const isNewData = payload !== this.lastPayload
+    // 演出中の割り込み: 同一データの見た目再描画は完了後にまとめて反映（演出を殺さない）。
+    // 別データへの新規切替なら、進行中の演出を即終了してから処理する。
+    if (this.trans) {
+      if (!isNewData) {
+        this.pendingRedraw = true
+        return
+      }
+      this.finishTransition(false)
+    }
+    const animate3D = isNewData && this.transition !== 'none' && this.terrainGroup !== null
     this.lastPayload = payload
     const { cols, rows, minEle, maxEle, widthMeters, heightMeters } = payload
     const heights = new Float32Array(payload.heights)
 
-    // 既存メッシュ・グリッドを破棄
-    if (this.mesh) {
-      this.scene.remove(this.mesh)
-      this.mesh.geometry.dispose()
-      ;(this.mesh.material as THREE.Material).dispose()
-      this.mesh = null
+    // 旧グループの扱い：演出するなら残して後で破棄、しなければ即破棄。
+    const oldGroup = this.terrainGroup
+    const oldTex = this.pendingDisposeTex // setSatelliteTexture が退避した旧テクスチャ
+    this.pendingDisposeTex = null
+    // 旧地点グループは旧地形グループの子。参照を手放し、旧グループと一緒に生かす/破棄する
+    // （renderLandmarks が旧地点を破棄しないように null にしておく）。
+    this.landmarkGroup = null
+    // 新地点データがあれば renderLandmarks より前に反映（演出のフェード対象に含めるため）。
+    if (landmarks) this.landmarks = landmarks
+    if (oldGroup && !animate3D) {
+      this.disposeGroup(oldGroup)
+      oldTex?.dispose()
     }
-    if (this.grid) {
-      this.scene.remove(this.grid)
-      this.grid.geometry.dispose()
-      ;(this.grid.material as THREE.Material).dispose()
-      this.grid = null
-    }
-    for (const sp of this.axisLabels) {
-      this.scene.remove(sp)
-      sp.material.map?.dispose()
-      sp.material.dispose()
-    }
+    // 新しいプレゼンテーションをまとめるグループ。
+    const group = new THREE.Group()
+    this.terrainGroup = group
+    this.mesh = null
+    this.grid = null
     this.axisLabels = []
 
     // ジオメトリは「地表メートル」で作る（X=東西, Z=南北, Y=高さ[m]）。
@@ -525,7 +702,8 @@ export class TerrainViewer {
     const maxDim = Math.max(widthMeters, heightMeters) || 1
     const k = WORLD_SCALE
     this.mesh.scale.setScalar(k)
-    this.scene.add(this.mesh)
+    group.add(this.mesh)
+    group.userData.halfX = (widthMeters * k) / 2 // 東西の半幅（ワイプ/スライドの範囲計算用）
 
     // 注釈サイズの倍率を更新。ON のときは地形の実ワールドサイズ（最大辺 maxDim*k）を
     // 基準値 2 で割った比に。OFF なら 1（絶対サイズ固定）。renderLandmarks より前に確定させる。
@@ -550,7 +728,7 @@ export class TerrainViewer {
     const divisions = Math.round(gridSpan / gridStep)
     this.grid = new THREE.GridHelper(gridSpan * k, divisions, 0x5a7a9a, 0x3a4a5a)
     // GridHelper は XZ 平面・原点中心。地形も原点中心なので位置はそのままでよい。
-    this.scene.add(this.grid)
+    group.add(this.grid)
 
     // 中心軸（東西=X / 南北=Z）の端に「中心からの距離(km)」を小さく表示する。
     // 北を -Z に取っているので、N は -Z 側。
@@ -567,9 +745,13 @@ export class TerrainViewer {
       // 深度テストなし＝常にフル描画（見切れ防止）。worldH は注釈倍率を反映。
       const sp = makeLabelSprite(text, 0x9fc2e8, 0.06 * this.annotScale)
       sp.position.copy(pos)
-      this.scene.add(sp)
+      group.add(sp)
       this.axisLabels.push(sp)
     }
+
+    // グループをシーンへ追加。演出する場合は旧グループを生かしたまま 3D で切替。
+    this.scene.add(group)
+    if (animate3D && oldGroup) this.startTransition3D(oldGroup, group, oldTex)
 
     // --- カメラのフィッティング ---
     // 「縦いっぱい」に収まる距離を画角（垂直FOV）から求める（fitDistFor）。
@@ -751,8 +933,12 @@ export class TerrainViewer {
     this.raf = requestAnimationFrame(this.animate)
     this.controls.update()
     this.updateSmoothZoom()
-    this.declutterLabels()
-    this.updateAxisLabelOcclusion()
+    this.updateTransition()
+    // 演出中はラベルの遮蔽判定・重なり回避を止める（visible 上書きでフェードが潰れるため）。
+    if (!this.trans) {
+      this.declutterLabels()
+      this.updateAxisLabelOcclusion()
+    }
 
     // メインシーン
     this.renderer.setViewport(0, 0, this.container.clientWidth, this.container.clientHeight)
@@ -782,13 +968,16 @@ export class TerrainViewer {
   dispose() {
     cancelAnimationFrame(this.raf)
     this.resizeObs.disconnect()
-    this.satelliteTex?.dispose()
-    for (const sp of this.axisLabels) {
-      sp.material.map?.dispose()
-      sp.material.dispose()
+    if (this.trans) {
+      this.disposeGroup(this.trans.oldGroup)
+      this.trans.oldTex?.dispose()
+      this.trans = null
     }
+    if (this.terrainGroup) this.disposeGroup(this.terrainGroup)
+    this.pendingDisposeTex?.dispose()
+    this.satelliteTex?.dispose()
     this.landmarks = []
-    this.renderLandmarks() // グループとテクスチャを破棄
+    this.renderLandmarks() // 地点グループとテクスチャを破棄
     this.renderer.dispose()
   }
 }

@@ -106,6 +106,14 @@ $<HTMLButtonElement>('btn-fov-reset').addEventListener('click', () => {
   api.setSettings({ cameraFov: DEFAULT_FOV })
 })
 
+// 地形切替トランジション（なし / 横スライド / ワイプ）
+const transitionSel = $<HTMLSelectElement>('transition-mode')
+transitionSel.addEventListener('change', () => {
+  const m = transitionSel.value as 'none' | 'slide' | 'wipe'
+  viewer?.setTransition(m)
+  api.setSettings({ transition: m })
+})
+
 // カメラ自動回転トグル（押すたびに ON/OFF）
 const btnRotate = $<HTMLButtonElement>('btn-rotate')
 let autoRotate = false
@@ -670,6 +678,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setAutoFit(chkAutoFit.checked)
       viewer.setScaleAnnotations(chkScaleAnnotations.checked)
       viewer.setFov(Number(fovInput.value))
+      viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe')
     }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
@@ -788,10 +797,11 @@ function showPreview(
   previewImg.style.display = 'block'
   previewEmpty.style.display = 'none'
 
-  // 3D: ビューワが既にあれば即反映、なければ次に3Dタブを開いた時に反映
+  // 3D: ビューワが既にあれば即反映、なければ次に3Dタブを開いた時に反映。
+  // 地点は setData に渡して構築時点で反映する（切替演出で地名ラベルもフェードさせるため）。
   if (viewer) {
     viewer.setSatelliteTexture(satelliteDataUrl)
-    viewer.setData(mesh)
+    viewer.setData(mesh, true, workspace.landmarks)
   } else {
     pendingMesh = mesh
     pendingSatellite = satelliteDataUrl
@@ -811,10 +821,11 @@ function showPreview(
   // 3Dビューポート上の寸法情報を更新
   updateViewer3dInfo(mesh, h)
 
-  // このワークスペースのランドマークを反映（詳細モードへは入らない＝選択のみ）
+  // このワークスペースのランドマークを反映（詳細モードへは入らない＝選択のみ）。
+  // viewer 有: 上の setData で反映済み（演出のフェード対象に含めるため）。
+  // viewer 無: pendingMesh とともに 3Dタブ表示時に setLandmarks で反映。
   setPlaceMode(false)
   landmarks = workspace.landmarks
-  viewer?.setLandmarks(landmarks)
   renderLandmarkPanel()
 }
 
@@ -1322,6 +1333,9 @@ btnExportRaw.addEventListener('click', async () => {
   if (typeof settings.cameraFov === 'number') {
     fovInput.value = String(settings.cameraFov)
     fovVal.textContent = String(settings.cameraFov)
+  }
+  if (settings.transition === 'slide' || settings.transition === 'wipe') {
+    transitionSel.value = settings.transition
   }
 
   const cfg = await api.getConfig()

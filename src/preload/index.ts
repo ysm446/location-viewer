@@ -65,6 +65,7 @@ export interface AppSettings {
   autoFit?: boolean
   scaleAnnotations?: boolean
   cameraFov?: number
+  transition?: 'none' | 'slide' | 'wipe'
 }
 
 const api = {
