@@ -298,6 +298,12 @@ select {
   color: var(--text);
   font-size: 13px;
 }
+/* フォーカス時の既定ハイライト（黄色い枠）を抑止 */
+input:focus,
+select:focus,
+button:focus {
+  outline: none;
+}
 /* スライダーを細く・つまみを小さく（ズーム/高さ強調 共通） */
 input[type='range'] {
   padding: 0;
@@ -394,8 +400,9 @@ button.primary:hover {
   border-radius: 6px 6px 0 0;
 }
 .tab.active {
-  background: var(--accent);
-  border-color: var(--accent-bright);
+  background: var(--control-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
 /* ライブラリ一覧 */
