@@ -98,6 +98,8 @@ export class TerrainViewer {
   private annotScale = 1
   // ON のとき地形を実標高（海面=0m を基準）で配置する。OFF は最低地点を y=0 に置く。
   private seaLevelBase = false
+  // ON のとき地名ラベルを画面に対して一定サイズで表示（距離に応じて毎フレーム拡縮補正）。
+  private fixedLabelSize = false
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
@@ -764,6 +766,8 @@ export class TerrainViewer {
       const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.034 * s)
       label.position.set(x, topY + 0.06 * s, z)
       label.renderOrder = 11
+      // 画面固定サイズ表示の基準として設計スケールを控える（毎フレーム距離で補正する）。
+      label.userData.designScale = label.scale.clone()
       group.add(label)
 
       this.landmarkObjs.set(lm.id, { marker, line, label })
@@ -1025,6 +1029,12 @@ export class TerrainViewer {
     if (this.lastPayload) this.setData(this.lastPayload, false) // 見た目のみ更新（視点維持）
   }
 
+  /** 地名ラベルを画面に対して一定サイズで表示するか（OFF は通常の遠近で拡縮）。 */
+  setFixedLabelSize(v: boolean) {
+    this.fixedLabelSize = v
+    if (this.lastPayload) this.setData(this.lastPayload, false) // ラベルを設計サイズで作り直す
+  }
+
   private resize() {
     const w = this.container.clientWidth || 1
     const h = this.container.clientHeight || 1
@@ -1071,6 +1081,14 @@ export class TerrainViewer {
     for (const { id, o, base } of entries) {
       const labelDist = cam.distanceTo(o.label.position)
       const pxPerWorld = h / (2 * Math.tan(fovR / 2) * Math.max(labelDist, 1e-3))
+      // 画面固定サイズ ON：目標pxになるよう距離に応じてワールドスケールを補正（行数ぶんの高さ）。
+      if (this.fixedLabelSize) {
+        const lines = (o.label.userData.lines as number) || 1
+        const targetPxH = h * 0.022 * lines // 画面高に対する一定比率
+        const worldH = targetPxH / pxPerWorld
+        const ds = o.label.userData.designScale as THREE.Vector3
+        if (ds) o.label.scale.copy(ds).multiplyScalar(worldH / ds.y)
+      }
       const sw = o.label.scale.x * pxPerWorld
       const sh = o.label.scale.y * pxPerWorld
 
@@ -1240,6 +1258,7 @@ function makeLabelSprite(
   // 文字のアスペクト比を保って横幅を決める（worldH は1行ぶんの高さ基準）
   const totalH = worldH * lines.length
   sp.scale.set(totalH * (w / h), totalH, 1)
+  sp.userData.lines = lines.length // 画面固定サイズ計算用（行数で目標pxを決める）
   return sp
 }
 

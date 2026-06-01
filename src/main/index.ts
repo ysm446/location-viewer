@@ -62,6 +62,7 @@ interface Settings {
   autoFit?: boolean
   scaleAnnotations?: boolean
   seaLevelBase?: boolean
+  fixedLabelSize?: boolean
   cameraFov?: number
   transition?: 'none' | 'slide' | 'wipe' | 'morph'
 }

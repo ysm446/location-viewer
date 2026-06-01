@@ -92,6 +92,13 @@ chkSeaLevel.addEventListener('change', () => {
   api.setSettings({ seaLevelBase: chkSeaLevel.checked })
 })
 
+// 地名ラベルを画面に対して一定サイズで表示する（環境設定）
+const chkFixedLabel = $<HTMLInputElement>('chk-fixed-label')
+chkFixedLabel.addEventListener('change', () => {
+  viewer?.setFixedLabelSize(chkFixedLabel.checked)
+  api.setSettings({ fixedLabelSize: chkFixedLabel.checked })
+})
+
 // カメラの画角（FOV, 度）。ドラッグ中はライブ反映し、離したときに保存する
 const DEFAULT_FOV = 50
 const fovInput = $<HTMLInputElement>('camera-fov')
@@ -715,6 +722,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setAutoFit(chkAutoFit.checked)
       viewer.setScaleAnnotations(chkScaleAnnotations.checked)
       viewer.setSeaLevelBase(chkSeaLevel.checked)
+      viewer.setFixedLabelSize(chkFixedLabel.checked)
       viewer.setFov(Number(fovInput.value))
       viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe' | 'morph')
     }
@@ -1373,6 +1381,7 @@ btnExportRaw.addEventListener('click', async () => {
   if (settings.autoFit) chkAutoFit.checked = true
   if (settings.scaleAnnotations) chkScaleAnnotations.checked = true
   if (settings.seaLevelBase) chkSeaLevel.checked = true
+  if (settings.fixedLabelSize) chkFixedLabel.checked = true
   if (typeof settings.cameraFov === 'number') {
     fovInput.value = String(settings.cameraFov)
     fovVal.textContent = String(settings.cameraFov)
