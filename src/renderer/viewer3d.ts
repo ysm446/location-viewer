@@ -38,6 +38,8 @@ export class TerrainViewer {
   // null のときはズーム停止中。
   private zoomTarget: number | null = null
   private zoomTmp = new THREE.Vector3()
+  // 演出中に保留した自動フィットの目標距離（finishTransition で zoomTarget に反映）。
+  private pendingFitDist: number | null = null
   // ワークスペース切替時に、全体が収まる距離へカメラを自動でフィット（寄せ/引き両方）。
   private autoFit = false
   // 地形切替の演出。none=即時 / slide=横スライド / wipe=ワールド平面でワイプ /
@@ -566,6 +568,11 @@ export class TerrainViewer {
         sp.material.opacity = 1 // slide で下げた不透明度を戻す
       }
     }
+    // 自動フィットを演出後に発火（演出中はカメラを動かさず、完了後にスムーズに寄せる）。
+    if (this.pendingFitDist !== null) {
+      this.zoomTarget = this.pendingFitDist
+      this.pendingFitDist = null
+    }
     if (applyPending && this.pendingRedraw) {
       this.pendingRedraw = false
       if (this.lastPayload) this.setData(this.lastPayload, false) // 保留した見た目更新を反映
@@ -992,11 +999,18 @@ export class TerrainViewer {
     // スムーズに寄せる/引く（ズームイン・アウト両方）。
     if (this.autoFit) {
       const dist = this.camera.position.distanceTo(this.controls.target)
-      this.zoomTarget = fitDist
       // 寄せ・引きどちらでも切れないようクリップ面を確保（near は縮小のみ、far は拡大のみ）。
       this.camera.near = Math.min(this.camera.near, Math.max(0.001, fitDist / 100))
       this.camera.far = Math.max(this.camera.far, fitDist * 10, dist * 1.2)
       this.camera.updateProjectionMatrix()
+      // 演出中はカメラ移動を保留し、完了後に寄せる（演出とズームが重ならないように）。
+      if (this.trans) {
+        this.zoomTarget = null // 進行中のズームは止め、演出完了まで待つ
+        this.pendingFitDist = fitDist
+      } else {
+        this.pendingFitDist = null
+        this.zoomTarget = fitDist
+      }
     }
     this.controls.update()
   }
