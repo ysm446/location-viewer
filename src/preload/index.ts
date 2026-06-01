@@ -64,6 +64,7 @@ export interface AppSettings {
   showLandmarks?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
+  seaLevelBase?: boolean
   cameraFov?: number
   transition?: 'none' | 'slide' | 'wipe' | 'morph'
 }

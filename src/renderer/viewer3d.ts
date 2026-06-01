@@ -93,6 +93,8 @@ export class TerrainViewer {
   // 注釈サイズの倍率。基準は旧正規化の「最大辺=2」。scaleAnnotations が ON のとき
   // 地形の実ワールドサイズに比例させ、OFF なら常に 1（絶対サイズ固定）。
   private annotScale = 1
+  // ON のとき地形を実標高（海面=0m を基準）で配置する。OFF は最低地点を y=0 に置く。
+  private seaLevelBase = false
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
@@ -394,6 +396,7 @@ export class TerrainViewer {
       })
       oldTexMesh = new THREE.Mesh(geo, mat) // ジオメトリ共有＝同じ変形
       oldTexMesh.scale.copy(mesh.scale)
+      oldTexMesh.position.copy(mesh.position) // 海抜オフセット（mesh.position.y）も一致させ二重表示を防ぐ
       oldTexMesh.renderOrder = 1
       newGroup.add(oldTexMesh)
     }
@@ -658,7 +661,8 @@ export class TerrainViewer {
     const e01 = h[r1 * g.cols + c0]
     const e11 = h[r1 * g.cols + c1]
     const ele = (e00 * (1 - tx) + e10 * tx) * (1 - ty) + (e01 * (1 - tx) + e11 * tx) * ty
-    return (ele - g.minEle) * g.k
+    // メッシュと同じ縦オフセット（海抜基準 ON なら実標高、OFF なら最低地点=0）。
+    return (this.seaLevelBase ? ele : ele - g.minEle) * g.k
   }
 
   /** ドラッグ中：地点のマーカー・線・ラベルを地形上の base 位置へ移動する */
@@ -883,6 +887,10 @@ export class TerrainViewer {
     const maxDim = Math.max(widthMeters, heightMeters) || 1
     const k = WORLD_SCALE
     this.mesh.scale.setScalar(k)
+    // 海抜基準 ON なら最低地点を minEle*k だけ持ち上げ、地形を実標高に浮かせる。
+    // ジオメトリ自体は base=0（最低地点）のまま＝頂点色・morph 補間はそのまま使える。
+    const baseY = this.seaLevelBase ? minEle * k : 0
+    this.mesh.position.y = baseY
     group.add(this.mesh)
     group.userData.halfX = (widthMeters * k) / 2 // 東西の半幅（ワイプ/スライドの範囲計算用）
 
@@ -940,7 +948,7 @@ export class TerrainViewer {
     // --- カメラのフィッティング ---
     // 「縦いっぱい」に収まる距離を画角（垂直FOV）から求める（fitDistFor）。
     const sizeY = (maxEle - minEle) * k
-    const centerY = sizeY / 2 // 注視点の高さ（ボックス中心）
+    const centerY = baseY + sizeY / 2 // 注視点の高さ（ボックス中心。海抜基準なら実標高ぶん持ち上げ）
     const fitDist = this.fitDistFor(payload)
 
     if (doFit) {
@@ -992,6 +1000,12 @@ export class TerrainViewer {
   /** 注釈（地点マーカー・線・ラベル・軸ラベル）を地形スケールに合わせて拡縮するか。 */
   setScaleAnnotations(v: boolean) {
     this.scaleAnnotations = v
+    if (this.lastPayload) this.setData(this.lastPayload, false) // 見た目のみ更新（視点維持）
+  }
+
+  /** 地形を実標高（海面=0m 基準）で配置するか。OFF は最低地点を y=0 に置く。 */
+  setSeaLevelBase(v: boolean) {
+    this.seaLevelBase = v
     if (this.lastPayload) this.setData(this.lastPayload, false) // 見た目のみ更新（視点維持）
   }
 

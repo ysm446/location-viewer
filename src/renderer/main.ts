@@ -85,6 +85,13 @@ chkScaleAnnotations.addEventListener('change', () => {
   api.setSettings({ scaleAnnotations: chkScaleAnnotations.checked })
 })
 
+// 地形を実標高（海面=0m 基準）で配置する（環境設定）
+const chkSeaLevel = $<HTMLInputElement>('chk-sea-level')
+chkSeaLevel.addEventListener('change', () => {
+  viewer?.setSeaLevelBase(chkSeaLevel.checked)
+  api.setSettings({ seaLevelBase: chkSeaLevel.checked })
+})
+
 // カメラの画角（FOV, 度）。ドラッグ中はライブ反映し、離したときに保存する
 const DEFAULT_FOV = 50
 const fovInput = $<HTMLInputElement>('camera-fov')
@@ -707,6 +714,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setAutoRotate(autoRotate)
       viewer.setAutoFit(chkAutoFit.checked)
       viewer.setScaleAnnotations(chkScaleAnnotations.checked)
+      viewer.setSeaLevelBase(chkSeaLevel.checked)
       viewer.setFov(Number(fovInput.value))
       viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe' | 'morph')
     }
@@ -1364,6 +1372,7 @@ btnExportRaw.addEventListener('click', async () => {
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
   if (settings.autoFit) chkAutoFit.checked = true
   if (settings.scaleAnnotations) chkScaleAnnotations.checked = true
+  if (settings.seaLevelBase) chkSeaLevel.checked = true
   if (typeof settings.cameraFov === 'number') {
     fovInput.value = String(settings.cameraFov)
     fovVal.textContent = String(settings.cameraFov)
