@@ -188,7 +188,7 @@ body {
   z-index: 10;
   max-width: 60%;
   background: var(--overlay-bg);
-  padding: 6px 16px;
+  padding: 6px 10px; /* 左パディングを下の寸法情報と揃える（テキスト左端を一致） */
   border-radius: 6px;
   font-size: 30px;
   font-weight: 300;
