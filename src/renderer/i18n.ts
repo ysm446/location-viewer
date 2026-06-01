@@ -6,7 +6,7 @@ export type Lang = 'ja' | 'en'
 type Dict = Record<string, string>
 
 const ja: Dict = {
-  'tab.map': '🗺 位置選択',
+  'tab.map': '位置選択',
   'tab.2d': '2D ハイトマップ',
   'tab.3d': '3D ビュー',
   'map.draw': '🖊 矩形を描く',
@@ -99,7 +99,7 @@ const ja: Dict = {
 }
 
 const en: Dict = {
-  'tab.map': '🗺 Location',
+  'tab.map': 'Location',
   'tab.2d': '2D Heightmap',
   'tab.3d': '3D View',
   'map.draw': '🖊 Draw box',

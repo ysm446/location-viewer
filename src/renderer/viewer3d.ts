@@ -1168,7 +1168,7 @@ export class TerrainViewer {
       this.zoomTarget = null
       return
     }
-    let next = THREE.MathUtils.lerp(cur, this.zoomTarget, 0.2)
+    let next = THREE.MathUtils.lerp(cur, this.zoomTarget, 0.12)
     // 目標にほぼ到達したらスナップして停止。
     if (Math.abs(next - this.zoomTarget) < this.zoomTarget * 0.002) {
       next = this.zoomTarget
