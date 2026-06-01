@@ -83,7 +83,10 @@ export class TerrainViewer {
         oldTex: THREE.Texture | null // 完了時に破棄する旧テクスチャ
         rx: number // 旧/新の東西比（X スケール = k*lerp(rx,1,e)）
         rz: number // 旧/新の南北比（Z スケール = k*lerp(rz,1,e)）
-        hidden: THREE.Object3D[] // 演出中に隠す（grid/軸ラベル/地点）→ 完了時に表示
+        baseY0: number // 旧地形の縦オフセット（海抜基準。mesh.position.y を旧→新へ補間）
+        baseY1: number // 新地形の縦オフセット
+        grid: THREE.Object3D | null // グリッド。フットプリント補間に合わせて X/Z 伸縮
+        hidden: THREE.Object3D[] // 演出中に隠す（軸ラベル/地点）→ 完了時に表示
       }
     | null = null
   // 演出中に来た「見た目だけの再描画」（衛星テクスチャ読込など）は、完了後にまとめて反映する。
@@ -401,9 +404,9 @@ export class TerrainViewer {
       newGroup.add(oldTexMesh)
     }
 
-    // 変形中はフットプリントが変わるので grid/軸ラベル/地点を隠し、完了時に表示する。
+    // 変形中はフットプリントが変わるので軸ラベル/地点を隠し、完了時に表示する。
+    // グリッドは隠さず、フットプリント補間に合わせて X/Z 伸縮させる（updateTransition）。
     const hidden: THREE.Object3D[] = []
-    if (this.grid) hidden.push(this.grid)
     for (const sp of this.axisLabels) hidden.push(sp)
     if (this.landmarkGroup) hidden.push(this.landmarkGroup)
     for (const o of hidden) o.visible = false
@@ -424,6 +427,11 @@ export class TerrainViewer {
       oldTex,
       rx,
       rz,
+      // 海抜基準 ON のときの旧/新の縦オフセット（OFF は両方 0）。mesh.position.y は
+      // build で新基準に設定済みだが、旧基準から補間して「今の座標」からモーフさせる。
+      baseY0: this.seaLevelBase ? oldPayload.minEle * WORLD_SCALE : 0,
+      baseY1: mesh.position.y,
+      grid: this.grid,
       hidden
     }
     this.updateTransition() // 初期状態（旧起伏・旧広さ）を確定
@@ -477,10 +485,16 @@ export class TerrainViewer {
       const sx = WORLD_SCALE * (tr.rx + (1 - tr.rx) * e)
       const sz = WORLD_SCALE * (tr.rz + (1 - tr.rz) * e)
       tr.mesh.scale.set(sx, WORLD_SCALE, sz)
+      // 縦オフセット（海抜基準）を旧→新へ補間し、開始位置から滑らかに上下させる。
+      const by = tr.baseY0 + (tr.baseY1 - tr.baseY0) * e
+      tr.mesh.position.y = by
       if (tr.oldTexMesh) {
         tr.oldTexMesh.scale.set(sx, WORLD_SCALE, sz)
+        tr.oldTexMesh.position.y = by
         ;(tr.oldTexMesh.material as THREE.Material).opacity = 1 - e // 旧テクスチャをフェードアウト
       }
+      // グリッドも同じ広さ比で X/Z 伸縮（旧フットプリント→新フットプリント）。
+      if (tr.grid) tr.grid.scale.set(tr.rx + (1 - tr.rx) * e, 1, tr.rz + (1 - tr.rz) * e)
     } else if (tr.kind === 'slide') {
       // 旧は左へ抜け、新は右から入る（途中は左=新 / 右=旧 で比較できる）。
       tr.oldGroup.position.x = -tr.slideDist * e
@@ -526,12 +540,14 @@ export class TerrainViewer {
       if (updateCol) col!.needsUpdate = true
       tr.geo.computeVertexNormals()
       tr.mesh.scale.setScalar(WORLD_SCALE) // 広さを新（等倍）へ戻す
+      tr.mesh.position.y = tr.baseY1 // 縦オフセットを新基準へ確定
       if (tr.oldTexMesh) {
         tr.newGroup.remove(tr.oldTexMesh)
         ;(tr.oldTexMesh.material as THREE.Material).dispose() // ジオメトリは共有なので破棄しない
       }
       tr.oldTex?.dispose()
-      // 隠していた grid/軸ラベル/地点を表示に戻す。
+      if (tr.grid) tr.grid.scale.set(1, 1, 1) // 伸縮した広さを新（等倍）へ戻す
+      // 隠していた軸ラベル/地点を表示に戻す。
       for (const o of tr.hidden) o.visible = true
       if (this.landmarkGroup) this.landmarkGroup.visible = this.landmarksVisible
     } else {
