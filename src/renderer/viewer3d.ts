@@ -728,7 +728,7 @@ export class TerrainViewer {
     const group = new THREE.Group()
     const s = this.annotScale // 注釈倍率（地形スケール連動 or 固定）
     const stem = 0.4 * s // リーダー線の長さ（ワールド単位。基準は最大辺=2）
-    const markerGeo = new THREE.SphereGeometry(0.01 * s, 12, 12)
+    const markerGeo = new THREE.SphereGeometry(0.007 * s, 12, 12)
     for (const lm of this.landmarks) {
       if (lm.visible === false) continue // 個別に非表示の地点はスキップ
       const u = (lm.lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
@@ -739,10 +739,16 @@ export class TerrainViewer {
       const surfaceY = this.surfaceWorldY(u, v)
       const topY = surfaceY + stem
 
-      // 地表の点＝ドラッグ用マーカー（クリック判定の対象。常に見えるよう深度テスト無効）
+      // 地表の点＝ドラッグ用マーカー（クリック判定の対象）。地形の深度を尊重しつつ、
+      // 自分が乗っている地面とのZファイト/めり込みを避けるため polygonOffset で少し手前へ。
       const marker = new THREE.Mesh(
         markerGeo,
-        new THREE.MeshBasicMaterial({ color: 0xffd24d, depthTest: false, transparent: true })
+        new THREE.MeshBasicMaterial({
+          color: 0xffd24d,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2
+        })
       )
       marker.position.set(x, surfaceY, z)
       marker.renderOrder = 12
@@ -750,15 +756,12 @@ export class TerrainViewer {
       group.add(marker)
       this.markerMeshes.push(marker)
 
-      // リーダー線（地形に隠れず常に見えるよう深度テスト無効）
+      // リーダー線（地形の深度を尊重＝手前の地形に隠れる）。根本はマーカーに覆われる。
       const lineGeo = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(x, surfaceY, z),
         new THREE.Vector3(x, topY, z)
       ])
-      const line = new THREE.Line(
-        lineGeo,
-        new THREE.LineBasicMaterial({ color: 0xcccccc, depthTest: false, transparent: true })
-      )
+      const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xcccccc }))
       line.renderOrder = 10
       group.add(line)
 
