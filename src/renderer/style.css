@@ -139,8 +139,8 @@ body {
 }
 #btn-draw.active,
 #btn-map-3d.active {
-  background: var(--handle);
-  border-color: var(--handle-hover);
+  background: var(--accent);
+  border-color: var(--accent-bright);
 }
 /* 3Dボタン：山シルエットSVG＋「3D」テキストを縦中央で揃える */
 #btn-map-3d {
@@ -254,8 +254,8 @@ body {
   justify-content: center;
 }
 .vp-icon.active {
-  background: var(--handle);
-  border-color: var(--handle-hover);
+  background: var(--accent);
+  border-color: var(--accent-bright);
   color: #fff;
 }
 /* 操作ヘルプ：右下（左下はギズモ用に空ける） */
@@ -399,11 +399,6 @@ input[type='range']::-webkit-slider-thumb {
 }
 .checkbox-row input[type='checkbox'] {
   width: auto;
-}
-/* チェックボックス/ラジオのオン色を青→グレーに（既定のブラウザ accent を上書き） */
-input[type='checkbox'],
-input[type='radio'] {
-  accent-color: var(--handle-hover);
 }
 .row {
   display: flex;
@@ -607,8 +602,8 @@ button.primary:hover {
 
 /* ランドマーク（地点）編集パネル */
 #btn-add-landmark.active {
-  background: var(--handle);
-  border-color: var(--handle-hover);
+  background: var(--accent);
+  border-color: var(--accent-bright);
 }
 #landmark-list {
   list-style: none;
