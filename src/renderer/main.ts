@@ -129,6 +129,41 @@ transitionSel.addEventListener('change', () => {
   api.setSettings({ transition: m })
 })
 
+// 右ペインの幅をドラッグで変更（#main-pane と #right-pane の間の仕切り）
+const rightResizer = $('right-resizer')
+const rightPane = $('right-pane')
+const RP_MIN = 240
+const RP_MAX = 760
+let rpDragging = false
+function applyRightPaneWidth(w: number) {
+  rightPane.style.flexBasis = Math.max(RP_MIN, Math.min(RP_MAX, Math.round(w))) + 'px'
+}
+rightResizer.addEventListener('pointerdown', (e) => {
+  rpDragging = true
+  rightResizer.classList.add('dragging')
+  rightResizer.setPointerCapture(e.pointerId)
+  document.body.style.userSelect = 'none' // ドラッグ中のテキスト選択を抑止
+})
+rightResizer.addEventListener('pointermove', (e) => {
+  if (!rpDragging) return
+  applyRightPaneWidth(window.innerWidth - e.clientX) // 右端からの距離＝右ペイン幅
+  map.resize() // 地図の表示領域を即追従（3Dビューワは ResizeObserver で自動追従）
+})
+function endRpDrag(e: PointerEvent) {
+  if (!rpDragging) return
+  rpDragging = false
+  rightResizer.classList.remove('dragging')
+  try {
+    rightResizer.releasePointerCapture(e.pointerId)
+  } catch {
+    /* キャプチャ済みでない場合は無視 */
+  }
+  document.body.style.userSelect = ''
+  api.setSettings({ rightPaneWidth: parseInt(rightPane.style.flexBasis || '340', 10) })
+}
+rightResizer.addEventListener('pointerup', endRpDrag)
+rightResizer.addEventListener('pointercancel', endRpDrag)
+
 // カメラ自動回転トグル（押すたびに ON/OFF）
 const btnRotate = $<HTMLButtonElement>('btn-rotate')
 let autoRotate = false
@@ -1382,6 +1417,7 @@ btnExportRaw.addEventListener('click', async () => {
   if (settings.scaleAnnotations) chkScaleAnnotations.checked = true
   if (settings.seaLevelBase) chkSeaLevel.checked = true
   if (settings.fixedLabelSize) chkFixedLabel.checked = true
+  if (typeof settings.rightPaneWidth === 'number') applyRightPaneWidth(settings.rightPaneWidth)
   if (typeof settings.cameraFov === 'number') {
     fovInput.value = String(settings.cameraFov)
     fovVal.textContent = String(settings.cameraFov)

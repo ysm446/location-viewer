@@ -66,6 +66,7 @@ export interface AppSettings {
   scaleAnnotations?: boolean
   seaLevelBase?: boolean
   fixedLabelSize?: boolean
+  rightPaneWidth?: number
   cameraFov?: number
   transition?: 'none' | 'slide' | 'wipe' | 'morph'
 }
