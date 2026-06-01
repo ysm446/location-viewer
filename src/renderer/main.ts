@@ -173,6 +173,16 @@ function makeStyle(tk: string, styleKey: string): maplibregl.StyleSpecification 
           ],
           tileSize: 512,
           attribution: '© Mapbox © Maxar'
+        },
+        // 3D 地形用の標高ソース（Mapbox Terrain-RGB）。map.setTerrain で使う。
+        'terrain-dem': {
+          type: 'raster-dem',
+          tiles: [
+            `https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}@2x.pngraw?access_token=${tk}`
+          ],
+          tileSize: 512,
+          encoding: 'mapbox',
+          maxzoom: 14
         }
       },
       layers: [{ id: 'base', type: 'raster', source: 'base' }]
@@ -236,13 +246,32 @@ map.addControl(new maplibregl.NavigationControl(), 'bottom-right')
   })
 })()
 
-// スタイル切替時に bbox 矩形レイヤーが消えるので、styledata で再描画する
+// 3D 地形（地図を傾けて立体表示）の状態。トークンがある時のみ有効。
+let map3d = false
+
+// スタイル切替時に bbox 矩形レイヤー・terrain が消えるので、styledata で再適用する
 map.on('styledata', () => {
+  if (map3d && token) map.setTerrain({ source: 'terrain-dem', exaggeration: 1.4 })
   const b = currentBBox()
   if ([b.west, b.south, b.east, b.north].every((v) => !isNaN(v))) {
     drawBBoxRect(b.west, b.south, b.east, b.north)
   }
 })
+
+// 3D 地形トグル（傾けて立体表示。標高ソースはトークン必須）
+const btnMap3d = $<HTMLButtonElement>('btn-map-3d')
+function setMap3D(on: boolean) {
+  map3d = on && !!token
+  btnMap3d.classList.toggle('active', map3d)
+  if (map3d) {
+    map.setTerrain({ source: 'terrain-dem', exaggeration: 1.4 })
+    map.easeTo({ pitch: 60, duration: 700 })
+  } else {
+    map.setTerrain(null)
+    map.easeTo({ pitch: 0, bearing: 0, duration: 700 })
+  }
+}
+btnMap3d.addEventListener('click', () => setMap3D(!map3d))
 
 // 地図スタイル切替（data/settings.json に保存）
 const mapStyleSel = $<HTMLSelectElement>('map-style')

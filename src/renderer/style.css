@@ -137,9 +137,16 @@ body {
 #map-overlay select {
   width: auto;
 }
-#btn-draw.active {
+#btn-draw.active,
+#btn-map-3d.active {
   background: var(--accent);
   border-color: var(--accent-bright);
+}
+/* 3Dボタン：山シルエットSVG＋「3D」テキストを縦中央で揃える */
+#btn-map-3d {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* 2D プレビュー（ズーム/パン対応） */
