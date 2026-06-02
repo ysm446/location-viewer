@@ -3,6 +3,8 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-06-02
+- OSM ルート：自動車道（road カテゴリ）のライン色をオレンジ（#ff8c2b / 0xff8c2b）から水色（#4fc3f7 / 0x4fc3f7）に変更。2D（`main.ts` の `ROUTE_COLORS`）と 3D（`viewer3d.ts` の `ROUTE_COLORS_3D`）を一致させた。
+- OSM ルート：歩道・登山道（path カテゴリ）のライン色を緑（#36b34a / 0x36b34a）から黄緑（#9acd32 / 0x9acd32）に変更。2D 地図（`main.ts` の `ROUTE_COLORS`）と 3D ドレープ（`viewer3d.ts` の `ROUTE_COLORS_3D`）の両方を更新し、配色を一致させた。
 - OSM ルート：「全ルートをクリア」ボタンを追加（ルートタブ、一覧の下）。保存済みの全ルートを確認ダイアログののち削除し、2D/3D とパネルを更新（候補は対象外）。ルートが1本以上あるときだけ表示。クリップ（エリア外カット）は新規取得にしか効かないため、既存ルートをまとめて消して取り直すための導線。控えめな破壊的アクション用に `.link-danger` スタイルを追加。
 - OSM ルート：選択範囲（bbox）からはみ出した部分をカットするオプションを追加。Overpass は bbox にかかる way の全体形状を返すため、`osm.ts` に Liang–Barsky による線分クリップ（`clipSegment` / `clipPolylineToBBox`）を実装し、bbox を出入りするラインは矩形内の連続区間ごとに分割して返す。ルートタブに「エリア外をカット」チェックボックス（既定ON）を追加し、`fetchOsmRoutes(bbox, cats, clip)` 経由で取得時に切替（IPC/preload に clip 引数を追加）。
 - UI：ロケーション詳細（右ペインのワークスペース内）を「ランドマーク」「ルート（OSM）」のサブタブに分割。これまで縦に積んでいた地点UIとルートUIをタブ切替式にし、`#ws-subtabs`（`.tab`）＋`#subview-landmarks` / `#subview-routes`（`.subview`）で表示を切り替える（`showWsSubtab`）。詳細を開くたびにランドマークタブから開始。地点の「ランドマーク」見出しとルートの「ルート（OSM）」見出しはタブ名が兼ねるため重複ラベルを削除。

@@ -12,8 +12,8 @@ const WORLD_SCALE = 1 / METERS_PER_WORLD_UNIT
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
 const ROUTE_COLORS_3D: Record<RouteCategory, number> = {
-  road: 0xff8c2b,
-  path: 0x36b34a,
+  road: 0x4fc3f7,
+  path: 0x9acd32,
   rail: 0xcfd3d6
 }
 

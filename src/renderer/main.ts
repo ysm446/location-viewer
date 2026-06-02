@@ -1138,8 +1138,8 @@ function renderLandmarkPanel() {
 
 // ===== OSM ルート（オーバーレイ・選択・保存） =====
 const ROUTE_COLORS: Record<RouteCategory, string> = {
-  road: '#ff8c2b',
-  path: '#36b34a',
+  road: '#4fc3f7',
+  path: '#9acd32',
   rail: '#cfd3d6'
 }
 
