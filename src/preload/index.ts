@@ -62,6 +62,7 @@ export interface AppSettings {
   snapPow2?: boolean
   renderMode?: 'default' | 'heightmap' | 'satellite'
   showLandmarks?: boolean
+  showHelp?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
   seaLevelBase?: boolean

@@ -100,16 +100,24 @@
                 <option value="heightmap" data-i18n="render.heightmap">ハイトマップ</option>
                 <option value="satellite" data-i18n="render.satellite">衛星画像</option>
               </select>
-              <label class="checkbox-row" style="margin: 0 0 0 6px">
-                <input id="chk-show-landmarks" type="checkbox" checked />
-                <span data-i18n="landmark.show">地点を表示</span>
-              </label>
-              <button id="btn-rotate" class="vp-icon" data-i18n-title="view3d.autorotate" title="自動回転">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
-              </button>
+              <div id="view-menu-wrap">
+                <button id="btn-view-menu" type="button">
+                  <span data-i18n="view3d.display">表示</span> ▾
+                </button>
+                <div id="view-menu" class="popup-menu hidden">
+                  <label class="checkbox-row">
+                    <input id="chk-show-landmarks" type="checkbox" checked />
+                    <span data-i18n="landmark.show">地点を表示</span>
+                  </label>
+                  <label class="checkbox-row">
+                    <input id="chk-show-help" type="checkbox" checked />
+                    <span data-i18n="view3d.help">ヘルプ</span>
+                  </label>
+                </div>
+              </div>
             </div>
             <div id="viewer3d-help" data-i18n="view3d.hint">
-              ドラッグ=回転 / ホイール=ズーム / 中・右ドラッグ=パン
+              ドラッグ=回転 / ホイール=ズーム / 中・右ドラッグ=パン / O=自動回転
             </div>
           </div>
         </div>

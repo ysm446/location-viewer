@@ -71,6 +71,35 @@ chkShowLandmarks.addEventListener('change', () => {
   api.setSettings({ showLandmarks: chkShowLandmarks.checked })
 })
 
+// ヘルプ（右下のマウス操作ガイド）の表示トグル
+const chkShowHelp = $<HTMLInputElement>('chk-show-help')
+const viewer3dHelp = $('viewer3d-help')
+chkShowHelp.addEventListener('change', () => {
+  viewer3dHelp.classList.toggle('hidden', !chkShowHelp.checked)
+  api.setSettings({ showHelp: chkShowHelp.checked })
+})
+
+// 「表示」ボタン：クリックでチェック項目のポップアップを開閉
+const btnViewMenu = $<HTMLButtonElement>('btn-view-menu')
+const viewMenu = $('view-menu')
+function closeViewMenu() {
+  viewMenu.classList.add('hidden')
+  btnViewMenu.classList.remove('active')
+}
+btnViewMenu.addEventListener('click', (e) => {
+  e.stopPropagation() // 直後の document クリックで閉じないように
+  const opening = viewMenu.classList.contains('hidden')
+  viewMenu.classList.toggle('hidden', !opening)
+  btnViewMenu.classList.toggle('active', opening)
+})
+// メニュー内の操作（チェック切替）では閉じない
+viewMenu.addEventListener('click', (e) => e.stopPropagation())
+// 外側クリック / Escape で閉じる
+document.addEventListener('click', closeViewMenu)
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeViewMenu()
+})
+
 // ワークスペース切替時の自動フィット（環境設定）
 const chkAutoFit = $<HTMLInputElement>('chk-auto-fit')
 chkAutoFit.addEventListener('change', () => {
@@ -164,12 +193,15 @@ function endRpDrag(e: PointerEvent) {
 rightResizer.addEventListener('pointerup', endRpDrag)
 rightResizer.addEventListener('pointercancel', endRpDrag)
 
-// カメラ自動回転トグル（押すたびに ON/OFF）
-const btnRotate = $<HTMLButtonElement>('btn-rotate')
+// カメラ自動回転トグル（O キーで ON/OFF）
 let autoRotate = false
-btnRotate.addEventListener('click', () => {
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'o' && e.key !== 'O') return
+  if (e.ctrlKey || e.metaKey || e.altKey) return // ショートカット衝突を回避
+  // 入力欄・選択でのタイプ中は無効
+  const el = document.activeElement
+  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT')) return
   autoRotate = !autoRotate
-  btnRotate.classList.toggle('active', autoRotate)
   viewer?.setAutoRotate(autoRotate)
 })
 
@@ -1413,6 +1445,10 @@ btnExportRaw.addEventListener('click', async () => {
     renderModeSel.value = settings.renderMode
   }
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
+  if (settings.showHelp === false) {
+    chkShowHelp.checked = false
+    viewer3dHelp.classList.add('hidden')
+  }
   if (settings.autoFit) chkAutoFit.checked = true
   if (settings.scaleAnnotations) chkScaleAnnotations.checked = true
   if (settings.seaLevelBase) chkSeaLevel.checked = true
