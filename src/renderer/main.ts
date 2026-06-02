@@ -73,9 +73,11 @@ const routeList = $<HTMLUListElement>('route-list')
 const routeStatus = $('route-status')
 const btnFetchOsm = $<HTMLButtonElement>('btn-fetch-osm')
 const btnSaveRoutes = $<HTMLButtonElement>('btn-save-routes')
+const btnClearRoutes = $<HTMLButtonElement>('btn-clear-routes')
 const chkRouteRoad = $<HTMLInputElement>('chk-route-road')
 const chkRoutePath = $<HTMLInputElement>('chk-route-path')
 const chkRouteRail = $<HTMLInputElement>('chk-route-rail')
+const chkRouteClip = $<HTMLInputElement>('chk-route-clip')
 const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
 chkShowLandmarks.addEventListener('change', () => {
   viewer?.setLandmarksVisible(chkShowLandmarks.checked)
@@ -1264,7 +1266,7 @@ async function fetchOsm() {
   btnFetchOsm.disabled = true
   routeStatus.textContent = t('route.fetching')
   try {
-    const feats = await api.fetchOsmRoutes(bbox, cats)
+    const feats = await api.fetchOsmRoutes(bbox, cats, chkRouteClip.checked)
     // 既に保存済みの way は候補から除外（重複防止）
     const have = new Set(routes.map((r) => r.osmId).filter((v): v is number => v != null))
     osmCandidates = feats.filter((f) => !have.has(f.osmId)).map((f) => ({ ...f, adopted: true }))
@@ -1304,6 +1306,7 @@ async function saveAdoptedRoutes() {
 
 function renderRoutePanel() {
   routeList.innerHTML = ''
+  btnClearRoutes.hidden = routes.length === 0
   for (const r of routes) {
     const li = document.createElement('li')
     li.className = 'lm-item'
@@ -1376,6 +1379,18 @@ function clearRoutes() {
 
 btnFetchOsm.addEventListener('click', fetchOsm)
 btnSaveRoutes.addEventListener('click', saveAdoptedRoutes)
+
+/** 保存済みの全ルートを削除する（候補は対象外） */
+async function clearAllRoutes() {
+  if (!selectedId || routes.length === 0) return
+  if (!confirm(t('route.clearConfirm'))) return
+  routes = []
+  await api.saveRoutes(selectedId, routes)
+  drawRouteLayers()
+  viewer?.setRoutes(routes)
+  renderRoutePanel()
+}
+btnClearRoutes.addEventListener('click', clearAllRoutes)
 
 // ---- 生成 ----
 api.onProgress((p) => {

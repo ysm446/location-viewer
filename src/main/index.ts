@@ -383,8 +383,8 @@ app.whenReady().then(() => {
   })
 
   // --- OSM: bbox 内のライン（道路/歩道/鉄道）を取得 ---
-  ipcMain.handle('osm:fetch', async (_e, bbox: BBox, cats: RouteCategory[]) => {
-    return fetchOsmFeatures(bbox, cats)
+  ipcMain.handle('osm:fetch', async (_e, bbox: BBox, cats: RouteCategory[], clip: boolean) => {
+    return fetchOsmFeatures(bbox, cats, clip)
   })
 
   // --- 標高サンプリング（緯度経度 → メートル） ---

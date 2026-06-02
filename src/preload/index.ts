@@ -100,8 +100,8 @@ const api = {
   // ルート（OSM 取り込み）
   saveRoutes: (id: string, routes: Route[]): Promise<boolean> =>
     ipcRenderer.invoke('workspace:saveRoutes', id, routes),
-  fetchOsmRoutes: (bbox: BBox, cats: RouteCategory[]): Promise<OsmFeature[]> =>
-    ipcRenderer.invoke('osm:fetch', bbox, cats),
+  fetchOsmRoutes: (bbox: BBox, cats: RouteCategory[], clip: boolean): Promise<OsmFeature[]> =>
+    ipcRenderer.invoke('osm:fetch', bbox, cats, clip),
   getThumb: (id: string): Promise<string | null> => ipcRenderer.invoke('workspace:thumb', id),
   exportItem: (
     id: string,

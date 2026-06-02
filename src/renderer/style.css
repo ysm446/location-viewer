@@ -650,6 +650,21 @@ button.primary:hover {
 .back-link:hover {
   text-decoration: underline;
 }
+/* 控えめな破壊的アクション（全ルートをクリア等） */
+.link-danger {
+  margin-top: 8px;
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--danger-text);
+  font-size: 12px;
+  cursor: pointer;
+}
+.link-danger:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+}
 /* 既定（一覧モード）では戻るリンクと中身は隠す */
 #ws-back,
 #ws-detail {

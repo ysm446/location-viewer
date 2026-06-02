@@ -48,6 +48,73 @@ function buildQuery(bbox: BBox, cats: RouteCategory[]): string {
   return `[out:json][timeout:25];(${parts.join('')});out geom;`
 }
 
+/**
+ * 線分 a→b を矩形 [minX,maxX]×[minY,maxY] にクリップする（Liang–Barsky）。
+ * 可視部分が無ければ null。t0/t1 は元の線分上の媒介変数（端の判定に使う）。
+ */
+function clipSegment(
+  a: [number, number],
+  b: [number, number],
+  minX: number,
+  minY: number,
+  maxX: number,
+  maxY: number
+): { a2: [number, number]; b2: [number, number]; t0: number; t1: number } | null {
+  const dx = b[0] - a[0]
+  const dy = b[1] - a[1]
+  const p = [-dx, dx, -dy, dy]
+  const q = [a[0] - minX, maxX - a[0], a[1] - minY, maxY - a[1]]
+  let t0 = 0
+  let t1 = 1
+  for (let i = 0; i < 4; i++) {
+    if (p[i] === 0) {
+      if (q[i] < 0) return null // 矩形外を平行に進む
+    } else {
+      const r = q[i] / p[i]
+      if (p[i] < 0) {
+        if (r > t1) return null
+        if (r > t0) t0 = r
+      } else {
+        if (r < t0) return null
+        if (r < t1) t1 = r
+      }
+    }
+  }
+  return {
+    a2: [a[0] + t0 * dx, a[1] + t0 * dy],
+    b2: [a[0] + t1 * dx, a[1] + t1 * dy],
+    t0,
+    t1
+  }
+}
+
+/** 折れ線を bbox でクリップし、矩形内に収まる連続区間（複数可）に分割して返す */
+function clipPolylineToBBox(coords: [number, number][], bbox: BBox): [number, number][][] {
+  const runs: [number, number][][] = []
+  let cur: [number, number][] = []
+  const pushPt = (pt: [number, number]) => {
+    const last = cur[cur.length - 1]
+    if (!last || last[0] !== pt[0] || last[1] !== pt[1]) cur.push(pt)
+  }
+  const endRun = () => {
+    if (cur.length >= 2) runs.push(cur)
+    cur = []
+  }
+  for (let i = 0; i < coords.length - 1; i++) {
+    const seg = clipSegment(coords[i], coords[i + 1], bbox.west, bbox.south, bbox.east, bbox.north)
+    if (!seg) {
+      endRun() // この区間は完全に外 → 連続が途切れる
+      continue
+    }
+    if (seg.t0 > 0) endRun() // 矩形に入り直した → 直前の連続は切れている
+    pushPt(seg.a2)
+    pushPt(seg.b2)
+    if (seg.t1 < 1) endRun() // 矩形から出た → ここで連続が終わる
+  }
+  endRun()
+  return runs
+}
+
 interface OverpassElement {
   type: string
   id: number
@@ -55,8 +122,15 @@ interface OverpassElement {
   geometry?: { lat: number; lon: number }[]
 }
 
-/** bbox と選択カテゴリで OSM のライン群を取得する */
-export async function fetchOsmFeatures(bbox: BBox, cats: RouteCategory[]): Promise<OsmFeature[]> {
+/**
+ * bbox と選択カテゴリで OSM のライン群を取得する。
+ * clip=true のとき、bbox からはみ出た部分を切り落として矩形内の区間に分割する。
+ */
+export async function fetchOsmFeatures(
+  bbox: BBox,
+  cats: RouteCategory[],
+  clip = true
+): Promise<OsmFeature[]> {
   if (cats.length === 0) return []
   const query = buildQuery(bbox, cats)
 
@@ -97,7 +171,13 @@ export async function fetchOsmFeatures(bbox: BBox, cats: RouteCategory[]): Promi
     if (!category || !cats.includes(category)) continue
     const coords = el.geometry.map((g) => [g.lon, g.lat] as [number, number])
     const tags = el.tags ?? {}
-    out.push({ osmId: el.id, name: tags.name ?? tags.ref ?? '', category, coords })
+    const name = tags.name ?? tags.ref ?? ''
+    // clip=true なら bbox 外を切り落とし、矩形内の連続区間ごとに分割して出力する。
+    const segments = clip ? clipPolylineToBBox(coords, bbox) : [coords]
+    for (const seg of segments) {
+      out.push({ osmId: el.id, name, category, coords: seg })
+      if (out.length >= MAX_FEATURES) break
+    }
     if (out.length >= MAX_FEATURES) break
   }
   return out

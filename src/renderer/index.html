@@ -186,12 +186,19 @@
                   <label class="checkbox-row"><input id="chk-route-path" type="checkbox" checked /><span data-i18n="route.catPath">歩道/登山道</span></label>
                   <label class="checkbox-row"><input id="chk-route-rail" type="checkbox" /><span data-i18n="route.catRail">鉄道</span></label>
                 </div>
+                <label class="checkbox-row" style="margin: 2px 0 8px">
+                  <input id="chk-route-clip" type="checkbox" checked />
+                  <span data-i18n="route.clip">エリア外をカット</span>
+                </label>
                 <div class="row" style="gap: 8px">
                   <button id="btn-fetch-osm" data-i18n="route.fetch">🛣 OSMから取得</button>
                   <button id="btn-save-routes" hidden data-i18n="route.save">採用を保存</button>
                 </div>
                 <p class="muted" id="route-status"></p>
                 <ul id="route-list"></ul>
+                <button id="btn-clear-routes" class="link-danger" hidden data-i18n="route.clearAll">
+                  全ルートをクリア
+                </button>
               </div>
             </div>
           </section>
