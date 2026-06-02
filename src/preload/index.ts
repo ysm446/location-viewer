@@ -1,8 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { BBox } from '../main/tiles'
-import type { Workspace, HeightmapMeta, Landmark } from '../main/library'
+import type { Workspace, HeightmapMeta, Landmark, Route, RouteCategory } from '../main/library'
+import type { OsmFeature } from '../main/osm'
 
-export type { Workspace, HeightmapMeta, Landmark }
+export type { Workspace, HeightmapMeta, Landmark, Route, RouteCategory, OsmFeature }
 
 export interface GenerateArgs {
   bbox: BBox
@@ -62,6 +63,7 @@ export interface AppSettings {
   snapPow2?: boolean
   renderMode?: 'default' | 'heightmap' | 'satellite'
   showLandmarks?: boolean
+  showRoutes?: boolean
   showHelp?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
@@ -95,6 +97,11 @@ const api = {
     ipcRenderer.invoke('workspace:saveLandmarks', id, landmarks),
   sampleElevation: (id: string, lng: number, lat: number): Promise<number | null> =>
     ipcRenderer.invoke('workspace:sampleElevation', id, lng, lat),
+  // ルート（OSM 取り込み）
+  saveRoutes: (id: string, routes: Route[]): Promise<boolean> =>
+    ipcRenderer.invoke('workspace:saveRoutes', id, routes),
+  fetchOsmRoutes: (bbox: BBox, cats: RouteCategory[]): Promise<OsmFeature[]> =>
+    ipcRenderer.invoke('osm:fetch', bbox, cats),
   getThumb: (id: string): Promise<string | null> => ipcRenderer.invoke('workspace:thumb', id),
   exportItem: (
     id: string,

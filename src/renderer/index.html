@@ -110,6 +110,10 @@
                     <span data-i18n="landmark.show">地点を表示</span>
                   </label>
                   <label class="checkbox-row">
+                    <input id="chk-show-routes" type="checkbox" checked />
+                    <span data-i18n="route.show">ルートを表示</span>
+                  </label>
+                  <label class="checkbox-row">
                     <input id="chk-show-help" type="checkbox" checked />
                     <span data-i18n="view3d.help">ヘルプ</span>
                   </label>
@@ -156,14 +160,39 @@
                 <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
               </div>
 
-              <div class="row" style="justify-content: space-between; margin-top: 12px">
-                <label style="margin: 0" data-i18n="landmark.title">ランドマーク</label>
-                <button id="btn-add-landmark" data-i18n="landmark.add">📍 地点を追加</button>
+              <!-- ランドマーク / ルート のサブタブ -->
+              <div id="ws-subtabs" class="tabs" style="margin-top: 12px">
+                <button id="subtab-landmarks" class="tab active" data-i18n="landmark.title">
+                  ランドマーク
+                </button>
+                <button id="subtab-routes" class="tab" data-i18n="route.title">ルート（OSM）</button>
               </div>
-              <p class="muted" id="landmark-hint" data-i18n="landmark.hint" hidden>
-                3Dビューで地形をクリックして地点を追加
-              </p>
-              <ul id="landmark-list"></ul>
+
+              <!-- ランドマーク パネル -->
+              <div id="subview-landmarks" class="subview">
+                <div class="row" style="justify-content: flex-end; margin-top: 10px">
+                  <button id="btn-add-landmark" data-i18n="landmark.add">📍 地点を追加</button>
+                </div>
+                <p class="muted" id="landmark-hint" data-i18n="landmark.hint" hidden>
+                  3Dビューで地形をクリックして地点を追加
+                </p>
+                <ul id="landmark-list"></ul>
+              </div>
+
+              <!-- ルート（OSM）パネル -->
+              <div id="subview-routes" class="subview hidden">
+                <div id="route-cats" style="display: flex; gap: 14px; flex-wrap: wrap; margin: 10px 0 6px">
+                  <label class="checkbox-row"><input id="chk-route-road" type="checkbox" checked /><span data-i18n="route.catRoad">道路</span></label>
+                  <label class="checkbox-row"><input id="chk-route-path" type="checkbox" checked /><span data-i18n="route.catPath">歩道/登山道</span></label>
+                  <label class="checkbox-row"><input id="chk-route-rail" type="checkbox" /><span data-i18n="route.catRail">鉄道</span></label>
+                </div>
+                <div class="row" style="gap: 8px">
+                  <button id="btn-fetch-osm" data-i18n="route.fetch">🛣 OSMから取得</button>
+                  <button id="btn-save-routes" hidden data-i18n="route.save">採用を保存</button>
+                </div>
+                <p class="muted" id="route-status"></p>
+                <ul id="route-list"></ul>
+              </div>
             </div>
           </section>
         </div>

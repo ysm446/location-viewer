@@ -33,6 +33,22 @@ export interface Landmark {
   visible?: boolean
 }
 
+/** ルート（OSM等から取り込んだライン）の種別 */
+export type RouteCategory = 'road' | 'path' | 'rail'
+
+/** 地形上のルート（折れ線）。座標は lng/lat で持ち、地形を更新しても残る */
+export interface Route {
+  id: string
+  name: string
+  category: RouteCategory
+  /** 取り込み元 OSM の way id（重複排除・出典用。手描き等では undefined） */
+  osmId?: number
+  /** [lng, lat] の折れ線 */
+  coords: [number, number][]
+  /** 表示 ON/OFF。未設定（undefined）は表示扱い */
+  visible?: boolean
+}
+
 /** ワークスペースが現在保持するハイトマップ（地形）のメタ情報 */
 export interface HeightmapMeta {
   bbox: BBox
@@ -57,6 +73,8 @@ export interface Workspace {
   order?: number
   heightmap: HeightmapMeta
   landmarks: Landmark[]
+  /** 地形上のルート（OSM 取り込み等）。未設定なら空扱い */
+  routes: Route[]
 }
 
 function wsDir(dir: string, id: string): string {
@@ -79,6 +97,7 @@ async function readWorkspaceFile(dir: string, id: string): Promise<Workspace | n
   try {
     const w = JSON.parse(await fs.readFile(wsJsonPath(dir, id), 'utf-8')) as Workspace
     w.landmarks = w.landmarks ?? []
+    w.routes = w.routes ?? []
     return w
   } catch {
     return null
@@ -212,6 +231,15 @@ export async function saveLandmarks(
   return true
 }
 
+/** ワークスペースのルートを保存する */
+export async function saveRoutes(dir: string, id: string, routes: Route[]): Promise<boolean> {
+  const w = await readWorkspaceFile(dir, id)
+  if (!w) return false
+  w.routes = routes
+  await writeWorkspaceFile(dir, w)
+  return true
+}
+
 /** ワークスペースの全解像度 16bit 値を読み出す */
 export async function readValues16(dir: string, id: string): Promise<Uint16Array> {
   const buf = await fs.readFile(u16Path(dir, id))
@@ -301,7 +329,8 @@ async function migrateLegacy(dir: string): Promise<void> {
         hasSatellite: e.hasSatellite,
         updatedAt: e.createdAt
       },
-      landmarks
+      landmarks,
+      routes: []
     })
   }
   await fs.rm(join(dir, LEGACY_INDEX), { force: true })

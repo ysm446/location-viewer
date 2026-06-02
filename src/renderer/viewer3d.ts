@@ -2,13 +2,20 @@
 // 平面ジオメトリの各頂点 Z を標高で押し出す（displacement 相当）。
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import type { MeshPayload, Landmark } from '../preload/index'
+import type { MeshPayload, Landmark, Route, RouteCategory } from '../preload/index'
 
 // 全地形で共通の表示スケール（メートル→ワールド単位）。地形ごとに正規化せず
 // 固定倍率で表示するので、ワークスペースを切り替えると実サイズの差がそのまま見える。
 // 1ワールド単位 = この実距離(m)。約10km四方の地形が最大辺 2 ワールド単位に収まる目安。
 const METERS_PER_WORLD_UNIT = 5000
 const WORLD_SCALE = 1 / METERS_PER_WORLD_UNIT
+
+// ルート種別ごとの線色（2D オーバーレイと合わせる）
+const ROUTE_COLORS_3D: Record<RouteCategory, number> = {
+  road: 0xff8c2b,
+  path: 0x36b34a,
+  rail: 0xcfd3d6
+}
 
 /** lng/lat → メッシュのローカル座標変換に必要な情報 */
 interface GeoContext {
@@ -121,6 +128,10 @@ export class TerrainViewer {
   private landmarkObjs = new Map<string, { marker: THREE.Mesh; line: THREE.Line; label: THREE.Sprite }>()
   private markerMeshes: THREE.Mesh[] = [] // レイキャスト用（クリック判定）
   private labelStem = new Map<string, number>() // 地点ごとのリーダー線の現在長（スムーズ移動用）
+  // ルート（OSM 等の折れ線）を地形にドレープして描画
+  private routes: Route[] = []
+  private routeGroup: THREE.Group | null = null
+  private routesVisible = true
   // 3Dクリックで地点を配置するモード
   private raycaster = new THREE.Raycaster()
   private placeMode = false
@@ -615,6 +626,55 @@ export class TerrainViewer {
     if (this.landmarkGroup) this.landmarkGroup.visible = on
   }
 
+  /** ルート（折れ線）を設定し、地形に沿わせて描き直す */
+  setRoutes(routes: Route[]) {
+    this.routes = routes
+    this.renderRoutes()
+  }
+
+  /** ルートの表示/非表示を切り替える */
+  setRoutesVisible(on: boolean) {
+    this.routesVisible = on
+    if (this.routeGroup) this.routeGroup.visible = on
+  }
+
+  /** 現在の geo と routes から、地形表面に沿った折れ線を作り直す */
+  private renderRoutes() {
+    if (this.routeGroup) {
+      this.routeGroup.removeFromParent()
+      this.disposeGroup(this.routeGroup)
+      this.routeGroup = null
+    }
+    const g = this.geo
+    if (!g || this.routes.length === 0) return
+
+    const group = new THREE.Group()
+    const lift = 8 * g.k // 地表から数メートル浮かせて Z ファイト／めり込みを避ける
+    for (const r of this.routes) {
+      if (r.visible === false || r.coords.length < 2) continue
+      const pts: THREE.Vector3[] = []
+      for (const [lng, lat] of r.coords) {
+        const u = (lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
+        const v = (g.bbox.north - lat) / (g.bbox.north - g.bbox.south || 1)
+        const x = (u - 0.5) * g.widthMeters * g.k
+        const z = (v - 0.5) * g.heightMeters * g.k
+        const y = this.surfaceWorldY(u, v) + lift
+        pts.push(new THREE.Vector3(x, y, z))
+      }
+      const lineGeo = new THREE.BufferGeometry().setFromPoints(pts)
+      const line = new THREE.Line(
+        lineGeo,
+        new THREE.LineBasicMaterial({ color: ROUTE_COLORS_3D[r.category] })
+      )
+      line.renderOrder = 9 // 地点（10〜12）より背面
+      group.add(line)
+    }
+    group.visible = this.routesVisible
+    // 地形グループの子にして、スライド/ワイプ等の演出で地形と一緒に動かす。
+    ;(this.terrainGroup ?? this.scene).add(group)
+    this.routeGroup = group
+  }
+
   /** 地点編集（詳細）モードの ON/OFF。OFF の間はピンのドラッグ移動を禁止する。 */
   setLandmarksEditable(on: boolean) {
     this.landmarksEditable = on
@@ -862,6 +922,8 @@ export class TerrainViewer {
     // 旧地点グループは旧地形グループの子。参照を手放し、旧グループと一緒に生かす/破棄する
     // （renderLandmarks が旧地点を破棄しないように null にしておく）。
     this.landmarkGroup = null
+    // ルートグループも旧地形グループの子。参照を手放し、旧グループと一緒に生かす/破棄する。
+    this.routeGroup = null
     // 新地点データがあれば renderLandmarks より前に反映（演出のフェード対象に含めるため）。
     if (landmarks) this.landmarks = landmarks
     if (oldGroup && !keepOld) {
@@ -940,6 +1002,7 @@ export class TerrainViewer {
       heights
     }
     this.renderLandmarks()
+    this.renderRoutes()
 
     // グリッド（地表の基準面 y=0 に配置）。1マスをきりの良い実距離にする。
     const gridStep = niceStep(maxDim / 10) // 約10分割になる実距離(m)
@@ -1227,6 +1290,8 @@ export class TerrainViewer {
     this.satelliteTex?.dispose()
     this.landmarks = []
     this.renderLandmarks() // 地点グループとテクスチャを破棄
+    this.routes = []
+    this.routeGroup = null // 地形グループと一緒に破棄済み
     this.renderer.dispose()
   }
 }

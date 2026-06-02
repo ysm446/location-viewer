@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron'
 import { join } from 'path'
 import { promises as fs } from 'fs'
 import { BBox, TILE_SIZE, TILE_SOURCES, computeRegion, downloadTiles } from './tiles'
+import { fetchOsmFeatures } from './osm'
 import {
   buildHeightField,
   buildMeshData,
@@ -16,6 +17,8 @@ import {
   Workspace,
   HeightmapMeta,
   Landmark,
+  Route,
+  RouteCategory,
   listWorkspaces,
   getWorkspace,
   createWorkspace,
@@ -24,6 +27,7 @@ import {
   deleteWorkspace,
   reorderWorkspaces,
   saveLandmarks,
+  saveRoutes,
   readValues16,
   readPreviewDataUrl,
   readSatelliteDataUrl,
@@ -59,6 +63,7 @@ interface Settings {
   snapPow2?: boolean
   renderMode?: 'default' | 'heightmap' | 'satellite'
   showLandmarks?: boolean
+  showRoutes?: boolean
   showHelp?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
@@ -254,7 +259,8 @@ app.whenReady().then(() => {
       name: autoName(args.bbox, args.zoom),
       createdAt: Date.now(),
       heightmap: { ...makeHeightmapMeta(args, r), hasSatellite: false },
-      landmarks: []
+      landmarks: [],
+      routes: []
     }
     await createWorkspace(dir, ws, r.values16, r.previewPng)
     return {
@@ -368,6 +374,17 @@ app.whenReady().then(() => {
   ipcMain.handle('workspace:saveLandmarks', async (_e, id: string, landmarks: Landmark[]) => {
     const dir = await ensureDataDir()
     return saveLandmarks(dir, id, landmarks)
+  })
+
+  // --- ルート: 保存 ---
+  ipcMain.handle('workspace:saveRoutes', async (_e, id: string, routes: Route[]) => {
+    const dir = await ensureDataDir()
+    return saveRoutes(dir, id, routes)
+  })
+
+  // --- OSM: bbox 内のライン（道路/歩道/鉄道）を取得 ---
+  ipcMain.handle('osm:fetch', async (_e, bbox: BBox, cats: RouteCategory[]) => {
+    return fetchOsmFeatures(bbox, cats)
   })
 
   // --- 標高サンプリング（緯度経度 → メートル） ---

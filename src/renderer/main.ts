@@ -7,7 +7,10 @@ import type {
   Workspace,
   HeightmapMeta,
   SatelliteTilesPayload,
-  Landmark
+  Landmark,
+  Route,
+  RouteCategory,
+  OsmFeature
 } from '../preload/index'
 import { TerrainViewer } from './viewer3d'
 import { t, setLang, getLang, applyDom, type Lang } from './i18n'
@@ -65,10 +68,24 @@ const wsBack = $('ws-back')
 const landmarkList = $<HTMLUListElement>('landmark-list')
 const landmarkHint = $('landmark-hint')
 const btnAddLandmark = $<HTMLButtonElement>('btn-add-landmark')
+// OSM ルート
+const routeList = $<HTMLUListElement>('route-list')
+const routeStatus = $('route-status')
+const btnFetchOsm = $<HTMLButtonElement>('btn-fetch-osm')
+const btnSaveRoutes = $<HTMLButtonElement>('btn-save-routes')
+const chkRouteRoad = $<HTMLInputElement>('chk-route-road')
+const chkRoutePath = $<HTMLInputElement>('chk-route-path')
+const chkRouteRail = $<HTMLInputElement>('chk-route-rail')
 const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
 chkShowLandmarks.addEventListener('change', () => {
   viewer?.setLandmarksVisible(chkShowLandmarks.checked)
   api.setSettings({ showLandmarks: chkShowLandmarks.checked })
+})
+
+const chkShowRoutes = $<HTMLInputElement>('chk-show-routes')
+chkShowRoutes.addEventListener('change', () => {
+  viewer?.setRoutesVisible(chkShowRoutes.checked)
+  api.setSettings({ showRoutes: chkShowRoutes.checked })
 })
 
 // ヘルプ（右下のマウス操作ガイド）の表示トグル
@@ -215,6 +232,8 @@ function showWorkspaceDetail(on: boolean) {
   rviewLibraryEl.classList.toggle('detail', on)
   // 詳細（地点編集）モードのときだけ 3D のピンをドラッグ可能にする（誤操作防止）
   viewer?.setLandmarksEditable(on)
+  // 詳細を開くたびにランドマークタブから始める
+  if (on) showWsSubtab('landmarks')
 }
 wsBack.addEventListener('click', () => {
   setPlaceMode(false)
@@ -228,6 +247,10 @@ let selectedId: string | null = null
 // 選択中ワークスペースのランドマーク
 let landmarks: Landmark[] = []
 let placeMode = false
+// 選択中ワークスペースの保存済みルート
+let routes: Route[] = []
+// OSM 取得直後の候補（採用/除外を切り替える一時バッファ）
+let osmCandidates: (OsmFeature & { adopted: boolean })[] = []
 
 // ---- 地図 ----
 // Mapbox の各スタイルを raster タイルとして読み込む（styles/v1 の tiles エンドポイント）
@@ -337,6 +360,7 @@ map.on('styledata', () => {
   if ([b.west, b.south, b.east, b.north].every((v) => !isNaN(v))) {
     drawBBoxRect(b.west, b.south, b.east, b.north)
   }
+  drawRouteLayers()
 })
 
 // 3D 地形トグル（傾けて立体表示。標高ソースはトークン必須）
@@ -783,6 +807,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer = new TerrainViewer($('viewer3d'))
       viewer.setLandmarkMoveHandler(onMoveLandmark)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
+      viewer.setRoutesVisible(chkShowRoutes.checked)
       viewer.setLandmarksEditable(detailMode)
       viewer.setRenderMode(renderModeSel.value as 'default' | 'heightmap' | 'satellite')
       viewer.setAutoRotate(autoRotate)
@@ -800,6 +825,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       pendingSatellite = null
     }
     viewer.setLandmarks(landmarks) // 初回生成時にも反映
+    viewer.setRoutes(routes) // 保存済みルートを地形にドレープ
   }
 }
 tabMap.addEventListener('click', () => showTab('map'))
@@ -820,6 +846,22 @@ function showRightTab(which: 'library' | 'settings') {
 }
 rtabLibrary.addEventListener('click', () => showRightTab('library'))
 rtabSettings.addEventListener('click', () => showRightTab('settings'))
+
+// ---- ロケーション内のサブタブ（ランドマーク / ルート） ----
+const subtabLandmarks = $<HTMLButtonElement>('subtab-landmarks')
+const subtabRoutes = $<HTMLButtonElement>('subtab-routes')
+const subviewLandmarks = $('subview-landmarks')
+const subviewRoutes = $('subview-routes')
+
+function showWsSubtab(which: 'landmarks' | 'routes') {
+  subtabLandmarks.classList.toggle('active', which === 'landmarks')
+  subtabRoutes.classList.toggle('active', which === 'routes')
+  subviewLandmarks.classList.toggle('hidden', which !== 'landmarks')
+  subviewRoutes.classList.toggle('hidden', which !== 'routes')
+  // ルートタブから離れたら地点配置モードと混同しないよう、配置モードは触らない。
+}
+subtabLandmarks.addEventListener('click', () => showWsSubtab('landmarks'))
+subtabRoutes.addEventListener('click', () => showWsSubtab('routes'))
 
 // ---- 2D プレビューのズーム/パン ----
 const previewWrap = $('preview-2d-wrap')
@@ -941,6 +983,7 @@ function showPreview(
   setPlaceMode(false)
   landmarks = workspace.landmarks
   renderLandmarkPanel()
+  loadRoutes(workspace)
 }
 
 /** ワークスペースの中（詳細モード）へ入る。未選択なら先に読み込む */
@@ -970,6 +1013,7 @@ function clearAnnotations() {
   viewer3dTitle.textContent = '' // 3Dビューポートのロケーション名タイトルを消す
   showWorkspaceDetail(false)
   renderLandmarkPanel()
+  clearRoutes()
 }
 
 async function saveLandmarks() {
@@ -1089,6 +1133,249 @@ function renderLandmarkPanel() {
     landmarkList.appendChild(li)
   }
 }
+
+// ===== OSM ルート（オーバーレイ・選択・保存） =====
+const ROUTE_COLORS: Record<RouteCategory, string> = {
+  road: '#ff8c2b',
+  path: '#36b34a',
+  rail: '#cfd3d6'
+}
+
+/** category プロパティから線色を引く match 式 */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function catColorExpr(): any {
+  return [
+    'match',
+    ['get', 'category'],
+    'road', ROUTE_COLORS.road,
+    'path', ROUTE_COLORS.path,
+    'rail', ROUTE_COLORS.rail,
+    '#ffffff'
+  ]
+}
+
+function lineFC(
+  items: { coords: [number, number][]; props: Record<string, unknown> }[]
+): GeoJSON.FeatureCollection {
+  return {
+    type: 'FeatureCollection',
+    features: items.map((it) => ({
+      type: 'Feature',
+      properties: it.props,
+      geometry: { type: 'LineString', coordinates: it.coords }
+    }))
+  }
+}
+
+function routesFC(): GeoJSON.FeatureCollection {
+  return lineFC(
+    routes
+      .filter((r) => r.visible !== false)
+      .map((r) => ({ coords: r.coords, props: { category: r.category } }))
+  )
+}
+
+function candidatesFC(): GeoJSON.FeatureCollection {
+  return lineFC(
+    osmCandidates.map((c, i) => ({
+      coords: c.coords,
+      props: { idx: i, category: c.category, adopted: c.adopted }
+    }))
+  )
+}
+
+let routeHandlersBound = false
+/** 保存済みルートと候補のレイヤーを地図へ反映（スタイル切替後も再構築できるよう冪等） */
+function drawRouteLayers() {
+  const routeSrc = map.getSource('routes') as maplibregl.GeoJSONSource | undefined
+  if (routeSrc) {
+    routeSrc.setData(routesFC())
+  } else {
+    map.addSource('routes', { type: 'geojson', data: routesFC() })
+    map.addLayer({
+      id: 'routes-line',
+      type: 'line',
+      source: 'routes',
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': catColorExpr(), 'line-width': 2.5 }
+    })
+  }
+  const candSrc = map.getSource('osm-candidates') as maplibregl.GeoJSONSource | undefined
+  if (candSrc) {
+    candSrc.setData(candidatesFC())
+  } else {
+    map.addSource('osm-candidates', { type: 'geojson', data: candidatesFC() })
+    map.addLayer({
+      id: 'osm-candidates-line',
+      type: 'line',
+      source: 'osm-candidates',
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': ['case', ['get', 'adopted'], catColorExpr(), '#7a7f85'],
+        'line-width': ['case', ['get', 'adopted'], 3.5, 1.5],
+        'line-opacity': ['case', ['get', 'adopted'], 0.95, 0.4]
+      }
+    })
+  }
+  if (!routeHandlersBound) {
+    // 候補ラインをクリックで採用/除外を切り替える
+    map.on('click', 'osm-candidates-line', (e) => {
+      if (drawMode) return
+      const idx = e.features?.[0]?.properties?.idx as number | undefined
+      const c = idx != null ? osmCandidates[idx] : undefined
+      if (!c) return
+      c.adopted = !c.adopted
+      ;(map.getSource('osm-candidates') as maplibregl.GeoJSONSource).setData(candidatesFC())
+    })
+    map.on('mouseenter', 'osm-candidates-line', () => {
+      if (!drawMode) map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', 'osm-candidates-line', () => {
+      if (!drawMode) map.getCanvas().style.cursor = ''
+    })
+    routeHandlersBound = true
+  }
+}
+
+function routeCatLabel(cat: RouteCategory): string {
+  if (cat === 'road') return t('route.catRoad')
+  if (cat === 'path') return t('route.catPath')
+  return t('route.catRail')
+}
+
+function selectedRouteCats(): RouteCategory[] {
+  const cats: RouteCategory[] = []
+  if (chkRouteRoad.checked) cats.push('road')
+  if (chkRoutePath.checked) cats.push('path')
+  if (chkRouteRail.checked) cats.push('rail')
+  return cats
+}
+
+/** 現在の bbox・選択カテゴリで OSM のラインを取得し、候補として地図に重ねる */
+async function fetchOsm() {
+  if (!selectedId) {
+    routeStatus.textContent = t('route.needWorkspace')
+    return
+  }
+  const cats = selectedRouteCats()
+  if (cats.length === 0) return
+  const bbox = currentBBox()
+  if (![bbox.west, bbox.south, bbox.east, bbox.north].every((v) => !isNaN(v))) return
+  btnFetchOsm.disabled = true
+  routeStatus.textContent = t('route.fetching')
+  try {
+    const feats = await api.fetchOsmRoutes(bbox, cats)
+    // 既に保存済みの way は候補から除外（重複防止）
+    const have = new Set(routes.map((r) => r.osmId).filter((v): v is number => v != null))
+    osmCandidates = feats.filter((f) => !have.has(f.osmId)).map((f) => ({ ...f, adopted: true }))
+    drawRouteLayers()
+    btnSaveRoutes.hidden = osmCandidates.length === 0
+    routeStatus.textContent = osmCandidates.length
+      ? `${osmCandidates.length}${t('route.found')}`
+      : t('route.none')
+  } catch (e) {
+    routeStatus.textContent = (e as Error).message
+  } finally {
+    btnFetchOsm.disabled = false
+  }
+}
+
+/** 採用中（adopted）の候補を routes へ確定し保存する */
+async function saveAdoptedRoutes() {
+  if (!selectedId) return
+  for (const c of osmCandidates.filter((x) => x.adopted)) {
+    routes.push({
+      id: `rt_${Date.now().toString(36)}_${c.osmId}`,
+      name: c.name || routeCatLabel(c.category),
+      category: c.category,
+      osmId: c.osmId,
+      coords: c.coords,
+      visible: true
+    })
+  }
+  osmCandidates = []
+  btnSaveRoutes.hidden = true
+  routeStatus.textContent = ''
+  await api.saveRoutes(selectedId, routes)
+  drawRouteLayers()
+  viewer?.setRoutes(routes)
+  renderRoutePanel()
+}
+
+function renderRoutePanel() {
+  routeList.innerHTML = ''
+  for (const r of routes) {
+    const li = document.createElement('li')
+    li.className = 'lm-item'
+    const top = document.createElement('div')
+    top.className = 'lm-top'
+
+    const vis = document.createElement('input')
+    vis.type = 'checkbox'
+    vis.className = 'lm-vis'
+    vis.checked = r.visible !== false
+    vis.title = t('route.show')
+    vis.addEventListener('change', async () => {
+      r.visible = vis.checked
+      if (selectedId) await api.saveRoutes(selectedId, routes)
+      drawRouteLayers()
+      viewer?.setRoutes(routes)
+    })
+
+    const dot = document.createElement('span')
+    dot.style.cssText = `display:inline-block;width:10px;height:10px;border-radius:2px;flex:0 0 auto;background:${ROUTE_COLORS[r.category]}`
+
+    const name = document.createElement('input')
+    name.className = 'lm-name'
+    name.value = r.name
+    name.addEventListener('change', async () => {
+      r.name = name.value
+      if (selectedId) await api.saveRoutes(selectedId, routes)
+    })
+
+    const del = document.createElement('button')
+    del.className = 'lib-icon lib-del'
+    del.innerHTML = ICON_DELETE
+    del.title = t('lib.delete')
+    del.setAttribute('aria-label', t('lib.delete'))
+    del.addEventListener('click', async () => {
+      routes = routes.filter((x) => x.id !== r.id)
+      if (selectedId) await api.saveRoutes(selectedId, routes)
+      drawRouteLayers()
+      viewer?.setRoutes(routes)
+      renderRoutePanel()
+    })
+
+    top.append(vis, dot, name, del)
+    li.append(top)
+    routeList.appendChild(li)
+  }
+}
+
+/** 選択ワークスペースのルート表示を初期化する */
+function loadRoutes(ws: Workspace) {
+  routes = ws.routes ?? []
+  osmCandidates = []
+  btnSaveRoutes.hidden = true
+  routeStatus.textContent = ''
+  drawRouteLayers()
+  viewer?.setRoutes(routes)
+  renderRoutePanel()
+}
+
+/** 選択が無くなったときにルート表示をクリアする */
+function clearRoutes() {
+  routes = []
+  osmCandidates = []
+  btnSaveRoutes.hidden = true
+  routeStatus.textContent = ''
+  drawRouteLayers()
+  viewer?.setRoutes(routes)
+  renderRoutePanel()
+}
+
+btnFetchOsm.addEventListener('click', fetchOsm)
+btnSaveRoutes.addEventListener('click', saveAdoptedRoutes)
 
 // ---- 生成 ----
 api.onProgress((p) => {
@@ -1445,6 +1732,7 @@ btnExportRaw.addEventListener('click', async () => {
     renderModeSel.value = settings.renderMode
   }
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
+  if (settings.showRoutes === false) chkShowRoutes.checked = false
   if (settings.showHelp === false) {
     chkShowHelp.checked = false
     viewer3dHelp.classList.add('hidden')
