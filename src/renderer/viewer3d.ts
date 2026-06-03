@@ -10,6 +10,9 @@ import type { MeshPayload, Landmark, Route, RouteCategory } from '../preload/ind
 const METERS_PER_WORLD_UNIT = 5000
 const WORLD_SCALE = 1 / METERS_PER_WORLD_UNIT
 
+// 「奥を隠す」で手前と重なって隠れる地名ラベルの薄表示の不透明度（完全には消さない）。
+const LABEL_DIM_OPACITY = 0.2
+
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
 // 色相を緑寄り（ティール緑→緑→黄緑）に収めて種別差を控えめにする（2D ROUTE_COLORS と一致）。
 const ROUTE_COLORS_3D: Record<RouteCategory, number> = {
@@ -1372,10 +1375,19 @@ export class TerrainViewer {
       o.label.position.set(base.x, topY + gap, base.z)
 
       // 出現/消滅は不透明度をフェードしてスムーズに（ハードな表示切替を避ける）。
-      // 線は stack では常時表示、hideFar ではラベルと一緒にフェードする。
-      const lineShow = this.labelDeclutter === 'stack' ? true : show
-      this.fadeObject(o.label, show ? 1 : 0)
-      this.fadeObject(o.line, lineShow ? 1 : 0)
+      let labelTarget: number
+      let lineTarget: number
+      if (this.labelDeclutter === 'stack') {
+        labelTarget = show ? 1 : 0 // 画面外のみ消す
+        lineTarget = 1 // 線は常時表示
+      } else {
+        // hideFar / none：手前と重なって隠れる「後ろのラベル」は完全に消さず薄く残す（画面外は 0）。
+        const dim = onScreen && !show ? LABEL_DIM_OPACITY : 0
+        labelTarget = show ? 1 : dim
+        lineTarget = labelTarget // 線もラベルと同じ濃さでフェード
+      }
+      this.fadeObject(o.label, labelTarget)
+      this.fadeObject(o.line, lineTarget)
     }
   }
 
