@@ -2,6 +2,9 @@
 
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
+## 2026-06-04
+- 3Dビュー：ルート折れ線を**ワイプ**と**ハイトモーフ**の演出に追従させた。これまでルートは setData の後に setRoutes で作り直されるため、ワイプのクリップ平面が適用されず（線が消えずに残る）、モーフでは地形が変形してもルートが新地形の最終位置に貼り付いたまま浮いていた。`renderRoutes` を進行中の演出（`this.trans`）に対応させ、(1) wipe では新地形側のクリップ平面 `newPlane` を各ルート線マテリアルに共有し `newMats` に登録して seam で一緒にワイプ、(2) morph では各頂点の旧地形上の対応点（旧フットプリント rx/rz・旧起伏を `oldY` からサンプル・旧海抜 `baseY0`）を作り、`applyRouteMorph` で旧→新へ毎フレーム補間。morph 状態に `cols`/`rows`/`routeLines` を追加し、`updateTransition`/`finishTransition` でルートも更新・確定。slide は従来どおりルートが地形グループの子として一緒に動く（変更なし）。旧地形側のルートも従来どおりクリップでワイプアウトする。
+
 ## 2026-06-03
 - OSM ルート：種別「歩道（path系まとめ）」を**歩道（foot）**と**登山道（trail）**に分割。`RouteCategory` を `'road' | 'foot' | 'trail' | 'rail'` に変更。判定基準は OSM の highway 種別＋`sac_scale`：footway/pedestrian/steps/cycleway=歩道、path/bridleway=登山道、`sac_scale`（登山難易度）が付く歩道系は登山道へ寄せる（`osm.ts` の `classify`／`buildQuery`）。配色は歩道=オレンジ(#ffa726)、登山道=黄緑(#9acd32) に分離（2D `ROUTE_COLORS`・3D `ROUTE_COLORS_3D`）。OSM 取得パネルと「表示」メニューのチェックを歩道/登山道の2つに分割。i18n に `route.catFoot`/`route.catTrail` を追加。
 - OSM ルート：保存済みルートの**種別を再判定**する機能を追加。ルートは OSM タグを保持しないため、`osmId` を Overpass に問い合わせ（`osm.ts` の `fetchOsmTagsByIds`：`out tags` でジオメトリ無しの軽量取得）、`classify` で歩道/登山道/道路/鉄道に振り分け直す。IPC `osm:reclassify`（`getWorkspace`→タグ取得→分類→`saveRoutes`、更新本数を返す）と preload `reclassifyRoutes` を追加。ルートパネルに「🔄 種別を再判定」ボタン（OSM 由来ルートがあるときだけ表示）。クリップ・除外・改名はそのまま保持。旧種別 `'path'` は読み込み時に `'foot'` へ寄せ、再判定で正しく振り分ける（`library.ts`）。

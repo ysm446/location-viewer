@@ -18,6 +18,14 @@ const ROUTE_COLORS_3D: Record<RouteCategory, number> = {
   rail: 0xcfd3d6 // 鉄道=グレー
 }
 
+/** モーフ演出中にルート折れ線を旧→新へ補間するための頂点バッファ（flat xyz） */
+interface RouteMorphLine {
+  line: THREE.Line
+  oldPts: Float32Array // 旧地形上の頂点（フットプリント・起伏・海抜オフセット込み）
+  newPts: Float32Array // 新地形上の頂点
+  n: number // 頂点数
+}
+
 /** lng/lat → メッシュのローカル座標変換に必要な情報 */
 interface GeoContext {
   bbox: { west: number; south: number; east: number; north: number }
@@ -97,6 +105,10 @@ export class TerrainViewer {
         baseY1: number // 新地形の縦オフセット
         grid: THREE.Object3D | null // グリッド。フットプリント補間に合わせて X/Z 伸縮
         hidden: THREE.Object3D[] // 演出中に隠す（軸ラベル/地点）→ 完了時に表示
+        cols: number // 起伏サンプル用グリッド列数（oldY/newY のレイアウト）
+        rows: number // 同・行数
+        // 地形と一緒に変形させるルート折れ線（setRoutes が演出中に登録）。
+        routeLines: RouteMorphLine[]
       }
     | null = null
   // 演出中に来た「見た目だけの再描画」（衛星テクスチャ読込など）は、完了後にまとめて反映する。
@@ -455,7 +467,10 @@ export class TerrainViewer {
       baseY0: this.seaLevelBase ? oldPayload.minEle * WORLD_SCALE : 0,
       baseY1: mesh.position.y,
       grid: this.grid,
-      hidden
+      hidden,
+      cols,
+      rows,
+      routeLines: [] // ルートは setRoutes（演出開始後に呼ばれる）が登録する
     }
     this.updateTransition() // 初期状態（旧起伏・旧広さ）を確定
   }
@@ -518,6 +533,8 @@ export class TerrainViewer {
       }
       // グリッドも同じ広さ比で X/Z 伸縮（旧フットプリント→新フットプリント）。
       if (tr.grid) tr.grid.scale.set(tr.rx + (1 - tr.rx) * e, 1, tr.rz + (1 - tr.rz) * e)
+      // ルート折れ線も地形と一緒に旧→新へ変形させる。
+      for (const rl of tr.routeLines) this.applyRouteMorph(rl, e)
     } else if (tr.kind === 'slide') {
       // 旧は左へ抜け、新は右から入る（途中は左=新 / 右=旧 で比較できる）。
       tr.oldGroup.position.x = -tr.slideDist * e
@@ -570,6 +587,8 @@ export class TerrainViewer {
       }
       tr.oldTex?.dispose()
       if (tr.grid) tr.grid.scale.set(1, 1, 1) // 伸縮した広さを新（等倍）へ戻す
+      // ルート折れ線を最終形（新地形上）へ確定。
+      for (const rl of tr.routeLines) this.applyRouteMorph(rl, 1)
       // 隠していた軸ラベル/地点を表示に戻す。
       for (const o of tr.hidden) o.visible = true
       if (this.landmarkGroup) this.landmarkGroup.visible = this.landmarksVisible
@@ -663,6 +682,12 @@ export class TerrainViewer {
       this.routeGroup = null
     }
     const g = this.geo
+    // 演出（wipe=クリップ / morph=頂点補間）に追従させるため、進行中の状態を見る。
+    // ルートは setData の後（演出開始後）に setRoutes 経由で再構築されるので、ここで登録する。
+    const tr = this.trans
+    const wipe = tr && tr.kind === 'wipe' ? tr : null
+    const morph = tr && tr.kind === 'morph' ? tr : null
+    if (morph) morph.routeLines = [] // 再構築するので古い参照を捨てる
     if (!g || this.routes.length === 0) return
 
     const group = new THREE.Group()
@@ -670,6 +695,9 @@ export class TerrainViewer {
     for (const r of this.routes) {
       if (r.visible === false || r.coords.length < 2) continue
       const pts: THREE.Vector3[] = []
+      // morph 中は旧地形上の対応点も作り、旧→新へ補間する（フットプリント・起伏・海抜込み）。
+      const oldFlat = morph ? new Float32Array(r.coords.length * 3) : null
+      let vi = 0
       for (const [lng, lat] of r.coords) {
         const u = (lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
         const v = (g.bbox.north - lat) / (g.bbox.north - g.bbox.south || 1)
@@ -677,6 +705,14 @@ export class TerrainViewer {
         const z = (v - 0.5) * g.heightMeters * g.k
         const y = this.surfaceWorldY(u, v) + lift
         pts.push(new THREE.Vector3(x, y, z))
+        if (morph && oldFlat) {
+          // 旧フットプリント（rx/rz 倍）・旧起伏（oldY をサンプル）・旧海抜（baseY0）で対応点を作る。
+          const oh = bilinearSample(morph.oldY, morph.cols, morph.rows, u, v)
+          oldFlat[vi * 3] = (u - 0.5) * (morph.rx * g.widthMeters) * g.k
+          oldFlat[vi * 3 + 1] = oh * g.k + morph.baseY0 + lift
+          oldFlat[vi * 3 + 2] = (v - 0.5) * (morph.rz * g.heightMeters) * g.k
+        }
+        vi++
       }
       const lineGeo = new THREE.BufferGeometry().setFromPoints(pts)
       const line = new THREE.Line(
@@ -687,11 +723,48 @@ export class TerrainViewer {
       line.userData.routeCategory = r.category
       line.visible = this.routeCatVisible[r.category] // 種別フィルタを反映
       group.add(line)
+
+      if (wipe && wipe.newPlane) {
+        // 新地形側のクリップ平面を共有し、地形と同じ seam でワイプさせる。
+        const m = line.material as THREE.Material
+        m.clippingPlanes = [wipe.newPlane]
+        m.needsUpdate = true
+        wipe.newMats.push(m) // finishTransition でクリップ解除される
+      }
+      if (morph && oldFlat) {
+        const newFlat = new Float32Array(pts.length * 3)
+        for (let i = 0; i < pts.length; i++) {
+          newFlat[i * 3] = pts[i].x
+          newFlat[i * 3 + 1] = pts[i].y
+          newFlat[i * 3 + 2] = pts[i].z
+        }
+        const rl: RouteMorphLine = { line, oldPts: oldFlat, newPts: newFlat, n: pts.length }
+        morph.routeLines.push(rl)
+        // 現在の進捗に合わせて初期位置を旧側へ寄せ、1フレーム新位置で見えるのを防ぐ。
+        const t = Math.min(1, (performance.now() - morph.start) / morph.dur)
+        this.applyRouteMorph(rl, t * t * (3 - 2 * t))
+      }
     }
     group.visible = this.routesVisible
     // 地形グループの子にして、スライド/ワイプ等の演出で地形と一緒に動かす。
     ;(this.terrainGroup ?? this.scene).add(group)
     this.routeGroup = group
+  }
+
+  /** ルート折れ線の各頂点を旧→新へ e（0..1）で補間して反映する（morph 用） */
+  private applyRouteMorph(rl: RouteMorphLine, e: number) {
+    const pos = (rl.line.geometry as THREE.BufferGeometry).attributes
+      .position as THREE.BufferAttribute
+    for (let i = 0; i < rl.n; i++) {
+      const o = i * 3
+      pos.setXYZ(
+        i,
+        rl.oldPts[o] + (rl.newPts[o] - rl.oldPts[o]) * e,
+        rl.oldPts[o + 1] + (rl.newPts[o + 1] - rl.oldPts[o + 1]) * e,
+        rl.oldPts[o + 2] + (rl.newPts[o + 2] - rl.oldPts[o + 2]) * e
+      )
+    }
+    pos.needsUpdate = true
   }
 
   /** 地点編集（詳細）モードの ON/OFF。OFF の間はピンのドラッグ移動を禁止する。 */
