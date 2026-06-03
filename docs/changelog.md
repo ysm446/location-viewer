@@ -3,6 +3,7 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-06-04
+- 3Dビュー（不具合修正）：ルート統合後にハイトモーフが効かなくなっていた問題を修正。統合 `LineSegments` のジオメトリ position 配列と morph の終点 `newPts` が同一参照だったため、補間初回で終点が上書き破壊され、ルートが旧位置に潰れたまま戻らなかった。morph 時は position に `newPts.slice()`（複製）を渡し、終点バッファを不変に保つようにした。
 - 3Dビュー（最適化）：ルートの 3D 描画を**種別ごとに 1 本の `THREE.LineSegments` へ統合**し、draw call をルート本数ぶん → 種別ごと最大4本に削減（カーブ表示時の重さの主因が「線オブジェクト1本=1 draw call」だったため）。`renderRoutes` はポリラインを隣接ペア（線分）に分解して種別別バッファ（new=新地形上／old=morph 用の旧地形上）へ詰め、`LineSegments` を生成。種別表示トグルは統合オブジェクトの `visible` を切替、ワイプのクリップ平面・モーフ補間（`applyRouteMorph`／`RouteMorphLine`）も統合バッファ単位で処理。デバッグ表示のルート行を `src（元の本数）/ draws（描画オブジェクト数）/ verts` に変更。
 - 3Dビュー：「表示」メニューに**デバッグ**チェックを追加。ON で左下（ギズモの上）に FPS・draw calls・polygons（三角形数）・geometries/textures・地形頂点数・ルート（表示中の線数／頂点数）を重ねて表示する。`viewer3d.ts` に `setDebug` と `updateDebugPanel` を追加し、`animate` で約0.5秒ごとに FPS を集計、`renderer.info`（render.calls / render.triangles / memory）から統計を読む。状態は `showDebug` として保存・復元（既定=OFF）。オーバーレイ用 `#viewer3d-debug` スタイルと i18n `view3d.debug` を追加。
 - 3Dビュー：ルート折れ線を**ワイプ**と**ハイトモーフ**の演出に追従させた。これまでルートは setData の後に setRoutes で作り直されるため、ワイプのクリップ平面が適用されず（線が消えずに残る）、モーフでは地形が変形してもルートが新地形の最終位置に貼り付いたまま浮いていた。`renderRoutes` を進行中の演出（`this.trans`）に対応させ、(1) wipe では新地形側のクリップ平面 `newPlane` を各ルート線マテリアルに共有し `newMats` に登録して seam で一緒にワイプ、(2) morph では各頂点の旧地形上の対応点（旧フットプリント rx/rz・旧起伏を `oldY` からサンプル・旧海抜 `baseY0`）を作り、`applyRouteMorph` で旧→新へ毎フレーム補間。morph 状態に `cols`/`rows`/`routeLines` を追加し、`updateTransition`/`finishTransition` でルートも更新・確定。slide は従来どおりルートが地形グループの子として一緒に動く（変更なし）。旧地形側のルートも従来どおりクリップでワイプアウトする。

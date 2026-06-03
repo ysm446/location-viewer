@@ -755,7 +755,9 @@ export class TerrainViewer {
       if (arr.length === 0) continue
       const newPts = new Float32Array(arr)
       const geom = new THREE.BufferGeometry()
-      geom.setAttribute('position', new THREE.BufferAttribute(newPts, 3))
+      // morph 中は position を毎フレーム書き換えるので、終点 newPts とは別バッファ（複製）を持たせる。
+      // 同一参照にすると補間で newPts 自身が上書きされ、終点が壊れて旧位置に潰れてしまう。
+      geom.setAttribute('position', new THREE.BufferAttribute(morph ? newPts.slice() : newPts, 3))
       const seg = new THREE.LineSegments(
         geom,
         new THREE.LineBasicMaterial({ color: ROUTE_COLORS_3D[cat] })
