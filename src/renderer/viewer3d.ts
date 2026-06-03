@@ -137,6 +137,9 @@ export class TerrainViewer {
   private seaLevelBase = false
   // ON のとき地名ラベルを画面に対して一定サイズで表示（距離に応じて毎フレーム拡縮補正）。
   private fixedLabelSize = false
+  // 地名ラベルの重なり回避方式。stack=奥のラベルを上へ逃がす（全部見せる）/
+  // hideFar=重なったら奥（カメラから遠い）ラベルを隠す。
+  private labelDeclutter: 'stack' | 'hideFar' = 'stack'
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
@@ -1252,6 +1255,11 @@ export class TerrainViewer {
     if (this.lastPayload) this.setData(this.lastPayload, false) // ラベルを設計サイズで作り直す
   }
 
+  /** 地名ラベルの重なり回避方式（stack=上へ逃がす / hideFar=奥を隠す）を切り替える。 */
+  setLabelDeclutter(mode: 'stack' | 'hideFar') {
+    this.labelDeclutter = mode
+  }
+
   private resize() {
     const w = this.container.clientWidth || 1
     const h = this.container.clientHeight || 1
@@ -1309,20 +1317,37 @@ export class TerrainViewer {
       const sw = o.label.scale.x * pxPerWorld
       const sh = o.label.scale.y * pxPerWorld
 
-      // 重ならない目標の高さ（target stem）を求める
-      let target = baseStem
-      let rect: [number, number, number, number] = [0, 0, sw, sh]
-      let onScreen = false
-      for (;;) {
-        v.set(base.x, base.y + target + gap, base.z).project(this.camera)
-        onScreen = v.z < 1 && v.x >= -1.3 && v.x <= 1.3 && v.y >= -1.3 && v.y <= 1.3
+      // 画面上の矩形を、与えた stem 高さで投影して求める（onScreen 判定込み）。
+      const rectAt = (stem: number): { rect: [number, number, number, number]; onScreen: boolean } => {
+        v.set(base.x, base.y + stem + gap, base.z).project(this.camera)
+        const onScreen = v.z < 1 && v.x >= -1.3 && v.x <= 1.3 && v.y >= -1.3 && v.y <= 1.3
         const sx = (v.x * 0.5 + 0.5) * w
         const sy = (-v.y * 0.5 + 0.5) * h
-        rect = [sx - sw / 2, sy - sh / 2, sw, sh]
-        if (!onScreen || target >= maxStem || !placed.some((r) => overlaps(rect, r))) break
-        target += step
+        return { rect: [sx - sw / 2, sy - sh / 2, sw, sh], onScreen }
       }
-      if (onScreen) placed.push(rect)
+
+      let target = baseStem
+      let onScreen = false
+      let show: boolean
+      if (this.labelDeclutter === 'stack') {
+        // stack：重なる間は stem を少しずつ上げて、全ラベルを見せ続ける。
+        let rect: [number, number, number, number]
+        for (;;) {
+          const r = rectAt(target)
+          rect = r.rect
+          onScreen = r.onScreen
+          if (!onScreen || target >= maxStem || !placed.some((p) => overlaps(rect, p))) break
+          target += step
+        }
+        if (onScreen) placed.push(rect)
+        show = onScreen // stack ではオフスクリーンのみ非表示
+      } else {
+        // hideFar：stem は固定。近い順に確定し、既出と重なる奥のラベルは隠す。
+        const { rect, onScreen: on } = rectAt(target)
+        onScreen = on
+        show = on && !placed.some((p) => overlaps(rect, p))
+        if (show) placed.push(rect)
+      }
 
       // 現在長を目標へスムーズに近づける（初回は即座に合わせる）
       const cur = this.labelStem.has(id)
@@ -1337,7 +1362,9 @@ export class TerrainViewer {
       pos.setXYZ(1, base.x, topY, base.z)
       pos.needsUpdate = true
       o.label.position.set(base.x, topY + gap, base.z)
-      o.label.visible = onScreen
+      o.label.visible = show
+      // hideFar で隠したラベルはリーダー線も消す。stack では線は常に表示（モード復帰時に戻す）。
+      o.line.visible = this.labelDeclutter === 'stack' ? true : show
     }
   }
 

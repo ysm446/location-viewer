@@ -3,6 +3,7 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-06-04
+- 3Dビュー：地名ラベルの**重なり回避方式を選べる**ようにした（環境設定 > 3Dビュー > 「地名ラベルの重なり回避」）。`stack`=従来どおり奥のラベルを上へ逃がして全部見せる／`hideFar`=重なったらカメラから遠い（奥の）ラベルを隠して手前を優先（リーダー線も一緒に隠す）。`viewer3d.ts` の `declutterLabels` を方式で分岐し、`setLabelDeclutter` を追加。状態は `labelDeclutter` として保存・復元（既定=stack）。i18n に `settings.labelDeclutter`/`declutter.stack`/`declutter.hideFar` を追加。
 - 3Dビュー（最適化）：軸ラベル（グリッド端の km 表示）の**遮蔽判定レイキャストを間引き**。これまで毎フレーム、軸ラベル4個ぶん地形メッシュ全体へレイキャスト（BVH 無し＝O(三角形数)）していたのを、カメラ（位置・注視点）が前回から動いていないフレームはスキップし、動いている間も約80msごとに間引くようにした（`occlDirty`/`occlLastTime`/`occlLastCam`/`occlLastTarget`）。新しい地形に切替時は一度やり直す。閲覧中（カメラ静止）の常時コストが実質ゼロになり、大きな地形ほど効果が大きい。
 - 3Dビュー（不具合修正）：ルート統合後にハイトモーフが効かなくなっていた問題を修正。統合 `LineSegments` のジオメトリ position 配列と morph の終点 `newPts` が同一参照だったため、補間初回で終点が上書き破壊され、ルートが旧位置に潰れたまま戻らなかった。morph 時は position に `newPts.slice()`（複製）を渡し、終点バッファを不変に保つようにした。
 - 3Dビュー（最適化）：ルートの 3D 描画を**種別ごとに 1 本の `THREE.LineSegments` へ統合**し、draw call をルート本数ぶん → 種別ごと最大4本に削減（カーブ表示時の重さの主因が「線オブジェクト1本=1 draw call」だったため）。`renderRoutes` はポリラインを隣接ペア（線分）に分解して種別別バッファ（new=新地形上／old=morph 用の旧地形上）へ詰め、`LineSegments` を生成。種別表示トグルは統合オブジェクトの `visible` を切替、ワイプのクリップ平面・モーフ補間（`applyRouteMorph`／`RouteMorphLine`）も統合バッファ単位で処理。デバッグ表示のルート行を `src（元の本数）/ draws（描画オブジェクト数）/ verts` に変更。

@@ -217,6 +217,13 @@ transitionSel.addEventListener('change', () => {
   api.setSettings({ transition: m })
 })
 
+const labelDeclutterSel = $<HTMLSelectElement>('label-declutter')
+labelDeclutterSel.addEventListener('change', () => {
+  const m = labelDeclutterSel.value as 'stack' | 'hideFar'
+  viewer?.setLabelDeclutter(m)
+  api.setSettings({ labelDeclutter: m })
+})
+
 // 右ペインの幅をドラッグで変更（#main-pane と #right-pane の間の仕切り）
 const rightResizer = $('right-resizer')
 const rightPane = $('right-pane')
@@ -863,6 +870,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setFixedLabelSize(chkFixedLabel.checked)
       viewer.setFov(Number(fovInput.value))
       viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe' | 'morph')
+      viewer.setLabelDeclutter(labelDeclutterSel.value as 'stack' | 'hideFar')
       viewer.setDebug(chkShowDebug.checked)
     }
     if (pendingMesh) {
@@ -1846,6 +1854,9 @@ btnExportRaw.addEventListener('click', async () => {
     settings.transition === 'morph'
   ) {
     transitionSel.value = settings.transition
+  }
+  if (settings.labelDeclutter === 'stack' || settings.labelDeclutter === 'hideFar') {
+    labelDeclutterSel.value = settings.labelDeclutter
   }
 
   const cfg = await api.getConfig()
