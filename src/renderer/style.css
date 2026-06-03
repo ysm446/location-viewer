@@ -226,6 +226,22 @@ body {
 #viewer3d-info:empty {
   display: none;
 }
+/* デバッグ表示（FPS・描画統計）。左下のギズモの上に重ねる。 */
+#viewer3d-debug {
+  position: absolute;
+  bottom: 130px;
+  left: 12px;
+  z-index: 10;
+  background: var(--overlay-bg-2);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: ui-monospace, "Cascadia Mono", "Consolas", monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-2);
+  pointer-events: none;
+  white-space: nowrap;
+}
 /* 操作バー（描画モード・地点表示）：右上に配置。左上=寸法情報, 左下=ギズモ。 */
 #viewer3d-controls {
   position: absolute;

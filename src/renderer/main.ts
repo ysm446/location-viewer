@@ -131,6 +131,13 @@ chkShowHelp.addEventListener('change', () => {
   api.setSettings({ showHelp: chkShowHelp.checked })
 })
 
+// デバッグ表示（FPS・描画統計）のトグル
+const chkShowDebug = $<HTMLInputElement>('chk-show-debug')
+chkShowDebug.addEventListener('change', () => {
+  viewer?.setDebug(chkShowDebug.checked)
+  api.setSettings({ showDebug: chkShowDebug.checked })
+})
+
 // 「表示」ボタン：クリックでチェック項目のポップアップを開閉
 const btnViewMenu = $<HTMLButtonElement>('btn-view-menu')
 const viewMenu = $('view-menu')
@@ -856,6 +863,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setFixedLabelSize(chkFixedLabel.checked)
       viewer.setFov(Number(fovInput.value))
       viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe' | 'morph')
+      viewer.setDebug(chkShowDebug.checked)
     }
     if (pendingMesh) {
       viewer.setSatelliteTexture(pendingSatellite)
@@ -1822,6 +1830,7 @@ btnExportRaw.addEventListener('click', async () => {
     chkShowHelp.checked = false
     viewer3dHelp.classList.add('hidden')
   }
+  if (settings.showDebug) chkShowDebug.checked = true
   if (settings.autoFit) chkAutoFit.checked = true
   if (settings.scaleAnnotations) chkScaleAnnotations.checked = true
   if (settings.seaLevelBase) chkSeaLevel.checked = true

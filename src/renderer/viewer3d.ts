@@ -50,6 +50,15 @@ export class TerrainViewer {
   private axisLabels: THREE.Sprite[] = []
   private container: HTMLElement
   private raf = 0
+  // デバッグ表示（FPS・描画統計）。debugEl は container に重ねるオーバーレイ。
+  private debugOn = false
+  private debugEl: HTMLDivElement | null = null
+  private fps = 0
+  private fpsFrames = 0
+  private fpsLast = 0
+  // メインシーン描画直後の統計（renderer.info は render ごとにリセットされるため退避）。
+  private dbgCalls = 0
+  private dbgTriangles = 0
   // スムーズズーム: ホイールで目標距離(注視点からの半径)を設定し、毎フレーム補間で寄せる。
   // null のときはズーム停止中。
   private zoomTarget: number | null = null
@@ -168,6 +177,13 @@ export class TerrainViewer {
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.renderer.setClearColor(0x111417)
     container.appendChild(this.renderer.domElement)
+
+    // デバッグ表示のオーバーレイ（左上）。既定は非表示、setDebug で切替。
+    this.debugEl = document.createElement('div')
+    this.debugEl.id = 'viewer3d-debug'
+    this.debugEl.style.display = 'none'
+    container.appendChild(this.debugEl)
+    this.fpsLast = performance.now()
 
     this.scene = new THREE.Scene()
 
@@ -674,7 +690,12 @@ export class TerrainViewer {
     }
   }
 
-  /** 現在の geo と routes から、地形表面に沿った折れ線を作り直す */
+  /**
+   * 現在の geo と routes から、地形表面に沿った折れ線を作り直す。
+   * draw call を抑えるため、同じ種別の全ルートを 1 本の THREE.LineSegments に統合する
+   * （ルート本数ぶんの描画 → 種別ごと最大4本）。LineSegments は頂点ペアごとに線分を描くので、
+   * ポリラインは隣接ペアに分解して詰める（内部頂点は複製）。
+   */
   private renderRoutes() {
     if (this.routeGroup) {
       this.routeGroup.removeFromParent()
@@ -690,55 +711,70 @@ export class TerrainViewer {
     if (morph) morph.routeLines = [] // 再構築するので古い参照を捨てる
     if (!g || this.routes.length === 0) return
 
-    const group = new THREE.Group()
     const lift = 8 * g.k // 地表から数メートル浮かせて Z ファイト／めり込みを避ける
+    // 種別ごとに線分頂点を貯める（new=新地形上 / old=旧地形上＝morph 補間の始点）。
+    const cats: RouteCategory[] = ['road', 'foot', 'trail', 'rail']
+    const newByCat: Record<RouteCategory, number[]> = { road: [], foot: [], trail: [], rail: [] }
+    const oldByCat: Record<RouteCategory, number[]> = { road: [], foot: [], trail: [], rail: [] }
+
     for (const r of this.routes) {
       if (r.visible === false || r.coords.length < 2) continue
-      const pts: THREE.Vector3[] = []
-      // morph 中は旧地形上の対応点も作り、旧→新へ補間する（フットプリント・起伏・海抜込み）。
-      const oldFlat = morph ? new Float32Array(r.coords.length * 3) : null
-      let vi = 0
+      const nf = newByCat[r.category]
+      const of = oldByCat[r.category]
+      // 各頂点のワールド座標（新地形）と、morph 用の旧地形対応点を先に計算しておく。
+      const px: number[] = []
+      const py: number[] = []
+      const pz: number[] = []
+      const ox: number[] = []
+      const oy: number[] = []
+      const oz: number[] = []
       for (const [lng, lat] of r.coords) {
         const u = (lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
         const v = (g.bbox.north - lat) / (g.bbox.north - g.bbox.south || 1)
-        const x = (u - 0.5) * g.widthMeters * g.k
-        const z = (v - 0.5) * g.heightMeters * g.k
-        const y = this.surfaceWorldY(u, v) + lift
-        pts.push(new THREE.Vector3(x, y, z))
-        if (morph && oldFlat) {
+        px.push((u - 0.5) * g.widthMeters * g.k)
+        py.push(this.surfaceWorldY(u, v) + lift)
+        pz.push((v - 0.5) * g.heightMeters * g.k)
+        if (morph) {
           // 旧フットプリント（rx/rz 倍）・旧起伏（oldY をサンプル）・旧海抜（baseY0）で対応点を作る。
           const oh = bilinearSample(morph.oldY, morph.cols, morph.rows, u, v)
-          oldFlat[vi * 3] = (u - 0.5) * (morph.rx * g.widthMeters) * g.k
-          oldFlat[vi * 3 + 1] = oh * g.k + morph.baseY0 + lift
-          oldFlat[vi * 3 + 2] = (v - 0.5) * (morph.rz * g.heightMeters) * g.k
+          ox.push((u - 0.5) * (morph.rx * g.widthMeters) * g.k)
+          oy.push(oh * g.k + morph.baseY0 + lift)
+          oz.push((v - 0.5) * (morph.rz * g.heightMeters) * g.k)
         }
-        vi++
       }
-      const lineGeo = new THREE.BufferGeometry().setFromPoints(pts)
-      const line = new THREE.Line(
-        lineGeo,
-        new THREE.LineBasicMaterial({ color: ROUTE_COLORS_3D[r.category] })
+      // 隣接ペア (i, i+1) を線分として詰める。
+      for (let i = 0; i < px.length - 1; i++) {
+        nf.push(px[i], py[i], pz[i], px[i + 1], py[i + 1], pz[i + 1])
+        if (morph) of.push(ox[i], oy[i], oz[i], ox[i + 1], oy[i + 1], oz[i + 1])
+      }
+    }
+
+    const group = new THREE.Group()
+    for (const cat of cats) {
+      const arr = newByCat[cat]
+      if (arr.length === 0) continue
+      const newPts = new Float32Array(arr)
+      const geom = new THREE.BufferGeometry()
+      geom.setAttribute('position', new THREE.BufferAttribute(newPts, 3))
+      const seg = new THREE.LineSegments(
+        geom,
+        new THREE.LineBasicMaterial({ color: ROUTE_COLORS_3D[cat] })
       )
-      line.renderOrder = 9 // 地点（10〜12）より背面
-      line.userData.routeCategory = r.category
-      line.visible = this.routeCatVisible[r.category] // 種別フィルタを反映
-      group.add(line)
+      seg.renderOrder = 9 // 地点（10〜12）より背面
+      seg.userData.routeCategory = cat
+      seg.visible = this.routeCatVisible[cat] // 種別フィルタを反映
+      group.add(seg)
 
       if (wipe && wipe.newPlane) {
         // 新地形側のクリップ平面を共有し、地形と同じ seam でワイプさせる。
-        const m = line.material as THREE.Material
+        const m = seg.material as THREE.Material
         m.clippingPlanes = [wipe.newPlane]
         m.needsUpdate = true
         wipe.newMats.push(m) // finishTransition でクリップ解除される
       }
-      if (morph && oldFlat) {
-        const newFlat = new Float32Array(pts.length * 3)
-        for (let i = 0; i < pts.length; i++) {
-          newFlat[i * 3] = pts[i].x
-          newFlat[i * 3 + 1] = pts[i].y
-          newFlat[i * 3 + 2] = pts[i].z
-        }
-        const rl: RouteMorphLine = { line, oldPts: oldFlat, newPts: newFlat, n: pts.length }
+      if (morph) {
+        const oldPts = new Float32Array(oldByCat[cat])
+        const rl: RouteMorphLine = { line: seg, oldPts, newPts, n: newPts.length / 3 }
         morph.routeLines.push(rl)
         // 現在の進捗に合わせて初期位置を旧側へ寄せ、1フレーム新位置で見えるのを防ぐ。
         const t = Math.min(1, (performance.now() - morph.start) / morph.dur)
@@ -1348,6 +1384,11 @@ export class TerrainViewer {
     this.renderer.setViewport(0, 0, this.container.clientWidth, this.container.clientHeight)
     this.renderer.setScissorTest(false)
     this.renderer.render(this.scene, this.camera)
+    // ギズモ描画で renderer.info がリセットされる前に、メインシーンの統計を退避。
+    if (this.debugOn) {
+      this.dbgCalls = this.renderer.info.render.calls
+      this.dbgTriangles = this.renderer.info.render.triangles
+    }
 
     // 左下に軸ギズモを重ねて描画（メインカメラの向きに同期）
     const size = 110
@@ -1367,6 +1408,56 @@ export class TerrainViewer {
     this.renderer.render(this.gizmoScene, this.gizmoCamera)
     this.renderer.setScissorTest(false)
     this.renderer.autoClear = true // 次フレームのメイン描画用に戻す
+
+    // FPS は約0.5秒ごとに集計し、デバッグ表示中ならパネルを更新する。
+    if (this.debugOn) {
+      this.fpsFrames++
+      const now = performance.now()
+      const dt = now - this.fpsLast
+      if (dt >= 500) {
+        this.fps = Math.round((this.fpsFrames * 1000) / dt)
+        this.fpsFrames = 0
+        this.fpsLast = now
+        this.updateDebugPanel()
+      }
+    }
+  }
+
+  /** デバッグ表示（FPS・描画統計）の ON/OFF */
+  setDebug(on: boolean) {
+    this.debugOn = on
+    if (this.debugEl) this.debugEl.style.display = on ? 'block' : 'none'
+    if (on) {
+      this.fpsFrames = 0
+      this.fpsLast = performance.now()
+      this.updateDebugPanel()
+    }
+  }
+
+  /** renderer.info とシーン内容から描画統計を集計してパネルへ反映する */
+  private updateDebugPanel() {
+    if (!this.debugEl) return
+    const info = this.renderer.info
+    const terrainVerts = this.geo ? this.geo.cols * this.geo.rows : 0
+    // ルートは種別ごとに1本へ統合されるので、draws=描画オブジェクト数（≦4）。
+    let routeDraws = 0
+    let routeVerts = 0
+    if (this.routeGroup) {
+      for (const c of this.routeGroup.children) {
+        if ((c as THREE.Line).isLine && c.visible) {
+          routeDraws++
+          routeVerts += (c as THREE.Line).geometry.attributes.position.count
+        }
+      }
+    }
+    const n = (v: number) => v.toLocaleString()
+    this.debugEl.innerHTML =
+      `FPS: ${this.fps}<br>` +
+      `draw calls: ${n(this.dbgCalls)}<br>` +
+      `polygons: ${n(this.dbgTriangles)}<br>` +
+      `geometries: ${info.memory.geometries} / textures: ${info.memory.textures}<br>` +
+      `terrain verts: ${n(terrainVerts)}<br>` +
+      `routes: ${n(this.routes.length)} src / ${n(routeDraws)} draws / ${n(routeVerts)} verts`
   }
 
   dispose() {
