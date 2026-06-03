@@ -30,6 +30,21 @@ interface RouteMorphLine {
   n: number // 頂点数
 }
 
+/** モーフ中に地点（マーカー＋線＋ラベル）を地表に追従させるための旧/新の接地位置 */
+interface LandmarkFollow {
+  marker: THREE.Mesh
+  line: THREE.Line
+  label: THREE.Sprite
+  oldBase: THREE.Vector3 // 旧地形上の接地点
+  newBase: THREE.Vector3 // 新地形上の接地点
+}
+
+/** モーフ中に軸ラベル（km）をフットプリント変形に追従させるための基準（新）位置 */
+interface AxisFollow {
+  sp: THREE.Sprite
+  base: THREE.Vector3 // 新フットプリントでの位置（毎フレーム rx/rz で縮める）
+}
+
 /** lng/lat → メッシュのローカル座標変換に必要な情報 */
 interface GeoContext {
   bbox: { west: number; south: number; east: number; north: number }
@@ -123,11 +138,13 @@ export class TerrainViewer {
         baseY0: number // 旧地形の縦オフセット（海抜基準。mesh.position.y を旧→新へ補間）
         baseY1: number // 新地形の縦オフセット
         grid: THREE.Object3D | null // グリッド。フットプリント補間に合わせて X/Z 伸縮
-        hidden: THREE.Object3D[] // 演出中に隠す（軸ラベル/地点）→ 完了時に表示
         cols: number // 起伏サンプル用グリッド列数（oldY/newY のレイアウト）
         rows: number // 同・行数
         // 地形と一緒に変形させるルート折れ線（setRoutes が演出中に登録）。
         routeLines: RouteMorphLine[]
+        // 地形変形に追従＋フェードインさせる地点・軸ラベル。
+        landmarkFollow: LandmarkFollow[]
+        axisFollow: AxisFollow[]
       }
     | null = null
   // 演出中に来た「見た目だけの再描画」（衛星テクスチャ読込など）は、完了後にまとめて反映する。
@@ -468,12 +485,38 @@ export class TerrainViewer {
       newGroup.add(oldTexMesh)
     }
 
-    // 変形中はフットプリントが変わるので軸ラベル/地点を隠し、完了時に表示する。
-    // グリッドは隠さず、フットプリント補間に合わせて X/Z 伸縮させる（updateTransition）。
-    const hidden: THREE.Object3D[] = []
-    for (const sp of this.axisLabels) hidden.push(sp)
-    if (this.landmarkGroup) hidden.push(this.landmarkGroup)
-    for (const o of hidden) o.visible = false
+    // 変形中も軸ラベル/地点を隠さず、地形の変形に追従させる＋フェードインで出す。
+    // 軸ラベル(km)：y=0 平面の四隅。フットプリント補間（rx/rz）で X/Z を縮めるだけ。
+    const axisFollow: AxisFollow[] = this.axisLabels.map((sp) => ({
+      sp,
+      base: sp.position.clone()
+    }))
+    for (const a of axisFollow) (a.sp.material as THREE.SpriteMaterial).opacity = 0
+    // 地点：新しい接地点（marker.position）と、旧地形上の接地点を作って旧→新へ補間する。
+    const g = this.geo
+    const baseY0 = this.seaLevelBase ? oldPayload.minEle * WORLD_SCALE : 0
+    const landmarkFollow: LandmarkFollow[] = []
+    if (g) {
+      for (const lm of this.landmarks) {
+        const o = this.landmarkObjs.get(lm.id)
+        if (!o) continue
+        const u = (lm.lng - g.bbox.west) / (g.bbox.east - g.bbox.west || 1)
+        const vv = (g.bbox.north - lm.lat) / (g.bbox.north - g.bbox.south || 1)
+        const oh = bilinearSample(oldY, cols, rows, u, vv) // 旧起伏(base0, m)
+        const oldBase = new THREE.Vector3(
+          (u - 0.5) * (rx * newWidth) * WORLD_SCALE,
+          oh * WORLD_SCALE + baseY0,
+          (vv - 0.5) * (rz * newHeight) * WORLD_SCALE
+        )
+        landmarkFollow.push({
+          marker: o.marker,
+          line: o.line,
+          label: o.label,
+          oldBase,
+          newBase: o.marker.position.clone()
+        })
+      }
+    }
 
     this.trans = {
       kind: 'morph',
@@ -493,13 +536,14 @@ export class TerrainViewer {
       rz,
       // 海抜基準 ON のときの旧/新の縦オフセット（OFF は両方 0）。mesh.position.y は
       // build で新基準に設定済みだが、旧基準から補間して「今の座標」からモーフさせる。
-      baseY0: this.seaLevelBase ? oldPayload.minEle * WORLD_SCALE : 0,
+      baseY0,
       baseY1: mesh.position.y,
       grid: this.grid,
-      hidden,
       cols,
       rows,
-      routeLines: [] // ルートは setRoutes（演出開始後に呼ばれる）が登録する
+      routeLines: [], // ルートは setRoutes（演出開始後に呼ばれる）が登録する
+      landmarkFollow,
+      axisFollow
     }
     this.updateTransition() // 初期状態（旧起伏・旧広さ）を確定
   }
@@ -561,9 +605,35 @@ export class TerrainViewer {
         ;(tr.oldTexMesh.material as THREE.Material).opacity = 1 - e // 旧テクスチャをフェードアウト
       }
       // グリッドも同じ広さ比で X/Z 伸縮（旧フットプリント→新フットプリント）。
-      if (tr.grid) tr.grid.scale.set(tr.rx + (1 - tr.rx) * e, 1, tr.rz + (1 - tr.rz) * e)
+      const fx = tr.rx + (1 - tr.rx) * e
+      const fz = tr.rz + (1 - tr.rz) * e
+      if (tr.grid) tr.grid.scale.set(fx, 1, fz)
       // ルート折れ線も地形と一緒に旧→新へ変形させる。
       for (const rl of tr.routeLines) this.applyRouteMorph(rl, e)
+      // 軸ラベル(km)：フットプリント変形に追従＋フェードイン。
+      for (const a of tr.axisFollow) {
+        a.sp.position.set(a.base.x * fx, a.base.y, a.base.z * fz)
+        ;(a.sp.material as THREE.SpriteMaterial).opacity = e
+      }
+      // 地点（マーカー＋線＋ラベル）：地表に追従＋フェードイン。
+      const s = this.annotScale
+      const stem = 0.4 * s
+      const gap = 0.05 * s
+      for (const lf of tr.landmarkFollow) {
+        const bx = lf.oldBase.x + (lf.newBase.x - lf.oldBase.x) * e
+        const by = lf.oldBase.y + (lf.newBase.y - lf.oldBase.y) * e
+        const bz = lf.oldBase.z + (lf.newBase.z - lf.oldBase.z) * e
+        lf.marker.position.set(bx, by, bz)
+        const topY = by + stem
+        const lpos = lf.line.geometry.attributes.position as THREE.BufferAttribute
+        lpos.setXYZ(0, bx, by, bz)
+        lpos.setXYZ(1, bx, topY, bz)
+        lpos.needsUpdate = true
+        lf.label.position.set(bx, topY + gap, bz)
+        ;(lf.marker.material as THREE.Material).opacity = e
+        ;(lf.line.material as THREE.Material).opacity = e
+        ;(lf.label.material as THREE.Material).opacity = e
+      }
     } else if (tr.kind === 'slide') {
       // 旧は左へ抜け、新は右から入る（途中は左=新 / 右=旧 で比較できる）。
       tr.oldGroup.position.x = -tr.slideDist * e
@@ -618,8 +688,17 @@ export class TerrainViewer {
       if (tr.grid) tr.grid.scale.set(1, 1, 1) // 伸縮した広さを新（等倍）へ戻す
       // ルート折れ線を最終形（新地形上）へ確定。
       for (const rl of tr.routeLines) this.applyRouteMorph(rl, 1)
-      // 隠していた軸ラベル/地点を表示に戻す。
-      for (const o of tr.hidden) o.visible = true
+      // 軸ラベル・地点を新位置・不透明度1へ確定（位置の微調整は次フレームの declutter が行う）。
+      for (const a of tr.axisFollow) {
+        a.sp.position.copy(a.base)
+        ;(a.sp.material as THREE.SpriteMaterial).opacity = 1
+      }
+      for (const lf of tr.landmarkFollow) {
+        lf.marker.position.copy(lf.newBase)
+        ;(lf.marker.material as THREE.Material).opacity = 1
+        ;(lf.line.material as THREE.Material).opacity = 1
+        ;(lf.label.material as THREE.Material).opacity = 1
+      }
       if (this.landmarkGroup) this.landmarkGroup.visible = this.landmarksVisible
     } else {
       // slide / wipe：旧グループ・旧テクスチャを破棄、新を正位置・クリップ解除・表示復帰。
@@ -957,7 +1036,8 @@ export class TerrainViewer {
           color: 0xffd24d,
           polygonOffset: true,
           polygonOffsetFactor: -2,
-          polygonOffsetUnits: -2
+          polygonOffsetUnits: -2,
+          transparent: true // モーフ時のフェードイン用
         })
       )
       marker.position.set(x, surfaceY, z)
