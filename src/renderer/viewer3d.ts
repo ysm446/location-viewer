@@ -12,9 +12,10 @@ const WORLD_SCALE = 1 / METERS_PER_WORLD_UNIT
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
 const ROUTE_COLORS_3D: Record<RouteCategory, number> = {
-  road: 0x4fc3f7,
-  path: 0x9acd32,
-  rail: 0xcfd3d6
+  road: 0x4fc3f7, // 自動車道=水色
+  foot: 0xffa726, // 歩道=オレンジ
+  trail: 0x9acd32, // 登山道=黄緑
+  rail: 0xcfd3d6 // 鉄道=グレー
 }
 
 /** lng/lat → メッシュのローカル座標変換に必要な情報 */
@@ -132,6 +133,13 @@ export class TerrainViewer {
   private routes: Route[] = []
   private routeGroup: THREE.Group | null = null
   private routesVisible = true
+  // 種別ごとの表示フラグ（「ルートを表示」全体の ON/OFF とは別に効かせる）
+  private routeCatVisible: Record<RouteCategory, boolean> = {
+    road: true,
+    foot: true,
+    trail: true,
+    rail: true
+  }
   // 3Dクリックで地点を配置するモード
   private raycaster = new THREE.Raycaster()
   private placeMode = false
@@ -638,6 +646,15 @@ export class TerrainViewer {
     if (this.routeGroup) this.routeGroup.visible = on
   }
 
+  /** 種別（道路/歩道/鉄道）ごとに表示/非表示を切り替える */
+  setRouteCategoryVisible(cat: RouteCategory, on: boolean) {
+    this.routeCatVisible[cat] = on
+    if (!this.routeGroup) return
+    for (const child of this.routeGroup.children) {
+      if (child.userData.routeCategory === cat) child.visible = on
+    }
+  }
+
   /** 現在の geo と routes から、地形表面に沿った折れ線を作り直す */
   private renderRoutes() {
     if (this.routeGroup) {
@@ -667,6 +684,8 @@ export class TerrainViewer {
         new THREE.LineBasicMaterial({ color: ROUTE_COLORS_3D[r.category] })
       )
       line.renderOrder = 9 // 地点（10〜12）より背面
+      line.userData.routeCategory = r.category
+      line.visible = this.routeCatVisible[r.category] // 種別フィルタを反映
       group.add(line)
     }
     group.visible = this.routesVisible

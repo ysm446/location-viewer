@@ -74,8 +74,10 @@ const routeStatus = $('route-status')
 const btnFetchOsm = $<HTMLButtonElement>('btn-fetch-osm')
 const btnSaveRoutes = $<HTMLButtonElement>('btn-save-routes')
 const btnClearRoutes = $<HTMLButtonElement>('btn-clear-routes')
+const btnReclassifyRoutes = $<HTMLButtonElement>('btn-reclassify-routes')
 const chkRouteRoad = $<HTMLInputElement>('chk-route-road')
-const chkRoutePath = $<HTMLInputElement>('chk-route-path')
+const chkRouteFoot = $<HTMLInputElement>('chk-route-foot')
+const chkRouteTrail = $<HTMLInputElement>('chk-route-trail')
 const chkRouteRail = $<HTMLInputElement>('chk-route-rail')
 const chkRouteClip = $<HTMLInputElement>('chk-route-clip')
 const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
@@ -85,9 +87,40 @@ chkShowLandmarks.addEventListener('change', () => {
 })
 
 const chkShowRoutes = $<HTMLInputElement>('chk-show-routes')
+const viewMenuRouteCats = $('view-menu-route-cats')
+// 「ルートを表示」OFF のときは種別チェックを淡色＆無効化
+function syncRouteCatsEnabled() {
+  viewMenuRouteCats.classList.toggle('disabled', !chkShowRoutes.checked)
+  for (const c of [chkShowRouteRoad, chkShowRouteFoot, chkShowRouteTrail, chkShowRouteRail]) {
+    c.disabled = !chkShowRoutes.checked
+  }
+}
 chkShowRoutes.addEventListener('change', () => {
   viewer?.setRoutesVisible(chkShowRoutes.checked)
   api.setSettings({ showRoutes: chkShowRoutes.checked })
+  syncRouteCatsEnabled()
+})
+
+// 「ルートを表示」の子：道路 / 歩道 / 登山道 / 鉄道 の種別ごとの表示トグル
+const chkShowRouteRoad = $<HTMLInputElement>('chk-show-route-road')
+const chkShowRouteFoot = $<HTMLInputElement>('chk-show-route-foot')
+const chkShowRouteTrail = $<HTMLInputElement>('chk-show-route-trail')
+const chkShowRouteRail = $<HTMLInputElement>('chk-show-route-rail')
+chkShowRouteRoad.addEventListener('change', () => {
+  viewer?.setRouteCategoryVisible('road', chkShowRouteRoad.checked)
+  api.setSettings({ showRouteRoad: chkShowRouteRoad.checked })
+})
+chkShowRouteFoot.addEventListener('change', () => {
+  viewer?.setRouteCategoryVisible('foot', chkShowRouteFoot.checked)
+  api.setSettings({ showRouteFoot: chkShowRouteFoot.checked })
+})
+chkShowRouteTrail.addEventListener('change', () => {
+  viewer?.setRouteCategoryVisible('trail', chkShowRouteTrail.checked)
+  api.setSettings({ showRouteTrail: chkShowRouteTrail.checked })
+})
+chkShowRouteRail.addEventListener('change', () => {
+  viewer?.setRouteCategoryVisible('rail', chkShowRouteRail.checked)
+  api.setSettings({ showRouteRail: chkShowRouteRail.checked })
 })
 
 // ヘルプ（右下のマウス操作ガイド）の表示トグル
@@ -810,6 +843,10 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setLandmarkMoveHandler(onMoveLandmark)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
       viewer.setRoutesVisible(chkShowRoutes.checked)
+      viewer.setRouteCategoryVisible('road', chkShowRouteRoad.checked)
+      viewer.setRouteCategoryVisible('foot', chkShowRouteFoot.checked)
+      viewer.setRouteCategoryVisible('trail', chkShowRouteTrail.checked)
+      viewer.setRouteCategoryVisible('rail', chkShowRouteRail.checked)
       viewer.setLandmarksEditable(detailMode)
       viewer.setRenderMode(renderModeSel.value as 'default' | 'heightmap' | 'satellite')
       viewer.setAutoRotate(autoRotate)
@@ -1138,9 +1175,10 @@ function renderLandmarkPanel() {
 
 // ===== OSM ルート（オーバーレイ・選択・保存） =====
 const ROUTE_COLORS: Record<RouteCategory, string> = {
-  road: '#4fc3f7',
-  path: '#9acd32',
-  rail: '#cfd3d6'
+  road: '#4fc3f7', // 自動車道=水色
+  foot: '#ffa726', // 歩道=オレンジ
+  trail: '#9acd32', // 登山道=黄緑
+  rail: '#cfd3d6' // 鉄道=グレー
 }
 
 /** category プロパティから線色を引く match 式 */
@@ -1150,7 +1188,8 @@ function catColorExpr(): any {
     'match',
     ['get', 'category'],
     'road', ROUTE_COLORS.road,
-    'path', ROUTE_COLORS.path,
+    'foot', ROUTE_COLORS.foot,
+    'trail', ROUTE_COLORS.trail,
     'rail', ROUTE_COLORS.rail,
     '#ffffff'
   ]
@@ -1241,14 +1280,16 @@ function drawRouteLayers() {
 
 function routeCatLabel(cat: RouteCategory): string {
   if (cat === 'road') return t('route.catRoad')
-  if (cat === 'path') return t('route.catPath')
+  if (cat === 'foot') return t('route.catFoot')
+  if (cat === 'trail') return t('route.catTrail')
   return t('route.catRail')
 }
 
 function selectedRouteCats(): RouteCategory[] {
   const cats: RouteCategory[] = []
   if (chkRouteRoad.checked) cats.push('road')
-  if (chkRoutePath.checked) cats.push('path')
+  if (chkRouteFoot.checked) cats.push('foot')
+  if (chkRouteTrail.checked) cats.push('trail')
   if (chkRouteRail.checked) cats.push('rail')
   return cats
 }
@@ -1307,6 +1348,8 @@ async function saveAdoptedRoutes() {
 function renderRoutePanel() {
   routeList.innerHTML = ''
   btnClearRoutes.hidden = routes.length === 0
+  // 再判定は OSM 由来（osmId 付き）のルートがあるときだけ意味がある
+  btnReclassifyRoutes.hidden = !routes.some((r) => r.osmId !== undefined)
   for (const r of routes) {
     const li = document.createElement('li')
     li.className = 'lm-item'
@@ -1391,6 +1434,28 @@ async function clearAllRoutes() {
   renderRoutePanel()
 }
 btnClearRoutes.addEventListener('click', clearAllRoutes)
+
+/** 保存済みルートの種別を OSM に問い合わせて再判定する（歩道/登山道の振り分け直し等） */
+async function reclassifyRoutes() {
+  if (!selectedId || routes.length === 0) return
+  btnReclassifyRoutes.disabled = true
+  routeStatus.textContent = t('route.reclassifying')
+  try {
+    const res = await api.reclassifyRoutes(selectedId)
+    if (res) {
+      routes = res.routes
+      drawRouteLayers()
+      viewer?.setRoutes(routes)
+      renderRoutePanel()
+      routeStatus.textContent = t('route.reclassifyDone').replace('{n}', String(res.changed))
+    }
+  } catch (e) {
+    routeStatus.textContent = (e as Error).message
+  } finally {
+    btnReclassifyRoutes.disabled = false
+  }
+}
+btnReclassifyRoutes.addEventListener('click', reclassifyRoutes)
 
 // ---- 生成 ----
 api.onProgress((p) => {
@@ -1748,6 +1813,11 @@ btnExportRaw.addEventListener('click', async () => {
   }
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
   if (settings.showRoutes === false) chkShowRoutes.checked = false
+  if (settings.showRouteRoad === false) chkShowRouteRoad.checked = false
+  if (settings.showRouteFoot === false) chkShowRouteFoot.checked = false
+  if (settings.showRouteTrail === false) chkShowRouteTrail.checked = false
+  if (settings.showRouteRail === false) chkShowRouteRail.checked = false
+  syncRouteCatsEnabled()
   if (settings.showHelp === false) {
     chkShowHelp.checked = false
     viewer3dHelp.classList.add('hidden')

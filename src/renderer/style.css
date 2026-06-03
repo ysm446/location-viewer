@@ -274,6 +274,18 @@ body {
 .popup-menu.hidden {
   display: none;
 }
+/* 「ルートを表示」の下にぶら下がる種別チェック（インデント表示） */
+.popup-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: -2px 0 0 18px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border-strong);
+}
+.popup-submenu.disabled {
+  opacity: 0.45;
+}
 
 /* ビューポートのアイコンボタン（自動回転など） */
 .vp-icon {

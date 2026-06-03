@@ -64,6 +64,10 @@ export interface AppSettings {
   renderMode?: 'default' | 'heightmap' | 'satellite'
   showLandmarks?: boolean
   showRoutes?: boolean
+  showRouteRoad?: boolean
+  showRouteFoot?: boolean
+  showRouteTrail?: boolean
+  showRouteRail?: boolean
   showHelp?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
@@ -102,6 +106,8 @@ const api = {
     ipcRenderer.invoke('workspace:saveRoutes', id, routes),
   fetchOsmRoutes: (bbox: BBox, cats: RouteCategory[], clip: boolean): Promise<OsmFeature[]> =>
     ipcRenderer.invoke('osm:fetch', bbox, cats, clip),
+  reclassifyRoutes: (id: string): Promise<{ routes: Route[]; changed: number } | null> =>
+    ipcRenderer.invoke('osm:reclassify', id),
   getThumb: (id: string): Promise<string | null> => ipcRenderer.invoke('workspace:thumb', id),
   exportItem: (
     id: string,

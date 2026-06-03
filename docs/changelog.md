@@ -2,6 +2,11 @@
 
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
+## 2026-06-03
+- OSM ルート：種別「歩道（path系まとめ）」を**歩道（foot）**と**登山道（trail）**に分割。`RouteCategory` を `'road' | 'foot' | 'trail' | 'rail'` に変更。判定基準は OSM の highway 種別＋`sac_scale`：footway/pedestrian/steps/cycleway=歩道、path/bridleway=登山道、`sac_scale`（登山難易度）が付く歩道系は登山道へ寄せる（`osm.ts` の `classify`／`buildQuery`）。配色は歩道=オレンジ(#ffa726)、登山道=黄緑(#9acd32) に分離（2D `ROUTE_COLORS`・3D `ROUTE_COLORS_3D`）。OSM 取得パネルと「表示」メニューのチェックを歩道/登山道の2つに分割。i18n に `route.catFoot`/`route.catTrail` を追加。
+- OSM ルート：保存済みルートの**種別を再判定**する機能を追加。ルートは OSM タグを保持しないため、`osmId` を Overpass に問い合わせ（`osm.ts` の `fetchOsmTagsByIds`：`out tags` でジオメトリ無しの軽量取得）、`classify` で歩道/登山道/道路/鉄道に振り分け直す。IPC `osm:reclassify`（`getWorkspace`→タグ取得→分類→`saveRoutes`、更新本数を返す）と preload `reclassifyRoutes` を追加。ルートパネルに「🔄 種別を再判定」ボタン（OSM 由来ルートがあるときだけ表示）。クリップ・除外・改名はそのまま保持。旧種別 `'path'` は読み込み時に `'foot'` へ寄せ、再判定で正しく振り分ける（`library.ts`）。
+- 3Dビュー：「表示」メニューの「ルートを表示」の下に種別ごとの子チェック（道路 / 歩道 / 登山道 / 鉄道）を追加。種別単位で 3D ルートの表示/非表示を切り替えられるようにした。`viewer3d.ts` に `routeCatVisible` と `setRouteCategoryVisible(cat, on)` を追加し、各 `THREE.Line` の `userData.routeCategory` と `line.visible` で種別フィルタを反映（`renderRoutes` でも復元）。`main.ts` は3つのチェック（`chk-show-route-road/path/rail`）を配線し、状態を `showRouteRoad`/`showRoutePath`/`showRouteRail` として保存・復元。「ルートを表示」OFF 時は子チェックを淡色＆無効化（`.popup-submenu.disabled`）。`AppSettings` に3キーを追加。インデント表示用の `.popup-submenu` スタイルを追加。
+
 ## 2026-06-02
 - OSM ルート：自動車道（road カテゴリ）のライン色をオレンジ（#ff8c2b / 0xff8c2b）から水色（#4fc3f7 / 0x4fc3f7）に変更。2D（`main.ts` の `ROUTE_COLORS`）と 3D（`viewer3d.ts` の `ROUTE_COLORS_3D`）を一致させた。
 - OSM ルート：歩道・登山道（path カテゴリ）のライン色を緑（#36b34a / 0x36b34a）から黄緑（#9acd32 / 0x9acd32）に変更。2D 地図（`main.ts` の `ROUTE_COLORS`）と 3D ドレープ（`viewer3d.ts` の `ROUTE_COLORS_3D`）の両方を更新し、配色を一致させた。

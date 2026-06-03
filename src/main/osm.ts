@@ -22,19 +22,29 @@ const TIMEOUT_MS = 30000
 /** 1回の取得で扱う上限（巨大 bbox の暴発を防ぐ） */
 const MAX_FEATURES = 8000
 
-/** カテゴリごとの Overpass フィルタ（正規表現は分類と一致させる） */
-const ROAD_RE = '^(footway|path|pedestrian|steps|cycleway|bridleway|construction|proposed)$'
-const PATH_RE = '^(footway|path|pedestrian|steps|cycleway|bridleway)$'
+// カテゴリごとの Overpass フィルタ（正規表現は classify と一致させる）。
+// 歩道（foot）＝舗装された歩行系、登山道（trail）＝自然路・登山路。
+// road から除外したいのは foot/trail に該当する全 highway なので、両者を束ねた式も持つ。
+const FOOT_RE = '^(footway|pedestrian|steps|cycleway)$'
+const TRAIL_RE = '^(path|bridleway)$'
+const FOOTTRAIL_RE = '^(footway|pedestrian|steps|cycleway|path|bridleway|construction|proposed)$'
 const RAIL_RE = '^(rail|light_rail|subway|tram|narrow_gauge|monorail|funicular)$'
 
-/** way のタグからカテゴリを判定する（buildQuery のフィルタと対応させる） */
-function classify(tags: Record<string, string> | undefined): RouteCategory | null {
+/**
+ * way のタグからカテゴリを判定する（buildQuery のフィルタと対応させる）。
+ * sac_scale（登山難易度）が付くものは歩道扱いの highway でも登山道へ寄せる。
+ */
+export function classify(tags: Record<string, string> | undefined): RouteCategory | null {
   if (!tags) return null
   if (tags.railway && new RegExp(RAIL_RE).test(tags.railway)) return 'rail'
   const hw = tags.highway
   if (!hw) return null
-  if (new RegExp(PATH_RE).test(hw)) return 'path'
-  if (new RegExp(ROAD_RE).test(hw)) return null // 歩道扱いの highway は road から除外
+  const isFoot = new RegExp(FOOT_RE).test(hw)
+  const isTrail = new RegExp(TRAIL_RE).test(hw)
+  if (isFoot || isTrail) {
+    // sac_scale が付けば登山道。それ以外は highway 種別で判定。
+    return tags.sac_scale ? 'trail' : isTrail ? 'trail' : 'foot'
+  }
   return 'road'
 }
 
@@ -42,8 +52,13 @@ function classify(tags: Record<string, string> | undefined): RouteCategory | nul
 function buildQuery(bbox: BBox, cats: RouteCategory[]): string {
   const bb = `${bbox.south},${bbox.west},${bbox.north},${bbox.east}`
   const parts: string[] = []
-  if (cats.includes('road')) parts.push(`way["highway"]["highway"!~"${ROAD_RE}"](${bb});`)
-  if (cats.includes('path')) parts.push(`way["highway"~"${PATH_RE}"](${bb});`)
+  if (cats.includes('road')) parts.push(`way["highway"]["highway"!~"${FOOTTRAIL_RE}"](${bb});`)
+  if (cats.includes('foot')) parts.push(`way["highway"~"${FOOT_RE}"](${bb});`)
+  if (cats.includes('trail')) {
+    parts.push(`way["highway"~"${TRAIL_RE}"](${bb});`)
+    // sac_scale 付きの歩道系も登山道として拾う（classify が trail へ寄せる）
+    parts.push(`way["highway"~"${FOOT_RE}"]["sac_scale"](${bb});`)
+  }
   if (cats.includes('rail')) parts.push(`way["railway"~"${RAIL_RE}"](${bb});`)
   return `[out:json][timeout:25];(${parts.join('')});out geom;`
 }
@@ -181,4 +196,47 @@ export async function fetchOsmFeatures(
     if (out.length >= MAX_FEATURES) break
   }
   return out
+}
+
+/**
+ * 保存済みルートの再分類用に、way id 群のタグだけを取得する（ジオメトリ無しで軽量）。
+ * 返り値は osmId → タグ の Map。取得できなかった id は欠落する。
+ */
+export async function fetchOsmTagsByIds(ids: number[]): Promise<Map<number, Record<string, string>>> {
+  const map = new Map<number, Record<string, string>>()
+  if (ids.length === 0) return map
+  const query = `[out:json][timeout:25];way(id:${ids.join(',')});out tags;`
+
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+  let res: Response
+  try {
+    res = await fetch(OVERPASS_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'mapbox-importer/0.1 (heightmap tool)',
+        Accept: 'application/json'
+      },
+      body: 'data=' + encodeURIComponent(query),
+      signal: controller.signal
+    })
+  } catch (e) {
+    throw new Error(
+      (e as Error).name === 'AbortError'
+        ? 'OSM 取得がタイムアウトしました。範囲を狭めて再試行してください。'
+        : `OSM 取得に失敗しました: ${(e as Error).message}`
+    )
+  } finally {
+    clearTimeout(timer)
+  }
+  if (!res.ok) {
+    throw new Error(`OSM 取得に失敗しました（HTTP ${res.status}）。混雑時は少し待って再試行してください。`)
+  }
+
+  const json = (await res.json()) as { elements?: OverpassElement[] }
+  for (const el of json.elements ?? []) {
+    if (el.type === 'way') map.set(el.id, el.tags ?? {})
+  }
+  return map
 }

@@ -34,7 +34,7 @@ export interface Landmark {
 }
 
 /** ルート（OSM等から取り込んだライン）の種別 */
-export type RouteCategory = 'road' | 'path' | 'rail'
+export type RouteCategory = 'road' | 'foot' | 'trail' | 'rail'
 
 /** 地形上のルート（折れ線）。座標は lng/lat で持ち、地形を更新しても残る */
 export interface Route {
@@ -98,6 +98,11 @@ async function readWorkspaceFile(dir: string, id: string): Promise<Workspace | n
     const w = JSON.parse(await fs.readFile(wsJsonPath(dir, id), 'utf-8')) as Workspace
     w.landmarks = w.landmarks ?? []
     w.routes = w.routes ?? []
+    // 旧種別 'path'（歩道/登山道をまとめていた）は 'foot' に寄せる。
+    // 歩道/登山道の正しい振り分けは「種別を再判定」(OSM 再問い合わせ) で行う。
+    for (const r of w.routes) {
+      if ((r.category as string) === 'path') r.category = 'foot'
+    }
     return w
   } catch {
     return null

@@ -113,6 +113,24 @@
                     <input id="chk-show-routes" type="checkbox" checked />
                     <span data-i18n="route.show">ルートを表示</span>
                   </label>
+                  <div id="view-menu-route-cats" class="popup-submenu">
+                    <label class="checkbox-row">
+                      <input id="chk-show-route-road" type="checkbox" checked />
+                      <span data-i18n="route.catRoad">道路</span>
+                    </label>
+                    <label class="checkbox-row">
+                      <input id="chk-show-route-foot" type="checkbox" checked />
+                      <span data-i18n="route.catFoot">歩道</span>
+                    </label>
+                    <label class="checkbox-row">
+                      <input id="chk-show-route-trail" type="checkbox" checked />
+                      <span data-i18n="route.catTrail">登山道</span>
+                    </label>
+                    <label class="checkbox-row">
+                      <input id="chk-show-route-rail" type="checkbox" checked />
+                      <span data-i18n="route.catRail">鉄道</span>
+                    </label>
+                  </div>
                   <label class="checkbox-row">
                     <input id="chk-show-help" type="checkbox" checked />
                     <span data-i18n="view3d.help">ヘルプ</span>
@@ -183,7 +201,8 @@
               <div id="subview-routes" class="subview hidden">
                 <div id="route-cats" style="display: flex; gap: 14px; flex-wrap: wrap; margin: 10px 0 6px">
                   <label class="checkbox-row"><input id="chk-route-road" type="checkbox" checked /><span data-i18n="route.catRoad">道路</span></label>
-                  <label class="checkbox-row"><input id="chk-route-path" type="checkbox" checked /><span data-i18n="route.catPath">歩道/登山道</span></label>
+                  <label class="checkbox-row"><input id="chk-route-foot" type="checkbox" checked /><span data-i18n="route.catFoot">歩道</span></label>
+                  <label class="checkbox-row"><input id="chk-route-trail" type="checkbox" checked /><span data-i18n="route.catTrail">登山道</span></label>
                   <label class="checkbox-row"><input id="chk-route-rail" type="checkbox" /><span data-i18n="route.catRail">鉄道</span></label>
                 </div>
                 <label class="checkbox-row" style="margin: 2px 0 8px">
@@ -196,9 +215,14 @@
                 </div>
                 <p class="muted" id="route-status"></p>
                 <ul id="route-list"></ul>
-                <button id="btn-clear-routes" class="link-danger" hidden data-i18n="route.clearAll">
-                  全ルートをクリア
-                </button>
+                <div class="row" style="justify-content: space-between; gap: 8px">
+                  <button id="btn-reclassify-routes" hidden data-i18n="route.reclassify">
+                    🔄 種別を再判定
+                  </button>
+                  <button id="btn-clear-routes" class="link-danger" hidden data-i18n="route.clearAll">
+                    全ルートをクリア
+                  </button>
+                </div>
               </div>
             </div>
           </section>

@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron'
 import { join } from 'path'
 import { promises as fs } from 'fs'
 import { BBox, TILE_SIZE, TILE_SOURCES, computeRegion, downloadTiles } from './tiles'
-import { fetchOsmFeatures } from './osm'
+import { fetchOsmFeatures, fetchOsmTagsByIds, classify } from './osm'
 import {
   buildHeightField,
   buildMeshData,
@@ -382,9 +382,32 @@ app.whenReady().then(() => {
     return saveRoutes(dir, id, routes)
   })
 
-  // --- OSM: bbox 内のライン（道路/歩道/鉄道）を取得 ---
+  // --- OSM: bbox 内のライン（道路/歩道/登山道/鉄道）を取得 ---
   ipcMain.handle('osm:fetch', async (_e, bbox: BBox, cats: RouteCategory[], clip: boolean) => {
     return fetchOsmFeatures(bbox, cats, clip)
+  })
+
+  // --- OSM: 保存済みルートの種別を再判定（osmId からタグを引き直して分類し直す） ---
+  ipcMain.handle('osm:reclassify', async (_e, id: string) => {
+    const dir = await ensureDataDir()
+    const ws = await getWorkspace(dir, id)
+    if (!ws) return null
+    const ids = [...new Set(ws.routes.map((r) => r.osmId).filter((v): v is number => typeof v === 'number'))]
+    if (ids.length === 0) return { routes: ws.routes, changed: 0 }
+    const tagMap = await fetchOsmTagsByIds(ids)
+    let changed = 0
+    for (const r of ws.routes) {
+      if (r.osmId === undefined) continue
+      const tags = tagMap.get(r.osmId)
+      if (!tags) continue
+      const cat = classify(tags)
+      if (cat && cat !== r.category) {
+        r.category = cat
+        changed++
+      }
+    }
+    await saveRoutes(dir, id, ws.routes)
+    return { routes: ws.routes, changed }
   })
 
   // --- 標高サンプリング（緯度経度 → メートル） ---
