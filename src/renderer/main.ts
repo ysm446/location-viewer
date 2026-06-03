@@ -1190,12 +1190,12 @@ function renderLandmarkPanel() {
 }
 
 // ===== OSM ルート（オーバーレイ・選択・保存） =====
-// 色相を青→緑のレンジに収めて種別差を控えめにする（3D ROUTE_COLORS_3D と一致させる）。
+// 色相を緑寄り（ティール緑→緑→黄緑）に収めて種別差を控えめにする（3D ROUTE_COLORS_3D と一致）。
 const ROUTE_COLORS: Record<RouteCategory, string> = {
-  road: '#4fb6f7', // 自動車道=青
-  foot: '#2fd0c4', // 歩道=シアン/ティール
-  trail: '#5fcf72', // 登山道=緑
-  rail: '#8fc7b4' // 鉄道=青緑（彩度低め）
+  road: '#2fc7a8', // 自動車道=ティール/青緑寄りの緑
+  foot: '#57c860', // 歩道=緑
+  trail: '#9acd32', // 登山道=黄緑（元の色）
+  rail: '#8fb89a' // 鉄道=くすんだ緑（セージ）
 }
 
 /** category プロパティから線色を引く match 式 */
