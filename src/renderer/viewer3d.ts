@@ -510,13 +510,10 @@ export class TerrainViewer {
           oh * WORLD_SCALE + baseY0,
           (vv - 0.5) * (rz * newHeight) * WORLD_SCALE
         )
-        landmarkFollow.push({
-          marker: o.marker,
-          line: o.line,
-          label: o.label,
-          oldBase,
-          newBase: o.marker.position.clone()
-        })
+        const newBase = o.marker.position.clone()
+        // declutter が「前/後ろ」判定に使う最終位置（モーフ中の配置位置とは別に固定）。
+        o.marker.userData.morphNewBase = newBase
+        landmarkFollow.push({ marker: o.marker, line: o.line, label: o.label, oldBase, newBase })
       }
     }
 
@@ -1371,12 +1368,23 @@ export class TerrainViewer {
     const maxStem = 1.6 * s
     const pad = 2
 
-    // マーカー（地表）からの距離が近い順に基準配置 → 奥は上へ逃がす
+    // モーフ中は「前/後ろ」の判定を最終位置（newBase）で固定し、配置だけ現在位置に追従させる。
+    // こうすると判定がモーフ中ブレず、完了後に明るさが急変（一瞬明るくなる等）しない。
+    const morphing = this.trans?.kind === 'morph'
+    const decBaseOf = (o: { marker: THREE.Mesh }): THREE.Vector3 => {
+      if (morphing) {
+        const nb = o.marker.userData.morphNewBase as THREE.Vector3 | undefined
+        if (nb) return nb
+      }
+      return o.marker.position
+    }
+    // 判定は decBase（最終位置）／配置は marker.position（現在位置）で行う。近い順に処理。
     const entries = [...this.landmarkObjs.entries()].map(([id, o]) => ({
       id,
       o,
-      base: o.marker.position,
-      dist: cam.distanceTo(o.marker.position)
+      decBase: decBaseOf(o),
+      placeBase: o.marker.position,
+      dist: cam.distanceTo(decBaseOf(o))
     }))
     entries.sort((a, b) => a.dist - b.dist)
 
@@ -1384,8 +1392,8 @@ export class TerrainViewer {
     const overlaps = (a: number[], b: number[]) =>
       a[0] < b[0] + b[2] + pad && a[0] + a[2] + pad > b[0] && a[1] < b[1] + b[3] + pad && a[1] + a[3] + pad > b[1]
 
-    for (const { id, o, base } of entries) {
-      const labelDist = cam.distanceTo(o.label.position)
+    for (const { id, o, decBase, placeBase } of entries) {
+      const labelDist = cam.distanceTo(decBase)
       const pxPerWorld = h / (2 * Math.tan(fovR / 2) * Math.max(labelDist, 1e-3))
       // 画面固定サイズ ON：目標pxになるよう距離に応じてワールドスケールを補正（行数ぶんの高さ）。
       if (this.fixedLabelSize) {
@@ -1398,9 +1406,9 @@ export class TerrainViewer {
       const sw = o.label.scale.x * pxPerWorld
       const sh = o.label.scale.y * pxPerWorld
 
-      // 画面上の矩形を、与えた stem 高さで投影して求める（onScreen 判定込み）。
+      // 画面上の矩形を、与えた stem 高さで投影して求める（onScreen 判定込み）。判定は最終位置基準。
       const rectAt = (stem: number): { rect: [number, number, number, number]; onScreen: boolean } => {
-        v.set(base.x, base.y + stem + gap, base.z).project(this.camera)
+        v.set(decBase.x, decBase.y + stem + gap, decBase.z).project(this.camera)
         const onScreen = v.z < 1 && v.x >= -1.3 && v.x <= 1.3 && v.y >= -1.3 && v.y <= 1.3
         const sx = (v.x * 0.5 + 0.5) * w
         const sy = (-v.y * 0.5 + 0.5) * h
@@ -1439,13 +1447,13 @@ export class TerrainViewer {
         : target
       this.labelStem.set(id, cur)
 
-      // 反映：線の先端とラベルを現在長に合わせる
-      const topY = base.y + cur
+      // 反映：線の先端とラベルを現在長に合わせる（配置は現在位置 placeBase）
+      const topY = placeBase.y + cur
       const pos = o.line.geometry.attributes.position as THREE.BufferAttribute
-      pos.setXYZ(0, base.x, base.y, base.z)
-      pos.setXYZ(1, base.x, topY, base.z)
+      pos.setXYZ(0, placeBase.x, placeBase.y, placeBase.z)
+      pos.setXYZ(1, placeBase.x, topY, placeBase.z)
       pos.needsUpdate = true
-      o.label.position.set(base.x, topY + gap, base.z)
+      o.label.position.set(placeBase.x, topY + gap, placeBase.z)
 
       // 出現/消滅は不透明度をフェードしてスムーズに（ハードな表示切替を避ける）。
       let labelTarget: number
@@ -1459,17 +1467,21 @@ export class TerrainViewer {
         labelTarget = show ? 1 : dim
         lineTarget = labelTarget // 線もラベルと同じ濃さでフェード
       }
-      // labelFade（モーフのフェードイン等）を乗算し、演出と declutter を両立させる。
-      this.fadeObject(o.label, labelTarget * this.labelFade)
-      this.fadeObject(o.line, lineTarget * this.labelFade)
+      // labelFade（モーフのフェードイン等）を乗算。モーフ中は判定が安定しているので opacity を
+      // 直接設定（フェードの遅延をなくし、完了時に最終値へ達して「一瞬明るくなる」のを防ぐ）。
+      this.fadeObject(o.label, labelTarget * this.labelFade, morphing)
+      this.fadeObject(o.line, lineTarget * this.labelFade, morphing)
     }
   }
 
-  /** スプライト/線の不透明度を目標へ毎フレーム近づけ、ほぼ0なら描画を止める（フェード表示）。 */
-  private fadeObject(obj: THREE.Sprite | THREE.Line, target: number) {
+  /**
+   * スプライト/線の不透明度を目標へ近づける（ほぼ0なら描画停止）。
+   * snap=true で即時設定（フェードの遅延なし）、false で毎フレーム少しずつ寄せる。
+   */
+  private fadeObject(obj: THREE.Sprite | THREE.Line, target: number, snap = false) {
     const mat = obj.material as THREE.Material & { opacity: number }
-    const next = mat.opacity + (target - mat.opacity) * 0.18
-    mat.opacity = Math.abs(next - target) < 0.01 ? target : next
+    const next = snap ? target : mat.opacity + (target - mat.opacity) * 0.18
+    mat.opacity = snap || Math.abs(next - target) < 0.01 ? target : next
     obj.visible = mat.opacity > 0.01
   }
 
