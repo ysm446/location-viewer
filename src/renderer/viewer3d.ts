@@ -165,6 +165,7 @@ export class TerrainViewer {
   private labelDeclutter: 'stack' | 'hideFar' | 'none' = 'stack'
   // ラベル/線の不透明度に掛ける全体係数（モーフのフェードインなど演出と declutter を両立させる）。
   private labelFade = 1
+  private labelOpacitySnapUntil = 0
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
@@ -694,6 +695,7 @@ export class TerrainViewer {
         ;(lf.marker.material as THREE.Material).opacity = 1
       }
       this.labelFade = 1 // フェード係数を戻す（declutter が本来の opacity を出す）
+      this.labelOpacitySnapUntil = performance.now() + 160
       if (this.landmarkGroup) this.landmarkGroup.visible = this.landmarksVisible
     } else {
       // slide / wipe：旧グループ・旧テクスチャを破棄、新を正位置・クリップ解除・表示復帰。
@@ -1396,6 +1398,9 @@ export class TerrainViewer {
     // それ以外は単純に近い順。
     if (this.labelDeclutter === 'hideFar') {
       entries.sort((a, b) => {
+        const dd = a.dist - b.dist
+        const hys = Math.max(0.02 * this.annotScale, Math.min(a.dist, b.dist) * 0.015)
+        if (Math.abs(dd) > hys) return dd
         const aw = this.labelShown.get(a.id) ? 0 : 1
         const bw = this.labelShown.get(b.id) ? 0 : 1
         return aw !== bw ? aw - bw : a.dist - b.dist
@@ -1486,8 +1491,9 @@ export class TerrainViewer {
       }
       // labelFade（モーフのフェードイン等）を乗算。モーフ中は判定が安定しているので opacity を
       // 直接設定（フェードの遅延をなくし、完了時に最終値へ達して「一瞬明るくなる」のを防ぐ）。
-      this.fadeObject(o.label, labelTarget * this.labelFade, morphing)
-      this.fadeObject(o.line, lineTarget * this.labelFade, morphing)
+      const snapOpacity = morphing || performance.now() < this.labelOpacitySnapUntil
+      this.fadeObject(o.label, labelTarget * this.labelFade, snapOpacity)
+      this.fadeObject(o.line, lineTarget * this.labelFade, snapOpacity)
     }
   }
 
