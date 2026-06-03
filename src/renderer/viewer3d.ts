@@ -184,6 +184,9 @@ export class TerrainViewer {
   private landmarkObjs = new Map<string, { marker: THREE.Mesh; line: THREE.Line; label: THREE.Sprite }>()
   private markerMeshes: THREE.Mesh[] = [] // レイキャスト用（クリック判定）
   private labelStem = new Map<string, number>() // 地点ごとのリーダー線の現在長（スムーズ移動用）
+  // hideFar：直前フレームに「前面（表示）」だったか。割り当てのヒステリシスに使い、
+  // カメラ移動中に前/後ろが入れ替わって後ろのラベルが一瞬明るくなるのを防ぐ。
+  private labelShown = new Map<string, boolean>()
   // ルート（OSM 等の折れ線）を地形にドレープして描画
   private routes: Route[] = []
   private routeGroup: THREE.Group | null = null
@@ -1380,7 +1383,7 @@ export class TerrainViewer {
       }
       return o.marker.position
     }
-    // 判定は decBase（最終位置）／配置は marker.position（現在位置）で行う。近い順に処理。
+    // 判定は decBase（最終位置）／配置は marker.position（現在位置）で行う。
     const entries = [...this.landmarkObjs.entries()].map(([id, o]) => ({
       id,
       o,
@@ -1388,7 +1391,18 @@ export class TerrainViewer {
       placeBase: o.marker.position,
       dist: cam.distanceTo(decBaseOf(o))
     }))
-    entries.sort((a, b) => a.dist - b.dist)
+    // hideFar はヒステリシス：直前に表示だったラベルを優先処理して前面の座を保たせる
+    // （カメラ移動で距離順が僅かに入れ替わっても前/後ろが揺れない＝後ろが一瞬明るくならない）。
+    // それ以外は単純に近い順。
+    if (this.labelDeclutter === 'hideFar') {
+      entries.sort((a, b) => {
+        const aw = this.labelShown.get(a.id) ? 0 : 1
+        const bw = this.labelShown.get(b.id) ? 0 : 1
+        return aw !== bw ? aw - bw : a.dist - b.dist
+      })
+    } else {
+      entries.sort((a, b) => a.dist - b.dist)
+    }
 
     const placed: [number, number, number, number][] = []
     const overlaps = (a: number[], b: number[]) =>
@@ -1436,11 +1450,12 @@ export class TerrainViewer {
         if (onScreen) placed.push(rect)
         show = onScreen // stack ではオフスクリーンのみ非表示
       } else {
-        // hideFar：stem は固定。近い順に確定し、既出と重なる奥のラベルは隠す。
+        // hideFar：stem は固定。前面優先順に確定し、既出と重なる奥のラベルは隠す。
         const { rect, onScreen: on } = rectAt(target)
         onScreen = on
         show = on && !placed.some((p) => overlaps(rect, p))
         if (show) placed.push(rect)
+        this.labelShown.set(id, show) // 次フレームのヒステリシス用
       }
 
       // 現在長を目標へスムーズに近づける（初回は即座に合わせる）。係数が小さいほどゆっくり移動。
