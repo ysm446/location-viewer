@@ -967,7 +967,11 @@ export class TerrainViewer {
         new THREE.Vector3(x, surfaceY, z),
         new THREE.Vector3(x, topY, z)
       ])
-      const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xcccccc }))
+      // transparent=true：declutter のフェード（出現/消滅）で opacity を効かせるため。
+      const line = new THREE.Line(
+        lineGeo,
+        new THREE.LineBasicMaterial({ color: 0xcccccc, transparent: true })
+      )
       line.renderOrder = 10
       group.add(line)
 
@@ -1362,10 +1366,21 @@ export class TerrainViewer {
       pos.setXYZ(1, base.x, topY, base.z)
       pos.needsUpdate = true
       o.label.position.set(base.x, topY + gap, base.z)
-      o.label.visible = show
-      // hideFar で隠したラベルはリーダー線も消す。stack では線は常に表示（モード復帰時に戻す）。
-      o.line.visible = this.labelDeclutter === 'stack' ? true : show
+
+      // 出現/消滅は不透明度をフェードしてスムーズに（ハードな表示切替を避ける）。
+      // 線は stack では常時表示、hideFar ではラベルと一緒にフェードする。
+      const lineShow = this.labelDeclutter === 'stack' ? true : show
+      this.fadeObject(o.label, show ? 1 : 0)
+      this.fadeObject(o.line, lineShow ? 1 : 0)
     }
+  }
+
+  /** スプライト/線の不透明度を目標へ毎フレーム近づけ、ほぼ0なら描画を止める（フェード表示）。 */
+  private fadeObject(obj: THREE.Sprite | THREE.Line, target: number) {
+    const mat = obj.material as THREE.Material & { opacity: number }
+    const next = mat.opacity + (target - mat.opacity) * 0.18
+    mat.opacity = Math.abs(next - target) < 0.01 ? target : next
+    obj.visible = mat.opacity > 0.01
   }
 
   /**
