@@ -138,8 +138,8 @@ export class TerrainViewer {
   // ON のとき地名ラベルを画面に対して一定サイズで表示（距離に応じて毎フレーム拡縮補正）。
   private fixedLabelSize = false
   // 地名ラベルの重なり回避方式。stack=奥のラベルを上へ逃がす（全部見せる）/
-  // hideFar=重なったら奥（カメラから遠い）ラベルを隠す。
-  private labelDeclutter: 'stack' | 'hideFar' = 'stack'
+  // hideFar=重なったら奥（カメラから遠い）ラベルを隠す / none=回避しない（そのまま表示）。
+  private labelDeclutter: 'stack' | 'hideFar' | 'none' = 'stack'
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
@@ -1259,8 +1259,8 @@ export class TerrainViewer {
     if (this.lastPayload) this.setData(this.lastPayload, false) // ラベルを設計サイズで作り直す
   }
 
-  /** 地名ラベルの重なり回避方式（stack=上へ逃がす / hideFar=奥を隠す）を切り替える。 */
-  setLabelDeclutter(mode: 'stack' | 'hideFar') {
+  /** 地名ラベルの重なり回避方式（stack=上へ逃がす / hideFar=奥を隠す / none=なし）を切り替える。 */
+  setLabelDeclutter(mode: 'stack' | 'hideFar' | 'none') {
     this.labelDeclutter = mode
   }
 
@@ -1333,7 +1333,10 @@ export class TerrainViewer {
       let target = baseStem
       let onScreen = false
       let show: boolean
-      if (this.labelDeclutter === 'stack') {
+      if (this.labelDeclutter === 'none') {
+        // なし：重なり回避せず、基準の高さで全ラベルをそのまま表示。
+        show = true
+      } else if (this.labelDeclutter === 'stack') {
         // stack：重なる間は stem を少しずつ上げて、全ラベルを見せ続ける。
         let rect: [number, number, number, number]
         for (;;) {

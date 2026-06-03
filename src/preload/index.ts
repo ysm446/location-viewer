@@ -77,7 +77,7 @@ export interface AppSettings {
   rightPaneWidth?: number
   cameraFov?: number
   transition?: 'none' | 'slide' | 'wipe' | 'morph'
-  labelDeclutter?: 'stack' | 'hideFar'
+  labelDeclutter?: 'stack' | 'hideFar' | 'none'
 }
 
 const api = {

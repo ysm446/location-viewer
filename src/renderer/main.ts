@@ -219,7 +219,7 @@ transitionSel.addEventListener('change', () => {
 
 const labelDeclutterSel = $<HTMLSelectElement>('label-declutter')
 labelDeclutterSel.addEventListener('change', () => {
-  const m = labelDeclutterSel.value as 'stack' | 'hideFar'
+  const m = labelDeclutterSel.value as 'stack' | 'hideFar' | 'none'
   viewer?.setLabelDeclutter(m)
   api.setSettings({ labelDeclutter: m })
 })
@@ -870,7 +870,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setFixedLabelSize(chkFixedLabel.checked)
       viewer.setFov(Number(fovInput.value))
       viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe' | 'morph')
-      viewer.setLabelDeclutter(labelDeclutterSel.value as 'stack' | 'hideFar')
+      viewer.setLabelDeclutter(labelDeclutterSel.value as 'stack' | 'hideFar' | 'none')
       viewer.setDebug(chkShowDebug.checked)
     }
     if (pendingMesh) {
@@ -1855,7 +1855,11 @@ btnExportRaw.addEventListener('click', async () => {
   ) {
     transitionSel.value = settings.transition
   }
-  if (settings.labelDeclutter === 'stack' || settings.labelDeclutter === 'hideFar') {
+  if (
+    settings.labelDeclutter === 'stack' ||
+    settings.labelDeclutter === 'hideFar' ||
+    settings.labelDeclutter === 'none'
+  ) {
     labelDeclutterSel.value = settings.labelDeclutter
   }
 
