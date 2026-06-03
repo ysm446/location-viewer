@@ -12,6 +12,8 @@ const WORLD_SCALE = 1 / METERS_PER_WORLD_UNIT
 
 // 「奥を隠す」で手前と重なって隠れる地名ラベルの薄表示の不透明度（完全には消さない）。
 const LABEL_DIM_OPACITY = 0.2
+// 「上へ逃がす」でラベルが目標の高さへ移動する速さ（毎フレームの補間係数）。小さいほどゆっくり。
+const LABEL_STEM_LERP = 0.08
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
 // 色相を緑寄り（ティール緑→緑→黄緑）に収めて種別差を控えめにする（2D ROUTE_COLORS と一致）。
@@ -1441,9 +1443,9 @@ export class TerrainViewer {
         if (show) placed.push(rect)
       }
 
-      // 現在長を目標へスムーズに近づける（初回は即座に合わせる）
+      // 現在長を目標へスムーズに近づける（初回は即座に合わせる）。係数が小さいほどゆっくり移動。
       const cur = this.labelStem.has(id)
-        ? this.labelStem.get(id)! + (target - this.labelStem.get(id)!) * 0.15
+        ? this.labelStem.get(id)! + (target - this.labelStem.get(id)!) * LABEL_STEM_LERP
         : target
       this.labelStem.set(id, cur)
 

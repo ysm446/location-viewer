@@ -3,6 +3,7 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-06-04
+- 3Dビュー：「上へ逃がす」モードでラベルが目標位置へ移動する速度をゆっくりに（stem 補間係数 0.15→0.08、`LABEL_STEM_LERP` として定数化）。
 - 3Dビュー（不具合修正）：「奥を隠す」（前後で透明度調整）モードで、ハイト・モーフ完了直後にラベルが**一瞬明るくなる**問題を修正。原因はモーフ中にラベル位置が動くと前/後ろ（dim）判定が毎フレーム変わり、完了後に `fadeObject` が最終値へ追いつく過程で明るさが揺れていたこと。対策として (1) declutter の前後判定を**最終位置（`marker.userData.morphNewBase`）基準で固定**（配置は現在位置 `placeBase` のまま追従）、(2) モーフ中は opacity を `fadeObject(..., snap=true)` で**即時設定**（フェード遅延をなくし、完了時に既に最終値）。
 - 3Dビュー（演出）：**ハイト・モーフ中もラベルの重なり回避（declutter）を走らせて統合**。これまでモーフ完了後に declutter が動き出して「急に避ける」不自然さがあったのを解消。モーフ中は地形グループが原点のままで画面投影が成立するため declutter をそのまま適用でき、モーフのフェードインは `labelFade`（0→1）を declutter のラベル/線 opacity に乗算して両立させる（`updateTransition` の morph 分岐はマーカー位置と `labelFade` のみ設定し、線・ラベルの配置/不透明度は `declutterLabels` に一元化）。`animate` は `!this.trans || isMorph` で declutter を呼ぶ（slide/wipe はグループが X 移動して投影がズレるため従来どおり対象外）。`finishTransition` で `labelFade` を 1 に戻す。
 - 3Dビュー（演出）：ハイト・モーフ中の**地点と軸ラベル(km)を「非表示→完了時に一括表示」から「地形変形に追従＋フェードイン」に変更**（パッと出る違和感を解消）。`startMorph` で軸ラベルの基準位置（`AxisFollow`）と、地点の旧/新接地点（`LandmarkFollow`：新しい注釈の (u,v) を旧起伏 `oldY`・旧フットプリント rx/rz・旧海抜 baseY0 上に合成）を作成。`updateTransition` の morph 分岐で、軸ラベルは grid と同じ rx/rz 比で X/Z を縮めつつ opacity 0→1、地点（マーカー＋リーダー線＋ラベル）は旧→新の接地点へ補間しつつ opacity 0→1。`finishTransition` で新位置・不透明度1へ確定（以後 declutter が引き継ぐ）。マーカー材質を `transparent:true` 化。従来の `hidden`（まるごと非表示）機構は撤去。
