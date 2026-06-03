@@ -161,6 +161,8 @@ export class TerrainViewer {
   // 地名ラベルの重なり回避方式。stack=奥のラベルを上へ逃がす（全部見せる）/
   // hideFar=重なったら奥（カメラから遠い）ラベルを隠す / none=回避しない（そのまま表示）。
   private labelDeclutter: 'stack' | 'hideFar' | 'none' = 'stack'
+  // ラベル/線の不透明度に掛ける全体係数（モーフのフェードインなど演出と declutter を両立させる）。
+  private labelFade = 1
   private resizeObs: ResizeObserver
   // 左下の軸ギズモ（別シーンを小さなビューポートに描画）
   private gizmoScene = new THREE.Scene()
@@ -615,25 +617,16 @@ export class TerrainViewer {
         a.sp.position.set(a.base.x * fx, a.base.y, a.base.z * fz)
         ;(a.sp.material as THREE.SpriteMaterial).opacity = e
       }
-      // 地点（マーカー＋線＋ラベル）：地表に追従＋フェードイン。
-      const s = this.annotScale
-      const stem = 0.4 * s
-      const gap = 0.05 * s
+      // 地点：マーカーを地表に追従させ、線・ラベルの配置と重なり回避は declutterLabels に任せる
+      // （モーフ中も declutter が走るため）。フェードインは labelFade を opacity に乗算して反映。
       for (const lf of tr.landmarkFollow) {
         const bx = lf.oldBase.x + (lf.newBase.x - lf.oldBase.x) * e
         const by = lf.oldBase.y + (lf.newBase.y - lf.oldBase.y) * e
         const bz = lf.oldBase.z + (lf.newBase.z - lf.oldBase.z) * e
         lf.marker.position.set(bx, by, bz)
-        const topY = by + stem
-        const lpos = lf.line.geometry.attributes.position as THREE.BufferAttribute
-        lpos.setXYZ(0, bx, by, bz)
-        lpos.setXYZ(1, bx, topY, bz)
-        lpos.needsUpdate = true
-        lf.label.position.set(bx, topY + gap, bz)
         ;(lf.marker.material as THREE.Material).opacity = e
-        ;(lf.line.material as THREE.Material).opacity = e
-        ;(lf.label.material as THREE.Material).opacity = e
       }
+      this.labelFade = e // declutter のラベル/線 opacity に掛ける（モーフのフェードイン）
     } else if (tr.kind === 'slide') {
       // 旧は左へ抜け、新は右から入る（途中は左=新 / 右=旧 で比較できる）。
       tr.oldGroup.position.x = -tr.slideDist * e
@@ -688,17 +681,17 @@ export class TerrainViewer {
       if (tr.grid) tr.grid.scale.set(1, 1, 1) // 伸縮した広さを新（等倍）へ戻す
       // ルート折れ線を最終形（新地形上）へ確定。
       for (const rl of tr.routeLines) this.applyRouteMorph(rl, 1)
-      // 軸ラベル・地点を新位置・不透明度1へ確定（位置の微調整は次フレームの declutter が行う）。
+      // 軸ラベルを新位置・不透明度1へ確定（以後は occlusion が担当）。
       for (const a of tr.axisFollow) {
         a.sp.position.copy(a.base)
         ;(a.sp.material as THREE.SpriteMaterial).opacity = 1
       }
+      // 地点はマーカーを新接地点へ確定。線・ラベルの配置/不透明度は直後に走る declutter が引き継ぐ。
       for (const lf of tr.landmarkFollow) {
         lf.marker.position.copy(lf.newBase)
         ;(lf.marker.material as THREE.Material).opacity = 1
-        ;(lf.line.material as THREE.Material).opacity = 1
-        ;(lf.label.material as THREE.Material).opacity = 1
       }
+      this.labelFade = 1 // フェード係数を戻す（declutter が本来の opacity を出す）
       if (this.landmarkGroup) this.landmarkGroup.visible = this.landmarksVisible
     } else {
       // slide / wipe：旧グループ・旧テクスチャを破棄、新を正位置・クリップ解除・表示復帰。
@@ -1466,8 +1459,9 @@ export class TerrainViewer {
         labelTarget = show ? 1 : dim
         lineTarget = labelTarget // 線もラベルと同じ濃さでフェード
       }
-      this.fadeObject(o.label, labelTarget)
-      this.fadeObject(o.line, lineTarget)
+      // labelFade（モーフのフェードイン等）を乗算し、演出と declutter を両立させる。
+      this.fadeObject(o.label, labelTarget * this.labelFade)
+      this.fadeObject(o.line, lineTarget * this.labelFade)
     }
   }
 
@@ -1533,11 +1527,14 @@ export class TerrainViewer {
     this.controls.update()
     this.updateSmoothZoom()
     this.updateTransition()
-    // 演出中はラベルの遮蔽判定・重なり回避を止める（visible 上書きでフェードが潰れるため）。
-    if (!this.trans) {
-      this.declutterLabels()
-      this.updateAxisLabelOcclusion()
-    }
+    // 地名ラベルの重なり回避（declutter）はモーフ中も走らせる（地形グループは原点のままで
+    // 画面投影が成立するため）。これでモーフ完了後に「急に避ける」不自然さが出ない。
+    // フェード（出現/モーフのフェードイン）は labelFade を opacity に乗算して両立させる。
+    // slide/wipe はグループが X 移動して投影がズレるので従来どおり止める。
+    const isMorph = this.trans?.kind === 'morph'
+    if (!this.trans || isMorph) this.declutterLabels()
+    // 軸ラベルの遮蔽判定は morph 中は axisFollow が担うので、非演出時のみ。
+    if (!this.trans) this.updateAxisLabelOcclusion()
 
     // メインシーン
     this.renderer.setViewport(0, 0, this.container.clientWidth, this.container.clientHeight)

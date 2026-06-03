@@ -3,6 +3,7 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-06-04
+- 3Dビュー（演出）：**ハイト・モーフ中もラベルの重なり回避（declutter）を走らせて統合**。これまでモーフ完了後に declutter が動き出して「急に避ける」不自然さがあったのを解消。モーフ中は地形グループが原点のままで画面投影が成立するため declutter をそのまま適用でき、モーフのフェードインは `labelFade`（0→1）を declutter のラベル/線 opacity に乗算して両立させる（`updateTransition` の morph 分岐はマーカー位置と `labelFade` のみ設定し、線・ラベルの配置/不透明度は `declutterLabels` に一元化）。`animate` は `!this.trans || isMorph` で declutter を呼ぶ（slide/wipe はグループが X 移動して投影がズレるため従来どおり対象外）。`finishTransition` で `labelFade` を 1 に戻す。
 - 3Dビュー（演出）：ハイト・モーフ中の**地点と軸ラベル(km)を「非表示→完了時に一括表示」から「地形変形に追従＋フェードイン」に変更**（パッと出る違和感を解消）。`startMorph` で軸ラベルの基準位置（`AxisFollow`）と、地点の旧/新接地点（`LandmarkFollow`：新しい注釈の (u,v) を旧起伏 `oldY`・旧フットプリント rx/rz・旧海抜 baseY0 上に合成）を作成。`updateTransition` の morph 分岐で、軸ラベルは grid と同じ rx/rz 比で X/Z を縮めつつ opacity 0→1、地点（マーカー＋リーダー線＋ラベル）は旧→新の接地点へ補間しつつ opacity 0→1。`finishTransition` で新位置・不透明度1へ確定（以後 declutter が引き継ぐ）。マーカー材質を `transparent:true` 化。従来の `hidden`（まるごと非表示）機構は撤去。
 - ルート配色：種別ごとの色相差を狭め、**緑寄り（ティール緑→緑→黄緑）のレンジ**に統一。道路=ティール(#2fc7a8)／歩道=緑(#57c860)／登山道=黄緑(#9acd32, 元の色)／鉄道=くすんだ緑(#8fb89a)。2D（`ROUTE_COLORS`）と 3D（`ROUTE_COLORS_3D`）を同じ値で更新。（当初は青→緑にしたが、緑側へ寄せ・登山道は元の黄緑へ戻す調整）
 - 3Dビュー：地名ラベルの重なり回避プルダウンの並びを「なし」を一番上に変更（既定は引き続き「上へ逃がす」＝stack に `selected` 付与）。
