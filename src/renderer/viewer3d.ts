@@ -59,6 +59,12 @@ export class TerrainViewer {
   // メインシーン描画直後の統計（renderer.info は render ごとにリセットされるため退避）。
   private dbgCalls = 0
   private dbgTriangles = 0
+  // 軸ラベルの遮蔽判定（地形へのレイキャスト＝高コスト）の間引き用。
+  // カメラが動いていないフレームはスキップし、動いている間も時間で間引く。
+  private occlDirty = true
+  private occlLastTime = 0
+  private occlLastCam = new THREE.Vector3(Infinity, Infinity, Infinity)
+  private occlLastTarget = new THREE.Vector3(Infinity, Infinity, Infinity)
   // スムーズズーム: ホイールで目標距離(注視点からの半径)を設定し、毎フレーム補間で寄せる。
   // null のときはズーム停止中。
   private zoomTarget: number | null = null
@@ -1066,6 +1072,7 @@ export class TerrainViewer {
     this.mesh = null
     this.grid = null
     this.axisLabels = []
+    this.occlDirty = true // 新しい地形・軸ラベルになるので遮蔽判定を一度やり直す
 
     // ジオメトリは「地表メートル」で作る（X=東西, Z=南北, Y=高さ[m]）。
     // 高さも同じメートル単位なので、全軸を同じ倍率でスケールすれば実寸比率になる。
@@ -1342,6 +1349,18 @@ export class TerrainViewer {
   private updateAxisLabelOcclusion() {
     if (!this.mesh || this.axisLabels.length === 0) return
     const cam = this.camera.position
+    const tgt = this.controls.target
+    // カメラ（位置・注視点）が前回判定から動いていなければ結果は不変なのでスキップ。
+    // 動いている間も約80msごとに間引く（自動回転中などの毎フレーム判定を防ぐ）。
+    const moved =
+      cam.distanceToSquared(this.occlLastCam) > 1e-8 ||
+      tgt.distanceToSquared(this.occlLastTarget) > 1e-8
+    const now = performance.now()
+    if (!this.occlDirty && (!moved || now - this.occlLastTime < 80)) return
+    this.occlDirty = false
+    this.occlLastTime = now
+    this.occlLastCam.copy(cam)
+    this.occlLastTarget.copy(tgt)
     const dir = new THREE.Vector3()
     for (const sp of this.axisLabels) {
       const distToLabel = cam.distanceTo(sp.position)
