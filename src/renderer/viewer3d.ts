@@ -11,11 +11,12 @@ const METERS_PER_WORLD_UNIT = 5000
 const WORLD_SCALE = 1 / METERS_PER_WORLD_UNIT
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
+// 色相を青→緑のレンジに収めて種別差を控えめにする（2D ROUTE_COLORS と一致させる）。
 const ROUTE_COLORS_3D: Record<RouteCategory, number> = {
-  road: 0x4fc3f7, // 自動車道=水色
-  foot: 0xffa726, // 歩道=オレンジ
-  trail: 0x9acd32, // 登山道=黄緑
-  rail: 0xcfd3d6 // 鉄道=グレー
+  road: 0x4fb6f7, // 自動車道=青
+  foot: 0x2fd0c4, // 歩道=シアン/ティール
+  trail: 0x5fcf72, // 登山道=緑
+  rail: 0x8fc7b4 // 鉄道=青緑（彩度低め）
 }
 
 /** モーフ演出中にルート折れ線を旧→新へ補間するための頂点バッファ（flat xyz） */
