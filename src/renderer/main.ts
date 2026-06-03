@@ -91,7 +91,13 @@ const viewMenuRouteCats = $('view-menu-route-cats')
 // 「ルートを表示」OFF のときは種別チェックを淡色＆無効化
 function syncRouteCatsEnabled() {
   viewMenuRouteCats.classList.toggle('disabled', !chkShowRoutes.checked)
-  for (const c of [chkShowRouteRoad, chkShowRouteFoot, chkShowRouteTrail, chkShowRouteRail]) {
+  for (const c of [
+    chkShowRouteRoad,
+    chkShowRouteFoot,
+    chkShowRouteTrail,
+    chkShowRouteRail,
+    chkShowRouteInfo
+  ]) {
     c.disabled = !chkShowRoutes.checked
   }
 }
@@ -121,6 +127,13 @@ chkShowRouteTrail.addEventListener('change', () => {
 chkShowRouteRail.addEventListener('change', () => {
   viewer?.setRouteCategoryVisible('rail', chkShowRouteRail.checked)
   api.setSettings({ showRouteRail: chkShowRouteRail.checked })
+})
+
+// ルートの距離/勾配ラベル（カーブ単位）の表示トグル
+const chkShowRouteInfo = $<HTMLInputElement>('chk-show-route-info')
+chkShowRouteInfo.addEventListener('change', () => {
+  viewer?.setRouteLabelsVisible(chkShowRouteInfo.checked)
+  api.setSettings({ showRouteInfo: chkShowRouteInfo.checked })
 })
 
 // ヘルプ（右下のマウス操作ガイド）の表示トグル
@@ -861,6 +874,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setRouteCategoryVisible('foot', chkShowRouteFoot.checked)
       viewer.setRouteCategoryVisible('trail', chkShowRouteTrail.checked)
       viewer.setRouteCategoryVisible('rail', chkShowRouteRail.checked)
+      viewer.setRouteLabelsVisible(chkShowRouteInfo.checked)
       viewer.setLandmarksEditable(detailMode)
       viewer.setRenderMode(renderModeSel.value as 'default' | 'heightmap' | 'satellite')
       viewer.setAutoRotate(autoRotate)
@@ -1834,6 +1848,7 @@ btnExportRaw.addEventListener('click', async () => {
   if (settings.showRouteFoot === false) chkShowRouteFoot.checked = false
   if (settings.showRouteTrail === false) chkShowRouteTrail.checked = false
   if (settings.showRouteRail === false) chkShowRouteRail.checked = false
+  if (settings.showRouteInfo) chkShowRouteInfo.checked = true
   syncRouteCatsEnabled()
   if (settings.showHelp === false) {
     chkShowHelp.checked = false

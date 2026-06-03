@@ -14,6 +14,10 @@ const WORLD_SCALE = 1 / METERS_PER_WORLD_UNIT
 const LABEL_DIM_OPACITY = 0.2
 // 「上へ逃がす」でラベルが目標の高さへ移動する速さ（毎フレームの補間係数）。小さいほどゆっくり。
 const LABEL_STEM_LERP = 0.08
+// ルートの距離/勾配ラベル（カーブ単位）。地名ラベルより小さめのフォント高さ（annotScale 倍率前）。
+const ROUTE_LABEL_WORLD_H = 0.022
+// ルートの画面上の長さ（px）がこれ未満ならラベルを出さない（遠い/短いカーブの間引き＝LOD）。
+const ROUTE_LABEL_MIN_PX = 60
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
 // 色相を緑寄り（ティール緑→緑→黄緑）に収めて種別差を控えめにする（2D ROUTE_COLORS と一致）。
@@ -192,6 +196,9 @@ export class TerrainViewer {
   private routes: Route[] = []
   private routeGroup: THREE.Group | null = null
   private routesVisible = true
+  // カーブ単位の距離/勾配ラベル（routeGroup の子スプライト）。declutter で重なり回避する。
+  private routeLabels: { sprite: THREE.Sprite; category: RouteCategory; worldLen: number }[] = []
+  private routeLabelsVisible = true
   // 種別ごとの表示フラグ（「ルートを表示」全体の ON/OFF とは別に効かせる）
   private routeCatVisible: Record<RouteCategory, boolean> = {
     road: true,
@@ -770,6 +777,11 @@ export class TerrainViewer {
     if (this.routeGroup) this.routeGroup.visible = on
   }
 
+  /** ルートの距離/勾配ラベルの表示/非表示を切り替える（declutter が opacity に反映）。 */
+  setRouteLabelsVisible(on: boolean) {
+    this.routeLabelsVisible = on
+  }
+
   /** 種別（道路/歩道/鉄道）ごとに表示/非表示を切り替える */
   setRouteCategoryVisible(cat: RouteCategory, on: boolean) {
     this.routeCatVisible[cat] = on
@@ -798,9 +810,11 @@ export class TerrainViewer {
     const wipe = tr && tr.kind === 'wipe' ? tr : null
     const morph = tr && tr.kind === 'morph' ? tr : null
     if (morph) morph.routeLines = [] // 再構築するので古い参照を捨てる
+    this.routeLabels = [] // 距離/勾配ラベルも作り直す（古いスプライトは routeGroup と一緒に破棄済み）
     if (!g || this.routes.length === 0) return
 
     const lift = 8 * g.k // 地表から数メートル浮かせて Z ファイト／めり込みを避ける
+    const labelSprites: THREE.Sprite[] = [] // routeGroup へまとめて追加する距離/勾配ラベル
     // 種別ごとに線分頂点を貯める（new=新地形上 / old=旧地形上＝morph 補間の始点）。
     const cats: RouteCategory[] = ['road', 'foot', 'trail', 'rail']
     const newByCat: Record<RouteCategory, number[]> = { road: [], foot: [], trail: [], rail: [] }
@@ -836,6 +850,10 @@ export class TerrainViewer {
         nf.push(px[i], py[i], pz[i], px[i + 1], py[i + 1], pz[i + 1])
         if (morph) of.push(ox[i], oy[i], oz[i], ox[i + 1], oy[i + 1], oz[i + 1])
       }
+
+      // カーブ単位の距離/勾配ラベルを作る（水平距離・総上り＝②平均グレード）。py は既に lift 込み。
+      const sp = this.buildRouteLabel(px, py, pz, r.category)
+      if (sp) labelSprites.push(sp)
     }
 
     const group = new THREE.Group()
@@ -872,10 +890,71 @@ export class TerrainViewer {
         this.applyRouteMorph(rl, t * t * (3 - 2 * t))
       }
     }
+    // 距離/勾配ラベルも routeGroup の子にする（ルートと一緒に表示/移動。重なり回避は declutter）。
+    for (const sp of labelSprites) group.add(sp)
     group.visible = this.routesVisible
     // 地形グループの子にして、スライド/ワイプ等の演出で地形と一緒に動かす。
     ;(this.terrainGroup ?? this.scene).add(group)
     this.routeGroup = group
+  }
+
+  /**
+   * 1本のルート（ワールド頂点列）から距離/勾配ラベルのスプライトを作って返す（無ければ null）。
+   * 距離＝水平距離、勾配＝②平均グレード＝総上り/水平距離。アンカーは弧長の中点。
+   * 返り値の登録（this.routeLabels）もここで行う。
+   */
+  private buildRouteLabel(
+    px: number[],
+    py: number[],
+    pz: number[],
+    category: RouteCategory
+  ): THREE.Sprite | null {
+    const g = this.geo
+    if (!g || px.length < 2) return null
+    // 各区間の水平長（ワールド）と総上り（ワールド）を集計。
+    const segLen: number[] = []
+    let totalLen = 0
+    let ascent = 0
+    for (let i = 0; i < px.length - 1; i++) {
+      const dx = px[i + 1] - px[i]
+      const dz = pz[i + 1] - pz[i]
+      const L = Math.hypot(dx, dz)
+      segLen.push(L)
+      totalLen += L
+      const dy = py[i + 1] - py[i]
+      if (dy > 0) ascent += dy
+    }
+    const horizM = totalLen / g.k // ワールド→メートル
+    if (horizM < 1) return null // 退化したカーブはラベルなし
+    const grade = ascent > 0 ? (ascent / totalLen) * 100 : 0 // ワールド比なので k は相殺
+    const km = horizM / 1000
+    const text = `${km.toFixed(1)}km/${Math.round(grade)}%`
+
+    // 弧長の中点を求めて配置位置（地表より少し上）にする。
+    const half = totalLen / 2
+    let acc = 0
+    let ax = px[0]
+    let ay = py[0]
+    let az = pz[0]
+    for (let i = 0; i < segLen.length; i++) {
+      if (acc + segLen[i] >= half) {
+        const f = segLen[i] > 0 ? (half - acc) / segLen[i] : 0
+        ax = px[i] + (px[i + 1] - px[i]) * f
+        ay = py[i] + (py[i + 1] - py[i]) * f
+        az = pz[i] + (pz[i + 1] - pz[i]) * f
+        break
+      }
+      acc += segLen[i]
+    }
+
+    const sp = makeLabelSprite(text, 0xffffff, ROUTE_LABEL_WORLD_H * this.annotScale)
+    // py は既に地表＋lift。ラベルは線の少し上に置く。
+    sp.position.set(ax, ay + 0.03 * this.annotScale, az)
+    sp.renderOrder = 11
+    sp.material.opacity = 0 // declutter のフェードで出す
+    sp.visible = false
+    this.routeLabels.push({ sprite: sp, category, worldLen: totalLen })
+    return sp
   }
 
   /** ルート折れ線の各頂点を旧→新へ e（0..1）で補間して反映する（morph 用） */
@@ -1148,6 +1227,7 @@ export class TerrainViewer {
     this.landmarkGroup = null
     // ルートグループも旧地形グループの子。参照を手放し、旧グループと一緒に生かす/破棄する。
     this.routeGroup = null
+    this.routeLabels = [] // 旧ラベルは旧グループと一緒に破棄される（参照だけ捨てる）
     // 新地点データがあれば renderLandmarks より前に反映（演出のフェード対象に含めるため）。
     if (landmarks) this.landmarks = landmarks
     if (oldGroup && !keepOld) {
@@ -1361,57 +1441,59 @@ export class TerrainViewer {
    * 手前（カメラに近い）を基準位置に、奥側ほど上へ逃がす。
    */
   private declutterLabels() {
-    const group = this.landmarkGroup
-    if (!group || !group.visible || this.landmarkObjs.size === 0) return
+    const lmGroup = this.landmarkGroup
+    const hasLandmarks = !!lmGroup && lmGroup.visible && this.landmarkObjs.size > 0
+    const hasRouteLabels = this.routeLabels.length > 0
+    if (!hasLandmarks && !hasRouteLabels) return
     const w = this.container.clientWidth || 1
     const h = this.container.clientHeight || 1
     const fovR = (this.camera.fov * Math.PI) / 180
     const cam = this.camera.position
     const v = new THREE.Vector3()
-    const s = this.annotScale // 注釈倍率（renderLandmarks と一致させる）
-    const baseStem = 0.4 * s // 既定のリーダー線長（ワールド）
-    const gap = 0.05 * s // 線の先端からラベル中心までの隙間
-    const step = 0.04 * s // 上へ逃がす1ステップ（ワールド）
-    const maxStem = 1.6 * s
     const pad = 2
-
-    // モーフ中は「前/後ろ」の判定を最終位置（newBase）で固定し、配置だけ現在位置に追従させる。
-    // こうすると判定がモーフ中ブレず、完了後に明るさが急変（一瞬明るくなる等）しない。
+    // モーフ中・モーフ直後は opacity を即時反映（フェード遅延による明るい跳ねを抑える）。
     const morphing = this.trans?.kind === 'morph'
-    const decBaseOf = (o: { marker: THREE.Mesh }): THREE.Vector3 => {
-      if (morphing) {
-        const nb = o.marker.userData.morphNewBase as THREE.Vector3 | undefined
-        if (nb) return nb
-      }
-      return o.marker.position
-    }
-    // 判定は decBase（最終位置）／配置は marker.position（現在位置）で行う。
-    const entries = [...this.landmarkObjs.entries()].map(([id, o]) => ({
-      id,
-      o,
-      decBase: decBaseOf(o),
-      placeBase: o.marker.position,
-      dist: cam.distanceTo(decBaseOf(o))
-    }))
-    // hideFar はヒステリシス：直前に表示だったラベルを優先処理して前面の座を保たせる
-    // （カメラ移動で距離順が僅かに入れ替わっても前/後ろが揺れない＝後ろが一瞬明るくならない）。
-    // それ以外は単純に近い順。
-    if (this.labelDeclutter === 'hideFar') {
-      entries.sort((a, b) => {
-        const dd = a.dist - b.dist
-        const hys = Math.max(0.02 * this.annotScale, Math.min(a.dist, b.dist) * 0.015)
-        if (Math.abs(dd) > hys) return dd
-        const aw = this.labelShown.get(a.id) ? 0 : 1
-        const bw = this.labelShown.get(b.id) ? 0 : 1
-        return aw !== bw ? aw - bw : a.dist - b.dist
-      })
-    } else {
-      entries.sort((a, b) => a.dist - b.dist)
-    }
-
+    const snapNow = morphing || performance.now() < this.labelOpacitySnapUntil
+    // 地名ラベルとルートラベルで共有する配置済み矩形（互いに重ならないように積む）。
     const placed: [number, number, number, number][] = []
     const overlaps = (a: number[], b: number[]) =>
       a[0] < b[0] + b[2] + pad && a[0] + a[2] + pad > b[0] && a[1] < b[1] + b[3] + pad && a[1] + a[3] + pad > b[1]
+
+    // ---- 地名ラベル（マーカー＋リーダー線：上へ逃がす/奥を隠す/なし） ----
+    if (hasLandmarks) {
+      const s = this.annotScale // 注釈倍率（renderLandmarks と一致させる）
+      const baseStem = 0.4 * s // 既定のリーダー線長（ワールド）
+      const gap = 0.05 * s // 線の先端からラベル中心までの隙間
+      const step = 0.04 * s // 上へ逃がす1ステップ（ワールド）
+      const maxStem = 1.6 * s
+      // 判定は decBase（最終位置）／配置は marker.position（現在位置）。モーフ中も判定がブレない。
+      const decBaseOf = (o: { marker: THREE.Mesh }): THREE.Vector3 => {
+        if (morphing) {
+          const nb = o.marker.userData.morphNewBase as THREE.Vector3 | undefined
+          if (nb) return nb
+        }
+        return o.marker.position
+      }
+      const entries = [...this.landmarkObjs.entries()].map(([id, o]) => ({
+        id,
+        o,
+        decBase: decBaseOf(o),
+        placeBase: o.marker.position,
+        dist: cam.distanceTo(decBaseOf(o))
+      }))
+      // hideFar はヒステリシス：直前に表示だったラベルを優先して前面の座を保たせる。
+      if (this.labelDeclutter === 'hideFar') {
+        entries.sort((a, b) => {
+          const dd = a.dist - b.dist
+          const hys = Math.max(0.02 * this.annotScale, Math.min(a.dist, b.dist) * 0.015)
+          if (Math.abs(dd) > hys) return dd
+          const aw = this.labelShown.get(a.id) ? 0 : 1
+          const bw = this.labelShown.get(b.id) ? 0 : 1
+          return aw !== bw ? aw - bw : a.dist - b.dist
+        })
+      } else {
+        entries.sort((a, b) => a.dist - b.dist)
+      }
 
     for (const { id, o, decBase, placeBase } of entries) {
       const labelDist = cam.distanceTo(decBase)
@@ -1489,11 +1571,40 @@ export class TerrainViewer {
         labelTarget = show ? 1 : dim
         lineTarget = labelTarget // 線もラベルと同じ濃さでフェード
       }
-      // labelFade（モーフのフェードイン等）を乗算。モーフ中は判定が安定しているので opacity を
-      // 直接設定（フェードの遅延をなくし、完了時に最終値へ達して「一瞬明るくなる」のを防ぐ）。
-      const snapOpacity = morphing || performance.now() < this.labelOpacitySnapUntil
-      this.fadeObject(o.label, labelTarget * this.labelFade, snapOpacity)
-      this.fadeObject(o.line, lineTarget * this.labelFade, snapOpacity)
+      // labelFade（モーフのフェードイン等）を乗算。モーフ中/直後は即時反映。
+      this.fadeObject(o.label, labelTarget * this.labelFade, snapNow)
+      this.fadeObject(o.line, lineTarget * this.labelFade, snapNow)
+      }
+    }
+
+    // ---- ルートの距離/勾配ラベル（カーブ単位、地名ラベルと placed を共有して重なり回避） ----
+    if (hasRouteLabels) {
+      const visibleBase = this.routesVisible && this.routeLabelsVisible
+      // 優先度＝長い順（混雑時に主要ルートのラベルを残す）。
+      const items = visibleBase ? [...this.routeLabels].sort((a, b) => b.worldLen - a.worldLen) : []
+      for (const { sprite, category, worldLen } of items) {
+        let targetOp = 0
+        if (this.routeCatVisible[category]) {
+          v.copy(sprite.position).project(this.camera)
+          const onScreen = v.z < 1 && v.x >= -1.2 && v.x <= 1.2 && v.y >= -1.2 && v.y <= 1.2
+          const dist = cam.distanceTo(sprite.position)
+          const pxPerWorld = h / (2 * Math.tan(fovR / 2) * Math.max(dist, 1e-3))
+          // カーブの画面上の長さが短すぎる（遠い/短い）ものはラベルを出さない（LOD）。
+          if (onScreen && worldLen * pxPerWorld >= ROUTE_LABEL_MIN_PX) {
+            const sw = sprite.scale.x * pxPerWorld
+            const sh = sprite.scale.y * pxPerWorld
+            const sx = (v.x * 0.5 + 0.5) * w
+            const sy = (-v.y * 0.5 + 0.5) * h
+            const rect: [number, number, number, number] = [sx - sw / 2, sy - sh / 2, sw, sh]
+            if (!placed.some((p) => overlaps(rect, p))) {
+              placed.push(rect)
+              targetOp = 1
+            }
+          }
+        }
+        this.fadeObject(sprite, targetOp * this.labelFade, snapNow)
+      }
+      if (!visibleBase) for (const { sprite } of this.routeLabels) this.fadeObject(sprite, 0, snapNow)
     }
   }
 
