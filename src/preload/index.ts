@@ -117,6 +117,11 @@ const api = {
     format: 'png16' | 'raw16'
   ): Promise<{ saved: boolean; filePath?: string }> =>
     ipcRenderer.invoke('workspace:export', id, format),
+  // ロケーションを ZIP でバックアップ / 復元
+  exportZip: (id: string): Promise<{ saved: boolean; filePath?: string }> =>
+    ipcRenderer.invoke('workspace:exportZip', id),
+  importZip: (): Promise<{ imported: boolean; workspace?: Workspace }> =>
+    ipcRenderer.invoke('workspace:importZip'),
   // 衛星画像
   fetchSatellite: (bbox: BBox, zoom: number): Promise<SatelliteTilesPayload> =>
     ipcRenderer.invoke('satellite:fetch', { bbox, zoom }),

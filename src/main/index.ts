@@ -31,8 +31,11 @@ import {
   readValues16,
   readPreviewDataUrl,
   readSatelliteDataUrl,
-  saveSatellite
+  saveSatellite,
+  readWorkspaceEntries,
+  importWorkspaceEntries
 } from './library'
+import { writeZip, readZip } from './zip'
 
 interface Config {
   token?: string
@@ -446,6 +449,35 @@ app.whenReady().then(() => {
       await exportRaw16(filePath, values16)
     }
     return { saved: true, filePath }
+  })
+
+  // --- ワークスペースを ZIP でバックアップ書き出し（再取り込み可能な丸ごと） ---
+  ipcMain.handle('workspace:exportZip', async (_e, id: string) => {
+    const dir = await ensureDataDir()
+    const ws = await getWorkspace(dir, id)
+    if (!ws) throw new Error('ワークスペースが見つかりません。')
+    const fileName = `${ws.name}.zip`.replace(/[\\/:*?"<>|]/g, '_')
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'ロケーションを ZIP で書き出し',
+      defaultPath: join(dir, fileName),
+      filters: [{ name: 'ZIP アーカイブ', extensions: ['zip'] }]
+    })
+    if (canceled || !filePath) return { saved: false }
+    await writeZip(filePath, await readWorkspaceEntries(dir, id))
+    return { saved: true, filePath }
+  })
+
+  // --- ZIP からワークスペースを取り込み（新規ロケーションとして復元） ---
+  ipcMain.handle('workspace:importZip', async () => {
+    const dir = await ensureDataDir()
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+      title: 'ロケーション ZIP を取り込み',
+      properties: ['openFile'],
+      filters: [{ name: 'ZIP アーカイブ', extensions: ['zip'] }]
+    })
+    if (canceled || !filePaths?.length) return { imported: false }
+    const ws = await importWorkspaceEntries(dir, await readZip(filePaths[0]))
+    return { imported: true, workspace: ws }
   })
 
   createWindow()

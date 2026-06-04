@@ -169,7 +169,12 @@
             <!-- 一覧モードのヘッダ -->
             <div class="row" id="ws-list-header" style="justify-content: space-between">
               <label style="margin: 0" data-i18n="side.library">ロケーション</label>
-              <span class="muted" id="lib-count"></span>
+              <div class="row" style="gap: 6px; align-items: center">
+                <button id="btn-import-zip" data-i18n="btn.importZip" title="ZIPからロケーションを復元">
+                  📦 取り込み
+                </button>
+                <span class="muted" id="lib-count"></span>
+              </div>
             </div>
             <!-- 詳細モードの戻るリンク -->
             <a id="ws-back" class="back-link" data-i18n="ws.back">← ロケーション一覧</a>
@@ -184,6 +189,9 @@
                   PNG16 書き出し
                 </button>
                 <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
+                <button id="btn-export-zip" disabled data-i18n="btn.exportZip" title="再取り込み可能なバックアップZIP">
+                  ZIP 書き出し
+                </button>
               </div>
 
               <!-- ランドマーク / ルート のサブタブ -->

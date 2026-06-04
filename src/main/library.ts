@@ -14,6 +14,7 @@
 import { promises as fs } from 'fs'
 import { join } from 'path'
 import type { BBox } from './tiles'
+import type { ZipEntry } from './zip'
 
 const WS_FILE = 'workspace.json'
 const U16_FILE = 'heightmap.u16'
@@ -267,6 +268,65 @@ export async function readSatelliteDataUrl(dir: string, id: string): Promise<str
   } catch {
     return null
   }
+}
+
+/**
+ * ワークスペースのフォルダ内容を ZIP エントリ配列として読み出す（バックアップ用）。
+ * 任意ファイル（satellite.png 等）は存在するものだけ含める。
+ */
+export async function readWorkspaceEntries(dir: string, id: string): Promise<ZipEntry[]> {
+  if (!(await readWorkspaceFile(dir, id))) throw new Error('ワークスペースが見つかりません。')
+  const files = [WS_FILE, U16_FILE, PREVIEW_FILE, SATELLITE_FILE]
+  const entries: ZipEntry[] = []
+  for (const f of files) {
+    try {
+      entries.push({ name: f, data: await fs.readFile(join(dir, id, f)) })
+    } catch {
+      /* 任意ファイルが無ければスキップ */
+    }
+  }
+  return entries
+}
+
+/**
+ * ZIP から取り出したエントリ群を「新しいワークスペース」として取り込む（復元）。
+ * 既存と衝突しないよう id は採番し直し、表示順は末尾に置く。
+ * 想定外のパス（zip slip）を防ぐため、既知のファイル名だけを書き出す。
+ */
+export async function importWorkspaceEntries(dir: string, entries: ZipEntry[]): Promise<Workspace> {
+  const wsEntry = entries.find((e) => e.name === WS_FILE)
+  if (!wsEntry) {
+    throw new Error('workspace.json が見つかりません。正しいバックアップ ZIP ではありません。')
+  }
+  let ws: Workspace
+  try {
+    ws = JSON.parse(wsEntry.data.toString('utf-8')) as Workspace
+  } catch {
+    throw new Error('workspace.json の解析に失敗しました。')
+  }
+  if (!ws.heightmap) throw new Error('workspace.json に heightmap 情報がありません。')
+  if (!entries.some((e) => e.name === U16_FILE)) {
+    throw new Error('heightmap.u16 が見つかりません。')
+  }
+
+  // 新しい id を採番（時刻＋乱数で衝突回避）。order は末尾へ。
+  const newId = `ws_${Date.now().toString(36)}_${Math.floor(Math.random() * 1e6).toString(36)}`
+  ws.id = newId
+  ws.landmarks = ws.landmarks ?? []
+  ws.routes = ws.routes ?? []
+  const existing = await listWorkspaces(dir)
+  const orders = existing.map((e) => e.order).filter((o): o is number => typeof o === 'number')
+  ws.order = orders.length ? Math.max(...orders) + 1 : existing.length
+
+  await fs.mkdir(wsDir(dir, newId), { recursive: true })
+  // データファイルはそのまま書き出し。workspace.json は id を更新した内容で別途書く。
+  const allowed = [U16_FILE, PREVIEW_FILE, SATELLITE_FILE]
+  for (const e of entries) {
+    if (!allowed.includes(e.name)) continue
+    await fs.writeFile(join(dir, newId, e.name), e.data)
+  }
+  await writeWorkspaceFile(dir, ws)
+  return ws
 }
 
 async function moveIfExists(from: string, to: string): Promise<void> {

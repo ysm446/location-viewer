@@ -59,6 +59,8 @@ const viewer3dTitle = $('viewer3d-title')
 const progress = $('progress')
 const btnExportPng = $<HTMLButtonElement>('btn-export-png')
 const btnExportRaw = $<HTMLButtonElement>('btn-export-raw')
+const btnExportZip = $<HTMLButtonElement>('btn-export-zip')
+const btnImportZip = $<HTMLButtonElement>('btn-import-zip')
 const btnUpdateTerrain = $<HTMLButtonElement>('btn-update-terrain')
 const libList = $<HTMLUListElement>('library-list')
 const libCount = $('lib-count')
@@ -1039,6 +1041,7 @@ function showPreview(
   )}m${satMark}`
   btnExportPng.disabled = false
   btnExportRaw.disabled = false
+  btnExportZip.disabled = false
   btnUpdateTerrain.disabled = false
   markSelected()
 
@@ -1720,6 +1723,7 @@ async function refreshLibrary() {
         previewEmpty.style.display = 'block'
         btnExportPng.disabled = true
         btnExportRaw.disabled = true
+        btnExportZip.disabled = true
         btnUpdateTerrain.disabled = true
         clearAnnotations()
       }
@@ -1813,6 +1817,27 @@ btnExportRaw.addEventListener('click', async () => {
   if (!selectedId) return
   const r = await api.exportItem(selectedId, 'raw16')
   if (r.saved) progress.textContent = t('export.saved') + r.filePath
+})
+btnExportZip.addEventListener('click', async () => {
+  if (!selectedId) return
+  try {
+    const r = await api.exportZip(selectedId)
+    if (r.saved) progress.textContent = t('export.saved') + r.filePath
+  } catch (err) {
+    alert(t('export.saved') + (err as Error).message)
+  }
+})
+
+// ---- インポート（ZIP → 新規ロケーション） ----
+btnImportZip.addEventListener('click', async () => {
+  try {
+    const r = await api.importZip()
+    if (!r.imported || !r.workspace) return
+    await refreshLibrary()
+    progress.textContent = t('import.done') + r.workspace.name
+  } catch (err) {
+    alert(t('import.failed') + (err as Error).message)
+  }
 })
 
 // ---- 起動時 ----

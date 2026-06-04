@@ -68,6 +68,8 @@ const ja: Dict = {
   'selected.none': '選択なし',
   'btn.exportPng': 'PNG16 書き出し',
   'btn.exportRaw': 'R16 書き出し',
+  'btn.exportZip': 'ZIP 書き出し',
+  'btn.importZip': '📦 取り込み',
   'side.language': '言語 / Language',
   'lib.delete': '削除',
   'lib.rename': '名前を変更',
@@ -123,6 +125,8 @@ const ja: Dict = {
   'load.loading': '読み込み中…',
   'load.failed': '読み込みに失敗しました: ',
   'export.saved': '書き出し: ',
+  'import.done': '取り込み完了: ',
+  'import.failed': '取り込みに失敗しました: ',
   'count.items': '件'
 }
 
@@ -189,6 +193,8 @@ const en: Dict = {
   'selected.none': 'No selection',
   'btn.exportPng': 'Export PNG16',
   'btn.exportRaw': 'Export R16',
+  'btn.exportZip': 'Export ZIP',
+  'btn.importZip': '📦 Import',
   'side.language': 'Language / 言語',
   'lib.delete': 'Delete',
   'lib.rename': 'Rename',
@@ -244,6 +250,8 @@ const en: Dict = {
   'load.loading': 'Loading…',
   'load.failed': 'Failed to load: ',
   'export.saved': 'Saved: ',
+  'import.done': 'Imported: ',
+  'import.failed': 'Import failed: ',
   'count.items': ' items'
 }
 
