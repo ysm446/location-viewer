@@ -18,6 +18,7 @@ const LABEL_STEM_LERP = 0.08
 const ROUTE_LABEL_WORLD_H = 0.027
 // ルートの画面上の長さ（px）がこれ未満ならラベルを出さない（遠い/短いカーブの間引き＝LOD）。
 const ROUTE_LABEL_MIN_PX = 60
+const AXIS_LABEL_RIGHT_OFFSET_RATIO = 0.2
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
 // 色相を緑寄り（ティール緑→緑→黄緑）に収めて種別差を控えめにする（2D ROUTE_COLORS と一致）。
@@ -47,9 +48,12 @@ interface LandmarkFollow {
 
 /** モーフ中に軸ラベル（km）をフットプリント変形に追従させるための基準（新）位置 */
 interface AxisFollow {
-  sp: THREE.Sprite
+  sp: FlatLabelMesh
   base: THREE.Vector3 // 新フットプリントでの位置（毎フレーム rx/rz で縮める）
 }
+
+type FlatLabelMesh = THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>
+type LabelObject = THREE.Sprite | FlatLabelMesh
 
 /** lng/lat → メッシュのローカル座標変換に必要な情報 */
 interface GeoContext {
@@ -72,7 +76,7 @@ export class TerrainViewer {
   private mesh: THREE.Mesh | null = null
   private grid: THREE.GridHelper | null = null
   // グリッド中心軸の端に置く距離ラベル（中心から端までの km）
-  private axisLabels: THREE.Sprite[] = []
+  private axisLabels: FlatLabelMesh[] = []
   private container: HTMLElement
   private raf = 0
   // デバッグ表示（FPS・描画統計）。debugEl は container に重ねるオーバーレイ。
@@ -84,12 +88,6 @@ export class TerrainViewer {
   // メインシーン描画直後の統計（renderer.info は render ごとにリセットされるため退避）。
   private dbgCalls = 0
   private dbgTriangles = 0
-  // 軸ラベルの遮蔽判定（地形へのレイキャスト＝高コスト）の間引き用。
-  // カメラが動いていないフレームはスキップし、動いている間も時間で間引く。
-  private occlDirty = true
-  private occlLastTime = 0
-  private occlLastCam = new THREE.Vector3(Infinity, Infinity, Infinity)
-  private occlLastTarget = new THREE.Vector3(Infinity, Infinity, Infinity)
   // スムーズズーム: ホイールで目標距離(注視点からの半径)を設定し、毎フレーム補間で寄せる。
   // null のときはズーム停止中。
   private zoomTarget: number | null = null
@@ -120,8 +118,8 @@ export class TerrainViewer {
         newPlane: THREE.Plane | null
         newMats: THREE.Material[]
         // ラベル（軸km表示＋地名）。slide=opacityクロスフェード / wipe=seam同期で表示切替。
-        oldSprites: THREE.Sprite[]
-        newSprites: THREE.Sprite[]
+        oldSprites: LabelObject[]
+        newSprites: LabelObject[]
       }
     | {
         // ハイト・モーフ：新メッシュの頂点Yを旧→新へ補間し、X/Z スケール（広さ）も補間。
@@ -506,7 +504,7 @@ export class TerrainViewer {
       sp,
       base: sp.position.clone()
     }))
-    for (const a of axisFollow) (a.sp.material as THREE.SpriteMaterial).opacity = 0
+    for (const a of axisFollow) a.sp.material.opacity = 0
     // 地点：新しい接地点（marker.position）と、旧地形上の接地点を作って旧→新へ補間する。
     const g = this.geo
     const baseY0 = this.seaLevelBase ? oldPayload.minEle * WORLD_SCALE : 0
@@ -573,10 +571,11 @@ export class TerrainViewer {
   }
 
   /** グループ内のラベル（スプライト＝軸km・地名）を集める（フェード/表示切替用）。 */
-  private collectSprites(g: THREE.Group): THREE.Sprite[] {
-    const out: THREE.Sprite[] = []
+  private collectSprites(g: THREE.Group): LabelObject[] {
+    const out: LabelObject[] = []
     g.traverse((o) => {
       if ((o as THREE.Sprite).isSprite) out.push(o as THREE.Sprite)
+      else if ((o as FlatLabelMesh).userData?.isFlatLabel) out.push(o as FlatLabelMesh)
     })
     return out
   }
@@ -625,7 +624,7 @@ export class TerrainViewer {
       // 軸ラベル(km)：フットプリント変形に追従＋フェードイン。
       for (const a of tr.axisFollow) {
         a.sp.position.set(a.base.x * fx, a.base.y, a.base.z * fz)
-        ;(a.sp.material as THREE.SpriteMaterial).opacity = e
+        a.sp.material.opacity = e
       }
       // 地点：マーカーを地表に追従させ、線・ラベルの配置と重なり回避は declutterLabels に任せる
       // （モーフ中も declutter が走るため）。フェードインは labelFade を opacity に乗算して反映。
@@ -691,10 +690,10 @@ export class TerrainViewer {
       if (tr.grid) tr.grid.scale.set(1, 1, 1) // 伸縮した広さを新（等倍）へ戻す
       // ルート折れ線を最終形（新地形上）へ確定。
       for (const rl of tr.routeLines) this.applyRouteMorph(rl, 1)
-      // 軸ラベルを新位置・不透明度1へ確定（以後は occlusion が担当）。
+      // 軸ラベルを新位置・不透明度1へ確定。
       for (const a of tr.axisFollow) {
         a.sp.position.copy(a.base)
-        ;(a.sp.material as THREE.SpriteMaterial).opacity = 1
+        a.sp.material.opacity = 1
       }
       // 地点はマーカーを新接地点へ確定。線・ラベルの配置/不透明度は直後に走る declutter が引き継ぐ。
       for (const lf of tr.landmarkFollow) {
@@ -742,7 +741,9 @@ export class TerrainViewer {
       } else if ((o as THREE.Mesh).isMesh || (o as THREE.Line).isLine) {
         const any = o as THREE.Mesh & THREE.Line
         any.geometry?.dispose()
-        ;(any.material as THREE.Material)?.dispose()
+        const mat = any.material as THREE.Material & { map?: THREE.Texture }
+        mat.map?.dispose()
+        mat?.dispose()
       }
     })
   }
@@ -1247,7 +1248,6 @@ export class TerrainViewer {
     this.mesh = null
     this.grid = null
     this.axisLabels = []
-    this.occlDirty = true // 新しい地形・軸ラベルになるので遮蔽判定を一度やり直す
 
     // ジオメトリは「地表メートル」で作る（X=東西, Z=南北, Y=高さ[m]）。
     // 高さも同じメートル単位なので、全軸を同じ倍率でスケールすれば実寸比率になる。
@@ -1330,16 +1330,16 @@ export class TerrainViewer {
     group.userData.halfExtent = halfWorld // ワイプ/スライドの境界振り幅（グリッド端まで含む）
     const halfKm = gridSpan / 2 / 1000
     const kmText = `${halfKm >= 10 ? halfKm.toFixed(0) : halfKm >= 1 ? halfKm.toFixed(1) : halfKm.toFixed(2)} km`
-    const ends: [string, THREE.Vector3][] = [
-      [`E ${kmText}`, new THREE.Vector3(halfWorld, 0, 0)],
-      [`W ${kmText}`, new THREE.Vector3(-halfWorld, 0, 0)],
-      [`N ${kmText}`, new THREE.Vector3(0, 0, -halfWorld)],
-      [`S ${kmText}`, new THREE.Vector3(0, 0, halfWorld)]
+    const ends: [string, THREE.Vector3, THREE.Vector2, THREE.Vector2][] = [
+      [`E ${kmText}`, new THREE.Vector3(halfWorld, 0, 0), new THREE.Vector2(1, 0), new THREE.Vector2(1, 0)],
+      [`W ${kmText}`, new THREE.Vector3(-halfWorld, 0, 0), new THREE.Vector2(1, 0), new THREE.Vector2(-1, 0)],
+      [`N ${kmText}`, new THREE.Vector3(0, 0, -halfWorld), new THREE.Vector2(0, -1), new THREE.Vector2(0, -1)],
+      [`S ${kmText}`, new THREE.Vector3(0, 0, halfWorld), new THREE.Vector2(0, 1), new THREE.Vector2(0, 1)]
     ]
-    for (const [text, pos] of ends) {
+    for (const [text, pos, textDir, offsetDir] of ends) {
       // 深度テストなし＝常にフル描画（見切れ防止）。worldH は注釈倍率を反映。
-      const sp = makeLabelSprite(text, 0x9fc2e8, 0.06 * this.annotScale)
-      sp.position.copy(pos)
+      const sp = makeFlatLabelMesh(text, 0x9fc2e8, 0.06 * this.annotScale, textDir, offsetDir)
+      sp.position.copy(pos).add(sp.userData.axisLabelOffset as THREE.Vector3)
       group.add(sp)
       this.axisLabels.push(sp)
     }
@@ -1626,36 +1626,6 @@ export class TerrainViewer {
     obj.visible = mat.opacity > 0.01
   }
 
-  /**
-   * グリッド端の距離ラベルが地形の裏に回り込んだら、ラベルごと丸ごと隠す。
-   * 深度テストだと文字が途中で見切れるため、アンカー点のオクルージョンを
-   * レイキャストで判定して all-or-nothing で表示/非表示する。
-   */
-  private updateAxisLabelOcclusion() {
-    if (!this.mesh || this.axisLabels.length === 0) return
-    const cam = this.camera.position
-    const tgt = this.controls.target
-    // カメラ（位置・注視点）が前回判定から動いていなければ結果は不変なのでスキップ。
-    // 動いている間も約80msごとに間引く（自動回転中などの毎フレーム判定を防ぐ）。
-    const moved =
-      cam.distanceToSquared(this.occlLastCam) > 1e-8 ||
-      tgt.distanceToSquared(this.occlLastTarget) > 1e-8
-    const now = performance.now()
-    if (!this.occlDirty && (!moved || now - this.occlLastTime < 80)) return
-    this.occlDirty = false
-    this.occlLastTime = now
-    this.occlLastCam.copy(cam)
-    this.occlLastTarget.copy(tgt)
-    const dir = new THREE.Vector3()
-    for (const sp of this.axisLabels) {
-      const distToLabel = cam.distanceTo(sp.position)
-      dir.copy(sp.position).sub(cam).normalize()
-      this.raycaster.set(cam, dir)
-      const hit = this.raycaster.intersectObject(this.mesh)[0]
-      sp.visible = !(hit && hit.distance < distToLabel - 0.02)
-    }
-  }
-
   /** ホイールで設定した目標距離へカメラを毎フレーム少しずつ寄せる（スムーズズーム）。 */
   private updateSmoothZoom() {
     if (this.zoomTarget === null) return
@@ -1686,9 +1656,6 @@ export class TerrainViewer {
     // slide/wipe はグループが X 移動して投影がズレるので従来どおり止める。
     const isMorph = this.trans?.kind === 'morph'
     if (!this.trans || isMorph) this.declutterLabels()
-    // 軸ラベルの遮蔽判定は morph 中は axisFollow が担うので、非演出時のみ。
-    if (!this.trans) this.updateAxisLabelOcclusion()
-
     // メインシーン
     this.renderer.setViewport(0, 0, this.container.clientWidth, this.container.clientHeight)
     this.renderer.setScissorTest(false)
@@ -1834,6 +1801,61 @@ function makeLabelSprite(
   sp.scale.set(totalH * (w / h), totalH, 1)
   sp.userData.lines = lines.length // 画面固定サイズ計算用（行数で目標pxを決める）
   return sp
+}
+
+/** グリッドに平行で上向きの距離ラベル板を作る。 */
+function makeFlatLabelMesh(
+  text: string,
+  color = 0x9fc2e8,
+  worldH = 0.06,
+  textDir = new THREE.Vector2(1, 0),
+  offsetDir = textDir
+): FlatLabelMesh {
+  const fontPx = 48
+  const pad = 10
+  const lineH = fontPx * 1.15
+  const lines = text.split('\n')
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  const font = `${fontPx}px Segoe UI, sans-serif`
+  ctx.font = font
+  const w = Math.ceil(Math.max(...lines.map((l) => ctx.measureText(l).width))) + pad * 2
+  const h = Math.ceil(lineH * lines.length) + pad * 2
+  canvas.width = w
+  canvas.height = h
+  ctx.font = font
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.lineWidth = 6
+  ctx.strokeStyle = 'rgba(0,0,0,0.85)'
+  ctx.fillStyle = '#' + color.toString(16).padStart(6, '0')
+  lines.forEach((l, i) => {
+    const cy = pad + lineH * (i + 0.5)
+    ctx.strokeText(l, w / 2, cy)
+    ctx.fillText(l, w / 2, cy)
+  })
+
+  const tex = new THREE.CanvasTexture(canvas)
+  tex.colorSpace = THREE.SRGBColorSpace
+  const totalH = worldH * lines.length
+  const worldW = totalH * (w / h)
+  const textAxis = textDir.clone().normalize()
+  const offsetAxis = offsetDir.clone().normalize()
+  const geo = new THREE.PlaneGeometry(worldW, totalH)
+  const mat = new THREE.MeshBasicMaterial({
+    map: tex,
+    side: THREE.FrontSide,
+    depthTest: true,
+    depthWrite: false,
+    transparent: true
+  })
+  const mesh = new THREE.Mesh(geo, mat) as FlatLabelMesh
+  mesh.rotation.set(-Math.PI / 2, 0, -Math.atan2(textAxis.y, textAxis.x))
+  mesh.userData.isFlatLabel = true
+  mesh.userData.axisLabelOffset = new THREE.Vector3(offsetAxis.x, 0, offsetAxis.y).multiplyScalar(
+    worldW / 2 + worldH * AXIS_LABEL_RIGHT_OFFSET_RATIO
+  )
+  return mesh
 }
 
 /** 値を 1/2/5×10^n の「きりの良い」距離に丸める（グリッド間隔用） */
