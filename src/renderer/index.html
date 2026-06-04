@@ -168,12 +168,16 @@
           <section id="ws-panel">
             <!-- 一覧モードのヘッダ -->
             <div class="row" id="ws-list-header" style="justify-content: space-between">
-              <label style="margin: 0" data-i18n="side.library">ロケーション</label>
+              <label id="lib-count" style="margin: 0">ロケーション</label>
               <div class="row" style="gap: 6px; align-items: center">
-                <button id="btn-import-zip" data-i18n="btn.importZip" title="ZIPからロケーションを復元">
-                  📦 取り込み
+                <button id="btn-import-zip" title="ZIPからロケーションを復元">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3v10"/>
+                    <path d="m8 9 4 4 4-4"/>
+                    <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
+                  </svg>
+                  <span data-i18n="btn.importZip">インポート</span>
                 </button>
-                <span class="muted" id="lib-count"></span>
               </div>
             </div>
             <!-- 詳細モードの戻るリンク -->
@@ -184,15 +188,6 @@
             <!-- 選択ワークスペースの中身（詳細モードでのみ表示） -->
             <div id="ws-detail">
               <p class="muted" id="selected-info" data-i18n="selected.none">選択なし</p>
-              <div class="row">
-                <button id="btn-export-png" disabled data-i18n="btn.exportPng">
-                  PNG16 書き出し
-                </button>
-                <button id="btn-export-raw" disabled data-i18n="btn.exportRaw">R16 書き出し</button>
-                <button id="btn-export-zip" disabled data-i18n="btn.exportZip" title="再取り込み可能なバックアップZIP">
-                  ZIP 書き出し
-                </button>
-              </div>
 
               <!-- ランドマーク / ルート のサブタブ -->
               <div id="ws-subtabs" class="tabs" style="margin-top: 12px">
@@ -200,6 +195,7 @@
                   ランドマーク
                 </button>
                 <button id="subtab-routes" class="tab" data-i18n="route.title">ルート（OSM）</button>
+                <button id="subtab-export" class="tab" data-i18n="export.title">エクスポート</button>
               </div>
 
               <!-- ランドマーク パネル -->
@@ -237,6 +233,29 @@
                   </button>
                   <button id="btn-clear-routes" class="link-danger" hidden data-i18n="route.clearAll">
                     全ルートをクリア
+                  </button>
+                </div>
+              </div>
+
+              <!-- エクスポート パネル -->
+              <div id="subview-export" class="subview hidden">
+                <div class="export-group">
+                  <h3 data-i18n="export.texture">テクスチャーのエクスポート</h3>
+                  <label for="export-texture-format" data-i18n="export.textureFormat">形式</label>
+                  <div class="row" style="gap: 8px">
+                    <select id="export-texture-format">
+                      <option value="png16" data-i18n="btn.exportPng">PNG16 書き出し</option>
+                      <option value="raw16" data-i18n="btn.exportRaw">R16 書き出し</option>
+                    </select>
+                    <button id="btn-export-texture" disabled data-i18n="btn.exportTexture">
+                      テクスチャーを書き出し
+                    </button>
+                  </div>
+                </div>
+                <div class="export-group">
+                  <h3 data-i18n="export.data">データのエクスポート</h3>
+                  <button id="btn-export-zip" disabled data-i18n="btn.exportZip" title="再取り込み可能なバックアップZIP">
+                    エクスポート
                   </button>
                 </div>
               </div>

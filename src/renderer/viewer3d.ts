@@ -73,6 +73,13 @@ export class TerrainViewer {
   private scene: THREE.Scene
   private camera: THREE.PerspectiveCamera
   private controls: OrbitControls
+  private handleKeyDown = (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement | null
+    if (target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return
+    if (e.ctrlKey || e.metaKey || e.altKey) return
+    if (e.code === 'KeyF') this.focusOrbitOnModelCenter()
+    else if (e.code === 'KeyA') this.fitOrbitToModel()
+  }
   private mesh: THREE.Mesh | null = null
   private grid: THREE.GridHelper | null = null
   // グリッド中心軸の端に置く距離ラベル（中心から端までの km）
@@ -92,6 +99,16 @@ export class TerrainViewer {
   // null のときはズーム停止中。
   private zoomTarget: number | null = null
   private zoomTmp = new THREE.Vector3()
+  private focusMove:
+    | {
+        start: number
+        dur: number
+        cam0: THREE.Vector3
+        cam1: THREE.Vector3
+        target0: THREE.Vector3
+        target1: THREE.Vector3
+      }
+    | null = null
   // 演出中に保留した自動フィットの目標距離（finishTransition で zoomTarget に反映）。
   private pendingFitDist: number | null = null
   // ワークスペース切替時に、全体が収まる距離へカメラを自動でフィット（寄せ/引き両方）。
@@ -340,6 +357,7 @@ export class TerrainViewer {
 
     this.resizeObs = new ResizeObserver(() => this.resize())
     this.resizeObs.observe(container)
+    window.addEventListener('keydown', this.handleKeyDown)
     this.resize()
     this.animate()
   }
@@ -384,6 +402,44 @@ export class TerrainViewer {
     this.transition = mode
   }
 
+  private focusOrbitOnModelCenter() {
+    if (!this.mesh) return
+    this.mesh.updateWorldMatrix(true, false)
+    const center = new THREE.Box3().setFromObject(this.mesh).getCenter(new THREE.Vector3())
+    const delta = center.clone().sub(this.controls.target)
+    if (delta.lengthSq() < 1e-10) return
+    this.startFocusMove(center, this.camera.position.clone().add(delta))
+  }
+
+  private fitOrbitToModel() {
+    if (!this.mesh || !this.lastPayload) return
+    this.mesh.updateWorldMatrix(true, false)
+    const center = new THREE.Box3().setFromObject(this.mesh).getCenter(new THREE.Vector3())
+    const dir = new THREE.Vector3().subVectors(this.camera.position, this.controls.target)
+    if (dir.lengthSq() < 1e-10) dir.set(0, Math.sin(Math.PI / 6), Math.cos(Math.PI / 6))
+    dir.normalize()
+    const fitDist = this.fitDistFor(this.lastPayload)
+    const cameraTarget = center.clone().addScaledVector(dir, fitDist)
+    this.camera.near = Math.min(this.camera.near, Math.max(0.001, fitDist / 100))
+    this.camera.far = Math.max(this.camera.far, fitDist * 10, this.camera.position.distanceTo(this.controls.target) * 1.2)
+    this.camera.updateProjectionMatrix()
+    this.startFocusMove(center, cameraTarget)
+  }
+
+  private startFocusMove(target: THREE.Vector3, cameraTarget: THREE.Vector3, dur = 360) {
+    if (target.distanceToSquared(this.controls.target) < 1e-10 && cameraTarget.distanceToSquared(this.camera.position) < 1e-10)
+      return
+    this.focusMove = {
+      start: performance.now(),
+      dur,
+      cam0: this.camera.position.clone(),
+      cam1: cameraTarget,
+      target0: this.controls.target.clone(),
+      target1: target
+    }
+    this.zoomTarget = null
+  }
+
   /** 旧地形グループを生かしたまま、3D 空間で slide / wipe の演出を開始する。 */
   private startTransition3D(oldGroup: THREE.Group, newGroup: THREE.Group, oldTex: THREE.Texture | null) {
     // グリッド/軸ラベルまで含めた東西の最大半幅（境界の振り幅）。なければ halfX で代用。
@@ -408,8 +464,8 @@ export class TerrainViewer {
     }
     // ラベル（軸km＋地名スプライト）。slide=opacityクロスフェード / wipe=seam同期で表示切替。
     // 地点グループは地形グループの子なので、地名ラベルも一緒に扱われる。
-    const oldSprites = this.collectSprites(oldGroup)
-    const newSprites = this.collectSprites(newGroup)
+    const oldSprites = this.collectLabels(oldGroup)
+    const newSprites = this.collectLabels(newGroup)
     if (this.transition === 'wipe') {
       // 新ラベルは境界が通過した位置から出すので、初期は全部隠す。
       for (const sp of newSprites) sp.visible = false
@@ -570,8 +626,8 @@ export class TerrainViewer {
     })
   }
 
-  /** グループ内のラベル（スプライト＝軸km・地名）を集める（フェード/表示切替用）。 */
-  private collectSprites(g: THREE.Group): LabelObject[] {
+  /** グループ内のラベルを集める（フェード/表示切替用）。 */
+  private collectLabels(g: THREE.Group): LabelObject[] {
     const out: LabelObject[] = []
     g.traverse((o) => {
       if ((o as THREE.Sprite).isSprite) out.push(o as THREE.Sprite)
@@ -1324,25 +1380,9 @@ export class TerrainViewer {
     // GridHelper は XZ 平面・原点中心。地形も原点中心なので位置はそのままでよい。
     group.add(this.grid)
 
-    // 中心軸（東西=X / 南北=Z）の端に「中心からの距離(km)」を小さく表示する。
-    // 北を -Z に取っているので、N は -Z 側。
     const halfWorld = (gridSpan * k) / 2
     group.userData.halfExtent = halfWorld // ワイプ/スライドの境界振り幅（グリッド端まで含む）
-    const halfKm = gridSpan / 2 / 1000
-    const kmText = `${halfKm >= 10 ? halfKm.toFixed(0) : halfKm >= 1 ? halfKm.toFixed(1) : halfKm.toFixed(2)} km`
-    const ends: [string, THREE.Vector3, THREE.Vector2, THREE.Vector2][] = [
-      [`E ${kmText}`, new THREE.Vector3(halfWorld, 0, 0), new THREE.Vector2(1, 0), new THREE.Vector2(1, 0)],
-      [`W ${kmText}`, new THREE.Vector3(-halfWorld, 0, 0), new THREE.Vector2(1, 0), new THREE.Vector2(-1, 0)],
-      [`N ${kmText}`, new THREE.Vector3(0, 0, -halfWorld), new THREE.Vector2(0, -1), new THREE.Vector2(0, -1)],
-      [`S ${kmText}`, new THREE.Vector3(0, 0, halfWorld), new THREE.Vector2(0, 1), new THREE.Vector2(0, 1)]
-    ]
-    for (const [text, pos, textDir, offsetDir] of ends) {
-      // 深度テストなし＝常にフル描画（見切れ防止）。worldH は注釈倍率を反映。
-      const sp = makeFlatLabelMesh(text, 0x9fc2e8, 0.06 * this.annotScale, textDir, offsetDir)
-      sp.position.copy(pos).add(sp.userData.axisLabelOffset as THREE.Vector3)
-      group.add(sp)
-      this.axisLabels.push(sp)
-    }
+    this.buildAxisLabels(group, halfWorld, gridSpan / 2 / 1000)
 
     // グループをシーンへ追加。演出する場合は旧グループを生かしたまま 3D で切替（morph は頂点補間）。
     this.scene.add(group)
@@ -1388,6 +1428,24 @@ export class TerrainViewer {
       }
     }
     this.controls.update()
+  }
+
+  private buildAxisLabels(group: THREE.Group, halfWorld: number, halfKm: number) {
+    // 中心軸（東西=X / 南北=Z）の端に「中心からの距離(km)」を小さく表示する。
+    // 北を -Z に取っているので、N は -Z 側。
+    const kmText = `${halfKm >= 10 ? halfKm.toFixed(0) : halfKm >= 1 ? halfKm.toFixed(1) : halfKm.toFixed(2)} km`
+    const ends: [string, THREE.Vector3, THREE.Vector2, THREE.Vector2][] = [
+      [`E ${kmText}`, new THREE.Vector3(halfWorld, 0, 0), new THREE.Vector2(1, 0), new THREE.Vector2(1, 0)],
+      [`W ${kmText}`, new THREE.Vector3(-halfWorld, 0, 0), new THREE.Vector2(1, 0), new THREE.Vector2(-1, 0)],
+      [`N ${kmText}`, new THREE.Vector3(0, 0, -halfWorld), new THREE.Vector2(0, -1), new THREE.Vector2(0, -1)],
+      [`S ${kmText}`, new THREE.Vector3(0, 0, halfWorld), new THREE.Vector2(0, 1), new THREE.Vector2(0, 1)]
+    ]
+    for (const [text, pos, textDir, offsetDir] of ends) {
+      const sp = makeFlatLabelMesh(text, 0x9fc2e8, 0.06 * this.annotScale, textDir, offsetDir)
+      sp.position.copy(pos).add(sp.userData.axisLabelOffset as THREE.Vector3)
+      group.add(sp)
+      this.axisLabels.push(sp)
+    }
   }
 
   /**
@@ -1645,8 +1703,19 @@ export class TerrainViewer {
     this.camera.position.copy(this.controls.target).add(offset)
   }
 
+  private updateFocusMove() {
+    const move = this.focusMove
+    if (!move) return
+    const t = Math.min(1, (performance.now() - move.start) / move.dur)
+    const e = t * t * (3 - 2 * t)
+    this.camera.position.lerpVectors(move.cam0, move.cam1, e)
+    this.controls.target.lerpVectors(move.target0, move.target1, e)
+    if (t >= 1) this.focusMove = null
+  }
+
   private animate = () => {
     this.raf = requestAnimationFrame(this.animate)
+    this.updateFocusMove()
     this.controls.update()
     this.updateSmoothZoom()
     this.updateTransition()
@@ -1738,6 +1807,7 @@ export class TerrainViewer {
 
   dispose() {
     cancelAnimationFrame(this.raf)
+    window.removeEventListener('keydown', this.handleKeyDown)
     this.resizeObs.disconnect()
     if (this.trans && this.trans.kind !== 'morph') {
       this.disposeGroup(this.trans.oldGroup) // morph は旧グループ破棄済み（新は terrainGroup として下で破棄）
@@ -1755,18 +1825,7 @@ export class TerrainViewer {
   }
 }
 
-/**
- * テキストを描いた小さなラベル板（Sprite）を作る。"\n" で複数行に対応。
- * 文字幅・行数に合わせて canvas をサイズ調整し、ワールド上では小さめに表示する。
- * color は 0xRRGGBB、worldH は1行あたりのワールド高さ。
- * depthTest=true にすると地形に隠れる（オクルージョンする）。
- */
-function makeLabelSprite(
-  text: string,
-  color = 0x9fc2e8,
-  worldH = 0.06,
-  depthTest = false
-): THREE.Sprite {
+function makeTextLabelCanvas(text: string, color: number) {
   const fontPx = 48
   const pad = 10
   const lineH = fontPx * 1.15
@@ -1791,7 +1850,21 @@ function makeLabelSprite(
     ctx.strokeText(l, w / 2, cy) // 縁取り（黒）で視認性を確保
     ctx.fillText(l, w / 2, cy)
   })
+  return { canvas, w, h, lines }
+}
 
+/**
+ * テキストを描いた小さなラベル板（Sprite）を作る。"\n" で複数行に対応。
+ * color は 0xRRGGBB、worldH は1行あたりのワールド高さ。
+ * depthTest=true にすると地形に隠れる（オクルージョンする）。
+ */
+function makeLabelSprite(
+  text: string,
+  color = 0x9fc2e8,
+  worldH = 0.06,
+  depthTest = false
+): THREE.Sprite {
+  const { canvas, w, h, lines } = makeTextLabelCanvas(text, color)
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
   const mat = new THREE.SpriteMaterial({ map: tex, depthTest, transparent: true })
@@ -1811,30 +1884,7 @@ function makeFlatLabelMesh(
   textDir = new THREE.Vector2(1, 0),
   offsetDir = textDir
 ): FlatLabelMesh {
-  const fontPx = 48
-  const pad = 10
-  const lineH = fontPx * 1.15
-  const lines = text.split('\n')
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')!
-  const font = `${fontPx}px Segoe UI, sans-serif`
-  ctx.font = font
-  const w = Math.ceil(Math.max(...lines.map((l) => ctx.measureText(l).width))) + pad * 2
-  const h = Math.ceil(lineH * lines.length) + pad * 2
-  canvas.width = w
-  canvas.height = h
-  ctx.font = font
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.lineWidth = 6
-  ctx.strokeStyle = 'rgba(0,0,0,0.85)'
-  ctx.fillStyle = '#' + color.toString(16).padStart(6, '0')
-  lines.forEach((l, i) => {
-    const cy = pad + lineH * (i + 0.5)
-    ctx.strokeText(l, w / 2, cy)
-    ctx.fillText(l, w / 2, cy)
-  })
-
+  const { canvas, w, h, lines } = makeTextLabelCanvas(text, color)
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
   const totalH = worldH * lines.length

@@ -57,8 +57,8 @@ const previewEmpty = $('preview-empty')
 const viewer3dInfo = $('viewer3d-info')
 const viewer3dTitle = $('viewer3d-title')
 const progress = $('progress')
-const btnExportPng = $<HTMLButtonElement>('btn-export-png')
-const btnExportRaw = $<HTMLButtonElement>('btn-export-raw')
+const exportTextureFormat = $<HTMLSelectElement>('export-texture-format')
+const btnExportTexture = $<HTMLButtonElement>('btn-export-texture')
 const btnExportZip = $<HTMLButtonElement>('btn-export-zip')
 const btnImportZip = $<HTMLButtonElement>('btn-import-zip')
 const btnUpdateTerrain = $<HTMLButtonElement>('btn-update-terrain')
@@ -921,18 +921,23 @@ rtabSettings.addEventListener('click', () => showRightTab('settings'))
 // ---- ロケーション内のサブタブ（ランドマーク / ルート） ----
 const subtabLandmarks = $<HTMLButtonElement>('subtab-landmarks')
 const subtabRoutes = $<HTMLButtonElement>('subtab-routes')
+const subtabExport = $<HTMLButtonElement>('subtab-export')
 const subviewLandmarks = $('subview-landmarks')
 const subviewRoutes = $('subview-routes')
+const subviewExport = $('subview-export')
 
-function showWsSubtab(which: 'landmarks' | 'routes') {
+function showWsSubtab(which: 'landmarks' | 'routes' | 'export') {
   subtabLandmarks.classList.toggle('active', which === 'landmarks')
   subtabRoutes.classList.toggle('active', which === 'routes')
+  subtabExport.classList.toggle('active', which === 'export')
   subviewLandmarks.classList.toggle('hidden', which !== 'landmarks')
   subviewRoutes.classList.toggle('hidden', which !== 'routes')
+  subviewExport.classList.toggle('hidden', which !== 'export')
   // ルートタブから離れたら地点配置モードと混同しないよう、配置モードは触らない。
 }
 subtabLandmarks.addEventListener('click', () => showWsSubtab('landmarks'))
 subtabRoutes.addEventListener('click', () => showWsSubtab('routes'))
+subtabExport.addEventListener('click', () => showWsSubtab('export'))
 
 // ---- 2D プレビューのズーム/パン ----
 const previewWrap = $('preview-2d-wrap')
@@ -1039,8 +1044,7 @@ function showPreview(
   selectedInfo.textContent = `${h.width}×${h.height}px / ${h.minEle.toFixed(1)}〜${h.maxEle.toFixed(
     1
   )}m${satMark}`
-  btnExportPng.disabled = false
-  btnExportRaw.disabled = false
+  btnExportTexture.disabled = false
   btnExportZip.disabled = false
   btnUpdateTerrain.disabled = false
   markSelected()
@@ -1629,7 +1633,9 @@ libList.addEventListener('dragover', (ev) => {
 
 async function refreshLibrary() {
   const workspaces = await api.listWorkspaces()
-  libCount.textContent = `${workspaces.length}${t('count.items')}`
+  const countText = `${workspaces.length}${t('count.items')}`
+  libCount.textContent =
+    getLang() === 'ja' ? `${t('side.library')}（${countText}）` : `${t('side.library')} (${countText})`
   libList.innerHTML = ''
   for (const e of workspaces) {
     const h = e.heightmap
@@ -1721,8 +1727,7 @@ async function refreshLibrary() {
         selectedInfo.textContent = t('selected.none')
         previewImg.style.display = 'none'
         previewEmpty.style.display = 'block'
-        btnExportPng.disabled = true
-        btnExportRaw.disabled = true
+        btnExportTexture.disabled = true
         btnExportZip.disabled = true
         btnUpdateTerrain.disabled = true
         clearAnnotations()
@@ -1808,14 +1813,10 @@ async function selectItem(id: string) {
 }
 
 // ---- エクスポート（選択中アイテム） ----
-btnExportPng.addEventListener('click', async () => {
+btnExportTexture.addEventListener('click', async () => {
   if (!selectedId) return
-  const r = await api.exportItem(selectedId, 'png16')
-  if (r.saved) progress.textContent = t('export.saved') + r.filePath
-})
-btnExportRaw.addEventListener('click', async () => {
-  if (!selectedId) return
-  const r = await api.exportItem(selectedId, 'raw16')
+  const format = exportTextureFormat.value === 'raw16' ? 'raw16' : 'png16'
+  const r = await api.exportItem(selectedId, format)
   if (r.saved) progress.textContent = t('export.saved') + r.filePath
 })
 btnExportZip.addEventListener('click', async () => {

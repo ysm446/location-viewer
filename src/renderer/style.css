@@ -518,6 +518,14 @@ button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
+#btn-import-zip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+#btn-import-zip svg {
+  flex: 0 0 auto;
+}
 button.primary {
   width: 100%;
   margin-top: 10px;
@@ -711,6 +719,22 @@ button.primary:hover {
 }
 #rview-library.detail #ws-detail {
   display: block;
+}
+
+.export-group {
+  margin-top: 12px;
+}
+.export-group h3 {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+.export-group select {
+  min-width: 0;
+}
+.export-group button {
+  flex: 0 0 auto;
 }
 
 /* ランドマーク（地点）編集パネル */
