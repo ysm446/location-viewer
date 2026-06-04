@@ -15,7 +15,7 @@ const LABEL_DIM_OPACITY = 0.2
 // 「上へ逃がす」でラベルが目標の高さへ移動する速さ（毎フレームの補間係数）。小さいほどゆっくり。
 const LABEL_STEM_LERP = 0.08
 // ルートの距離/勾配ラベル（カーブ単位）。地名ラベルより小さめのフォント高さ（annotScale 倍率前）。
-const ROUTE_LABEL_WORLD_H = 0.022
+const ROUTE_LABEL_WORLD_H = 0.027
 // ルートの画面上の長さ（px）がこれ未満ならラベルを出さない（遠い/短いカーブの間引き＝LOD）。
 const ROUTE_LABEL_MIN_PX = 60
 
@@ -900,8 +900,9 @@ export class TerrainViewer {
 
   /**
    * 1本のルート（ワールド頂点列）から距離/勾配ラベルのスプライトを作って返す（無ければ null）。
-   * 距離＝水平距離、勾配＝②平均グレード＝総上り/水平距離。アンカーは弧長の中点。
-   * 返り値の登録（this.routeLabels）もここで行う。
+   * 距離＝水平距離。勾配＝平均グレード＝Σ|標高差| / Σ水平距離（上り下りを絶対値で合算）。
+   * OSM ラインの向き（頂点の並び順）に依存しないので、下り向きに並んだ急坂でも正しく急に出る。
+   * アンカーは弧長の中点。返り値の登録（this.routeLabels）もここで行う。
    */
   private buildRouteLabel(
     px: number[],
@@ -911,22 +912,21 @@ export class TerrainViewer {
   ): THREE.Sprite | null {
     const g = this.geo
     if (!g || px.length < 2) return null
-    // 各区間の水平長（ワールド）と総上り（ワールド）を集計。
+    // 各区間の水平長（ワールド）と、絶対標高変化の合計（ワールド）を集計。
     const segLen: number[] = []
     let totalLen = 0
-    let ascent = 0
+    let vert = 0
     for (let i = 0; i < px.length - 1; i++) {
       const dx = px[i + 1] - px[i]
       const dz = pz[i + 1] - pz[i]
       const L = Math.hypot(dx, dz)
       segLen.push(L)
       totalLen += L
-      const dy = py[i + 1] - py[i]
-      if (dy > 0) ascent += dy
+      vert += Math.abs(py[i + 1] - py[i]) // 上りも下りも正で合算
     }
     const horizM = totalLen / g.k // ワールド→メートル
     if (horizM < 1) return null // 退化したカーブはラベルなし
-    const grade = ascent > 0 ? (ascent / totalLen) * 100 : 0 // ワールド比なので k は相殺
+    const grade = totalLen > 0 ? (vert / totalLen) * 100 : 0 // ワールド比なので k は相殺
     const km = horizM / 1000
     const text = `${km.toFixed(1)}km/${Math.round(grade)}%`
 
