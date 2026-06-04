@@ -777,9 +777,14 @@ export class TerrainViewer {
     if (this.routeGroup) this.routeGroup.visible = on
   }
 
-  /** ルートの距離/勾配ラベルの表示/非表示を切り替える（declutter が opacity に反映）。 */
+  /**
+   * ルートの距離/勾配ラベルの表示/非表示を切り替える。
+   * OFF の間は renderRoutes でラベル（テクスチャ）を作らない。ON にしたとき未生成なら作り直す。
+   */
   setRouteLabelsVisible(on: boolean) {
+    if (on === this.routeLabelsVisible) return
     this.routeLabelsVisible = on
+    if (on && this.routeLabels.length === 0 && this.routes.length > 0) this.renderRoutes()
   }
 
   /** 種別（道路/歩道/鉄道）ごとに表示/非表示を切り替える */
@@ -851,9 +856,11 @@ export class TerrainViewer {
         if (morph) of.push(ox[i], oy[i], oz[i], ox[i + 1], oy[i + 1], oz[i + 1])
       }
 
-      // カーブ単位の距離/勾配ラベルを作る（水平距離・総上り＝②平均グレード）。py は既に lift 込み。
-      const sp = this.buildRouteLabel(px, py, pz, r.category)
-      if (sp) labelSprites.push(sp)
+      // カーブ単位の距離/勾配ラベルは表示ONのときだけ作る（OFF なら計算もテクスチャ生成も省く）。
+      if (this.routeLabelsVisible) {
+        const sp = this.buildRouteLabel(px, py, pz, r.category)
+        if (sp) labelSprites.push(sp)
+      }
     }
 
     const group = new THREE.Group()
