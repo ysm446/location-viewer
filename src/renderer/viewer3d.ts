@@ -1209,7 +1209,7 @@ export class TerrainViewer {
 
       // ラベル（名前＋必要なら標高）
       const labelText = this.landmarkElevationVisible ? `${lm.name}\n${Math.round(lm.elevation)}m` : lm.name
-      const label = makeLabelSprite(labelText, 0xffffff, 0.034 * s)
+      const label = makeLabelSprite(labelText, 0xffffff, 0.034 * s, false, 2)
       label.position.set(x, topY + 0.06 * s, z)
       label.renderOrder = 11
       // 画面固定サイズ表示の基準として設計スケールを控える（毎フレーム距離で補正する）。
@@ -1574,7 +1574,7 @@ export class TerrainViewer {
       const pxPerWorld = h / (2 * Math.tan(fovR / 2) * Math.max(labelDist, 1e-3))
       // 画面固定サイズ ON：目標pxになるよう距離に応じてワールドスケールを補正（行数ぶんの高さ）。
       if (this.fixedLabelSize) {
-        const lines = (o.label.userData.lines as number) || 1
+        const lines = (o.label.userData.fixedSizeLines as number) || (o.label.userData.lines as number) || 1
         const targetPxH = h * 0.022 * lines // 画面高に対する一定比率
         const worldH = targetPxH / pxPerWorld
         const ds = o.label.userData.designScale as THREE.Vector3
@@ -1859,7 +1859,7 @@ function makeTextLabelCanvas(text: string, color: number) {
     ctx.strokeText(l, w / 2, cy) // 縁取り（黒）で視認性を確保
     ctx.fillText(l, w / 2, cy)
   })
-  return { canvas, w, h, lines }
+  return { canvas, w, h, lines, lineH, pad }
 }
 
 /**
@@ -1871,17 +1871,22 @@ function makeLabelSprite(
   text: string,
   color = 0x9fc2e8,
   worldH = 0.06,
-  depthTest = false
+  depthTest = false,
+  scaleReferenceLines?: number
 ): THREE.Sprite {
-  const { canvas, w, h, lines } = makeTextLabelCanvas(text, color)
+  const { canvas, w, h, lines, lineH, pad } = makeTextLabelCanvas(text, color)
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
   const mat = new THREE.SpriteMaterial({ map: tex, depthTest, transparent: true })
   const sp = new THREE.Sprite(mat)
   // 文字のアスペクト比を保って横幅を決める（worldH は1行ぶんの高さ基準）
-  const totalH = worldH * lines.length
+  const referenceLines = Math.max(lines.length, scaleReferenceLines ?? lines.length)
+  const referenceH = lineH * referenceLines + pad * 2
+  const fixedSizeLines = referenceLines * (h / referenceH)
+  const totalH = worldH * fixedSizeLines
   sp.scale.set(totalH * (w / h), totalH, 1)
   sp.userData.lines = lines.length // 画面固定サイズ計算用（行数で目標pxを決める）
+  sp.userData.fixedSizeLines = fixedSizeLines
   return sp
 }
 
