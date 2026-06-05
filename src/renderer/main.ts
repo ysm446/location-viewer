@@ -83,9 +83,20 @@ const chkRouteTrail = $<HTMLInputElement>('chk-route-trail')
 const chkRouteRail = $<HTMLInputElement>('chk-route-rail')
 const chkRouteClip = $<HTMLInputElement>('chk-route-clip')
 const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
+const chkShowLandmarkElevation = $<HTMLInputElement>('chk-show-landmark-elevation')
+const viewMenuLandmarkOptions = $('view-menu-landmark-options')
+function syncLandmarkOptionsEnabled() {
+  viewMenuLandmarkOptions.classList.toggle('disabled', !chkShowLandmarks.checked)
+  chkShowLandmarkElevation.disabled = !chkShowLandmarks.checked
+}
 chkShowLandmarks.addEventListener('change', () => {
   viewer?.setLandmarksVisible(chkShowLandmarks.checked)
   api.setSettings({ showLandmarks: chkShowLandmarks.checked })
+  syncLandmarkOptionsEnabled()
+})
+chkShowLandmarkElevation.addEventListener('change', () => {
+  viewer?.setLandmarkElevationVisible(chkShowLandmarkElevation.checked)
+  api.setSettings({ showLandmarkElevation: chkShowLandmarkElevation.checked })
 })
 
 const chkShowRoutes = $<HTMLInputElement>('chk-show-routes')
@@ -871,6 +882,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer = new TerrainViewer($('viewer3d'))
       viewer.setLandmarkMoveHandler(onMoveLandmark)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
+      viewer.setLandmarkElevationVisible(chkShowLandmarkElevation.checked)
       viewer.setRoutesVisible(chkShowRoutes.checked)
       viewer.setRouteCategoryVisible('road', chkShowRouteRoad.checked)
       viewer.setRouteCategoryVisible('foot', chkShowRouteFoot.checked)
@@ -1869,12 +1881,14 @@ btnImportZip.addEventListener('click', async () => {
     renderModeSel.value = settings.renderMode
   }
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
+  if (settings.showLandmarkElevation === false) chkShowLandmarkElevation.checked = false
   if (settings.showRoutes === false) chkShowRoutes.checked = false
   if (settings.showRouteRoad === false) chkShowRouteRoad.checked = false
   if (settings.showRouteFoot === false) chkShowRouteFoot.checked = false
   if (settings.showRouteTrail === false) chkShowRouteTrail.checked = false
   if (settings.showRouteRail === false) chkShowRouteRail.checked = false
   if (settings.showRouteInfo) chkShowRouteInfo.checked = true
+  syncLandmarkOptionsEnabled()
   syncRouteCatsEnabled()
   if (settings.showHelp === false) {
     chkShowHelp.checked = false

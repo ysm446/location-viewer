@@ -66,6 +66,7 @@ interface Settings {
   snapPow2?: boolean
   renderMode?: 'default' | 'heightmap' | 'satellite'
   showLandmarks?: boolean
+  showLandmarkElevation?: boolean
   showRoutes?: boolean
   showHelp?: boolean
   autoFit?: boolean

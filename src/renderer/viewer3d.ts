@@ -198,6 +198,7 @@ export class TerrainViewer {
   private landmarks: Landmark[] = []
   private landmarkGroup: THREE.Group | null = null
   private landmarksVisible = true
+  private landmarkElevationVisible = true
   // 地点編集（詳細）モードのときだけ true。false の間はピンをドラッグ移動できない（誤操作防止）。
   private landmarksEditable = false
   // 地点ごとの描画オブジェクト（ドラッグ移動時に位置を更新する）
@@ -822,6 +823,13 @@ export class TerrainViewer {
     if (this.landmarkGroup) this.landmarkGroup.visible = on
   }
 
+  /** ランドマークラベルの標高行の表示/非表示を切り替える */
+  setLandmarkElevationVisible(on: boolean) {
+    if (this.landmarkElevationVisible === on) return
+    this.landmarkElevationVisible = on
+    this.renderLandmarks()
+  }
+
   /** ルート（折れ線）を設定し、地形に沿わせて描き直す */
   setRoutes(routes: Route[]) {
     this.routes = routes
@@ -1199,8 +1207,9 @@ export class TerrainViewer {
       line.renderOrder = 10
       group.add(line)
 
-      // ラベル（名前＋標高）
-      const label = makeLabelSprite(`${lm.name}\n${Math.round(lm.elevation)}m`, 0xffffff, 0.034 * s)
+      // ラベル（名前＋必要なら標高）
+      const labelText = this.landmarkElevationVisible ? `${lm.name}\n${Math.round(lm.elevation)}m` : lm.name
+      const label = makeLabelSprite(labelText, 0xffffff, 0.034 * s)
       label.position.set(x, topY + 0.06 * s, z)
       label.renderOrder = 11
       // 画面固定サイズ表示の基準として設計スケールを控える（毎フレーム距離で補正する）。
