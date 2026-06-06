@@ -85,6 +85,17 @@ interface Settings {
 function settingsPath(dir: string): string {
   return join(dir, 'settings.json')
 }
+
+function screenshotDir(dir: string): string {
+  return join(dir, 'screenshot')
+}
+
+function timestampForFile(d = new Date()): string {
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(
+    d.getSeconds()
+  )}`
+}
 async function loadSettings(): Promise<Settings> {
   try {
     const dir = await ensureDataDir()
@@ -123,6 +134,20 @@ function createWindow(): void {
     webPreferences: {
       preload: join(__dirname, '../preload/index.cjs'),
       sandbox: false
+    }
+  })
+
+  win.webContents.on('before-input-event', (event, input) => {
+    if (
+      input.type === 'keyDown' &&
+      input.key === 'F12' &&
+      !input.control &&
+      !input.meta &&
+      !input.alt &&
+      !input.shift
+    ) {
+      event.preventDefault()
+      win.webContents.send('screenshot:shortcut')
     }
   })
 
@@ -260,6 +285,18 @@ app.whenReady().then(() => {
   ipcMain.handle('settings:set', async (_e, patch: Settings) => {
     await saveSettings(patch)
     return true
+  })
+
+  // --- スクリーンショット: 現在のウィンドウを data/screenshot に保存 ---
+  ipcMain.handle('screenshot:save', async (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win) throw new Error('ウィンドウが見つかりません。')
+    const dir = screenshotDir(await ensureDataDir())
+    await fs.mkdir(dir, { recursive: true })
+    const filePath = join(dir, `screenshot-${timestampForFile()}.png`)
+    const image = await win.capturePage()
+    await fs.writeFile(filePath, image.toPNG())
+    return { saved: true, filePath }
   })
 
   // --- 新規ワークスペースを作成（地形を生成して保存） ---

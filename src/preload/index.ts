@@ -96,6 +96,11 @@ const api = {
   getSettings: (): Promise<AppSettings> => ipcRenderer.invoke('settings:get'),
   setSettings: (patch: AppSettings): Promise<boolean> =>
     ipcRenderer.invoke('settings:set', patch),
+  saveScreenshot: (): Promise<{ saved: boolean; filePath?: string }> =>
+    ipcRenderer.invoke('screenshot:save'),
+  onScreenshotShortcut: (cb: () => void) => {
+    ipcRenderer.on('screenshot:shortcut', cb)
+  },
   // ワークスペース（地形を生成して新規作成 / 既存の地形を更新）
   createWorkspace: (args: GenerateArgs): Promise<TerrainResult> =>
     ipcRenderer.invoke('workspace:create', args),

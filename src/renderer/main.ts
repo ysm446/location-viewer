@@ -360,6 +360,31 @@ document.addEventListener('keydown', (e) => {
   viewer?.setAutoRotate(autoRotate)
 })
 
+let savingScreenshot = false
+async function saveCurrentScreenshot() {
+  if (savingScreenshot) return
+  savingScreenshot = true
+  progress.textContent = t('screenshot.saving')
+  try {
+    const res = await api.saveScreenshot()
+    if (res.saved && res.filePath) progress.textContent = t('screenshot.saved') + res.filePath
+  } catch (err) {
+    progress.textContent = ''
+    alert(t('screenshot.failed') + (err as Error).message)
+  } finally {
+    savingScreenshot = false
+  }
+}
+api.onScreenshotShortcut(() => {
+  void saveCurrentScreenshot()
+})
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'F12') return
+  if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return
+  e.preventDefault()
+  void saveCurrentScreenshot()
+})
+
 /**
  * 右ペインを 一覧⇔詳細 で切り替える。詳細モードでは CSS で選択以外の
  * ワークスペースを隠し、選択行の下に中身（地点等）を表示する。
