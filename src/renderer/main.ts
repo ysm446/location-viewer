@@ -70,6 +70,8 @@ const wsBack = $('ws-back')
 const landmarkList = $<HTMLUListElement>('landmark-list')
 const landmarkHint = $('landmark-hint')
 const btnAddLandmark = $<HTMLButtonElement>('btn-add-landmark')
+const btnImportLandmarkLibrary = $<HTMLButtonElement>('btn-import-landmark-library')
+const landmarkLibraryStatus = $('landmark-library-status')
 // OSM ルート
 const routeList = $<HTMLUListElement>('route-list')
 const routeStatus = $('route-status')
@@ -913,10 +915,10 @@ zoomInput.addEventListener('input', () => {
   updateTileGrid()
 })
 
-// 標高ソースごとの最大ズーム（Terrain-DEM は z14 まで、Terrain-RGB は z18 まで）
+// 標高ソースごとの最大ズーム（Mapbox 標高タイルの実上限）
 const SOURCE_MAX_ZOOM: Record<string, number> = {
   'terrain-dem': 14,
-  'terrain-rgb': 18
+  'terrain-rgb': 15
 }
 function applySourceMaxZoom() {
   const max = SOURCE_MAX_ZOOM[sourceSel.value] ?? 14
@@ -928,6 +930,7 @@ function applySourceMaxZoom() {
   }
 }
 sourceSel.addEventListener('change', applySourceMaxZoom)
+applySourceMaxZoom()
 
 // ---- トークン ----
 $('btn-save-token').addEventListener('click', async () => {
@@ -1186,11 +1189,30 @@ function clearAnnotations() {
   viewer3dTitle.textContent = '' // 3Dビューポートのロケーション名タイトルを消す
   showWorkspaceDetail(false)
   renderLandmarkPanel()
+  void refreshLandmarkLibraryStatus()
   clearRoutes()
 }
 
 async function saveLandmarks() {
   if (selectedId) await api.saveLandmarks(selectedId, landmarks)
+}
+
+async function refreshLandmarkLibraryStatus() {
+  if (!selectedId) {
+    btnImportLandmarkLibrary.disabled = true
+    landmarkLibraryStatus.textContent = ''
+    return
+  }
+  try {
+    const candidates = await api.landmarkLibraryCandidates(selectedId)
+    btnImportLandmarkLibrary.disabled = candidates.length === 0
+    landmarkLibraryStatus.textContent = candidates.length
+      ? t('landmark.libraryReady').replace('{count}', String(candidates.length))
+      : t('landmark.libraryEmpty')
+  } catch {
+    btnImportLandmarkLibrary.disabled = true
+    landmarkLibraryStatus.textContent = ''
+  }
 }
 
 function setPlaceMode(on: boolean) {
@@ -1221,6 +1243,23 @@ btnAddLandmark.addEventListener('click', () => {
   showTab('3d') // 配置は3Dビューで行う
   setPlaceMode(!placeMode)
 })
+
+btnImportLandmarkLibrary.addEventListener('click', async () => {
+  if (!selectedId) return
+  try {
+    const imported = await api.importLandmarksFromLibrary(selectedId)
+    if (imported.length) {
+      landmarks.push(...imported)
+      viewer?.setLandmarks(landmarks)
+      renderLandmarkPanel()
+    }
+    landmarkLibraryStatus.textContent = t('landmark.libraryImported').replace('{count}', String(imported.length))
+    await refreshLandmarkLibraryStatus()
+  } catch (err) {
+    landmarkLibraryStatus.textContent = t('landmark.libraryFailed') + (err as Error).message
+  }
+})
+
 
 /** 3Dで地点をドラッグ移動して確定したとき：標高を取り直して保存 */
 async function onMoveLandmark(id: string, lng: number, lat: number) {
@@ -1305,6 +1344,7 @@ function renderLandmarkPanel() {
     li.append(top, coords)
     landmarkList.appendChild(li)
   }
+  void refreshLandmarkLibraryStatus()
 }
 
 // ===== OSM ルート（オーバーレイ・選択・保存） =====
@@ -1890,9 +1930,13 @@ async function selectItem(id: string) {
 
     // 選択ワークスペースの範囲へ地図を移動し、bbox を反映
     const bb = item.workspace.heightmap.bbox
+    if (item.workspace.heightmap.sourceId && sourceSel.querySelector(`option[value="${item.workspace.heightmap.sourceId}"]`)) {
+      sourceSel.value = item.workspace.heightmap.sourceId
+    }
     setBBoxFields(bb.west, bb.south, bb.east, bb.north)
     zoomInput.value = String(item.workspace.heightmap.zoom)
     zoomVal.textContent = String(item.workspace.heightmap.zoom)
+    applySourceMaxZoom()
     updateEstimate()
     map.fitBounds(
       [

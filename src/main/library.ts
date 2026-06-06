@@ -21,10 +21,13 @@ const U16_FILE = 'heightmap.u16'
 const PREVIEW_FILE = 'preview.png'
 const SATELLITE_FILE = 'satellite.png'
 const LEGACY_INDEX = 'library.json'
+const LANDMARK_LIBRARY_FILE = 'landmark-library.json'
 
 /** 地形上のランドマーク（点）。座標は緯度経度で持ち、3D描画時にメッシュ座標へ変換する */
 export interface Landmark {
   id: string
+  /** 共通ランドマークライブラリから取り込んだ場合の元ID */
+  libraryId?: string
   name: string
   lng: number
   lat: number
@@ -32,6 +35,19 @@ export interface Landmark {
   elevation: number
   /** 3Dでの表示 ON/OFF。未設定（undefined）は表示扱い */
   visible?: boolean
+}
+
+/** 複数ロケーションで共有するランドマーク定義 */
+export interface LandmarkLibraryEntry {
+  id: string
+  name: string
+  lng: number
+  lat: number
+  elevation?: number
+  category?: string
+  source?: string
+  confidence?: 'high' | 'medium' | 'low'
+  notes?: string
 }
 
 /** ルート（OSM等から取り込んだライン）の種別 */
@@ -93,6 +109,45 @@ function previewPath(dir: string, id: string): string {
 function satellitePath(dir: string, id: string): string {
   return join(dir, id, SATELLITE_FILE)
 }
+function landmarkLibraryPath(dir: string): string {
+  return join(dir, LANDMARK_LIBRARY_FILE)
+}
+
+const DEFAULT_LANDMARK_LIBRARY: LandmarkLibraryEntry[] = [
+  {
+    id: 'sakuradaira_parking_upper',
+    name: '桜平駐車場（上）',
+    lng: 138.33611,
+    lat: 36.01,
+    elevation: 1920,
+    category: 'parking',
+    source: 'YAMAP model course Google Map link; 登山口P; O-ren hut guide; DEM checked',
+    confidence: 'high',
+    notes: '桜平駐車場の上。登山口P掲載の 36°00′36″/138°20′10″ と既存DEMで確認。'
+  },
+  {
+    id: 'sakuradaira_parking_middle',
+    name: '桜平駐車場（中）',
+    lng: 138.328956,
+    lat: 36.010303,
+    elevation: 1840,
+    category: 'parking',
+    source: 'YAMAP model course Google Map link; 登山口P; O-ren hut guide; DEM checked',
+    confidence: 'high',
+    notes: '桜平駐車場の中。YAMAPのGoogle Mapリンク座標を基準にし、登山口Pの標高1840mとDEMで確認。'
+  },
+  {
+    id: 'sakuradaira_parking_lower',
+    name: '桜平駐車場（下）',
+    lng: 138.315039435402,
+    lat: 36.0147896423738,
+    elevation: 1630,
+    category: 'parking',
+    source: 'YAMAP model course Google Map link; 登山口P; O-ren hut guide; DEM checked',
+    confidence: 'high',
+    notes: '桜平駐車場の下。YAMAPのGoogle Mapリンク座標を基準にし、登山口Pの標高1630mとDEMで確認。'
+  }
+]
 
 async function readWorkspaceFile(dir: string, id: string): Promise<Workspace | null> {
   try {
@@ -113,6 +168,63 @@ async function readWorkspaceFile(dir: string, id: string): Promise<Workspace | n
 async function writeWorkspaceFile(dir: string, ws: Workspace): Promise<void> {
   await fs.mkdir(wsDir(dir, ws.id), { recursive: true })
   await fs.writeFile(wsJsonPath(dir, ws.id), JSON.stringify(ws, null, 2), 'utf-8')
+}
+
+async function ensureLandmarkLibrary(dir: string): Promise<void> {
+  try {
+    await fs.access(landmarkLibraryPath(dir))
+  } catch {
+    await fs.mkdir(dir, { recursive: true })
+    await fs.writeFile(landmarkLibraryPath(dir), JSON.stringify(DEFAULT_LANDMARK_LIBRARY, null, 2), 'utf-8')
+  }
+}
+
+export async function readLandmarkLibrary(dir: string): Promise<LandmarkLibraryEntry[]> {
+  await ensureLandmarkLibrary(dir)
+  try {
+    const entries = JSON.parse(await fs.readFile(landmarkLibraryPath(dir), 'utf-8')) as LandmarkLibraryEntry[]
+    return entries.filter(
+      (e) =>
+        typeof e.id === 'string' &&
+        typeof e.name === 'string' &&
+        typeof e.lng === 'number' &&
+        typeof e.lat === 'number'
+    )
+  } catch {
+    return []
+  }
+}
+
+function containsBBox(bbox: BBox, lng: number, lat: number): boolean {
+  return lng >= bbox.west && lng <= bbox.east && lat >= bbox.south && lat <= bbox.north
+}
+
+function approxDistanceMeters(a: { lng: number; lat: number }, b: { lng: number; lat: number }): number {
+  const r = 6371000
+  const toRad = (d: number) => (d * Math.PI) / 180
+  const lat = toRad((a.lat + b.lat) / 2)
+  const dx = toRad(b.lng - a.lng) * Math.cos(lat)
+  const dy = toRad(b.lat - a.lat)
+  return Math.sqrt(dx * dx + dy * dy) * r
+}
+
+export function landmarkAlreadyImported(entry: LandmarkLibraryEntry, landmarks: Landmark[]): boolean {
+  return landmarks.some(
+    (lm) =>
+      lm.libraryId === entry.id ||
+      lm.id === `lm_lib_${entry.id}` ||
+      (lm.name === entry.name && approxDistanceMeters(lm, entry) < 80)
+  )
+}
+
+export async function landmarkLibraryCandidates(dir: string, workspaceId: string): Promise<LandmarkLibraryEntry[]> {
+  const ws = await readWorkspaceFile(dir, workspaceId)
+  if (!ws) return []
+  const entries = await readLandmarkLibrary(dir)
+  return entries.filter(
+    (entry) =>
+      containsBBox(ws.heightmap.bbox, entry.lng, entry.lat) && !landmarkAlreadyImported(entry, ws.landmarks)
+  )
 }
 
 async function writeU16(dir: string, id: string, values16: Uint16Array): Promise<void> {

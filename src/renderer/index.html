@@ -21,8 +21,6 @@
             <div id="map"></div>
             <!-- 生成パネル（位置選択タブのときだけ地図上にオーバーレイ表示） -->
             <div id="left-pane">
-              <h2>Mapbox Heightmap Importer</h2>
-
               <section class="card">
                 <label data-i18n="side.source">標高ソース</label>
                 <select id="source">
@@ -210,9 +208,13 @@
 
               <!-- ランドマーク パネル -->
               <div id="subview-landmarks" class="subview">
-                <div class="row" style="justify-content: flex-end; margin-top: 10px">
+                <div class="row landmark-actions">
+                  <button id="btn-import-landmark-library" disabled data-i18n="landmark.importLibrary">
+                    ライブラリから取り込み
+                  </button>
                   <button id="btn-add-landmark" data-i18n="landmark.add">📍 地点を追加</button>
                 </div>
+                <p class="muted" id="landmark-library-status"></p>
                 <p class="muted" id="landmark-hint" data-i18n="landmark.hint" hidden>
                   3Dビューで地形をクリックして地点を追加
                 </p>
@@ -231,13 +233,9 @@
                   <input id="chk-route-clip" type="checkbox" checked />
                   <span data-i18n="route.clip">エリア外をカット</span>
                 </label>
-                <div class="row" style="gap: 8px">
+                <div class="row route-actions">
                   <button id="btn-fetch-osm" data-i18n="route.fetch">🛣 OSMから取得</button>
                   <button id="btn-save-routes" hidden data-i18n="route.save">採用を保存</button>
-                </div>
-                <p class="muted" id="route-status"></p>
-                <ul id="route-list"></ul>
-                <div class="row" style="justify-content: space-between; gap: 8px">
                   <button id="btn-reclassify-routes" hidden data-i18n="route.reclassify">
                     🔄 種別を再判定
                   </button>
@@ -245,6 +243,8 @@
                     全ルートをクリア
                   </button>
                 </div>
+                <p class="muted" id="route-status"></p>
+                <ul id="route-list"></ul>
               </div>
 
               <!-- エクスポート パネル -->

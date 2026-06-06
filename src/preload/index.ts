@@ -1,9 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { BBox } from '../main/tiles'
-import type { Workspace, HeightmapMeta, Landmark, Route, RouteCategory } from '../main/library'
+import type { Workspace, HeightmapMeta, Landmark, LandmarkLibraryEntry, Route, RouteCategory } from '../main/library'
 import type { OsmFeature } from '../main/osm'
 
-export type { Workspace, HeightmapMeta, Landmark, Route, RouteCategory, OsmFeature }
+export type { Workspace, HeightmapMeta, Landmark, LandmarkLibraryEntry, Route, RouteCategory, OsmFeature }
 
 export interface GenerateArgs {
   bbox: BBox
@@ -104,6 +104,10 @@ const api = {
   // ランドマーク
   saveLandmarks: (id: string, landmarks: Landmark[]): Promise<boolean> =>
     ipcRenderer.invoke('workspace:saveLandmarks', id, landmarks),
+  landmarkLibraryCandidates: (id: string): Promise<LandmarkLibraryEntry[]> =>
+    ipcRenderer.invoke('landmarkLibrary:candidates', id),
+  importLandmarksFromLibrary: (id: string): Promise<Landmark[]> =>
+    ipcRenderer.invoke('landmarkLibrary:importIntoWorkspace', id),
   sampleElevation: (id: string, lng: number, lat: number): Promise<number | null> =>
     ipcRenderer.invoke('workspace:sampleElevation', id, lng, lat),
   // ルート（OSM 取り込み）

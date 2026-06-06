@@ -33,7 +33,11 @@ import {
   readSatelliteDataUrl,
   saveSatellite,
   readWorkspaceEntries,
-  importWorkspaceEntries
+  importWorkspaceEntries,
+  landmarkLibraryCandidates,
+  readLandmarkLibrary,
+  landmarkAlreadyImported,
+  LandmarkLibraryEntry
 } from './library'
 import { writeZip, readZip } from './zip'
 
@@ -195,6 +199,9 @@ async function generateTerrain(
   if (!cfg.token) throw new Error('Mapbox アクセストークンが未設定です。')
 
   const source = TILE_SOURCES[args.sourceId] ?? TILE_SOURCES['terrain-dem']
+  if (args.zoom > source.maxZoom) {
+    throw new Error(`${source.label} はズーム ${source.maxZoom} まで対応しています。ズームを下げてください。`)
+  }
   const region = computeRegion(args.bbox, args.zoom)
   const tileCount = (region.tileX1 - region.tileX0 + 1) * (region.tileY1 - region.tileY0 + 1)
   if (tileCount > 400) {
@@ -379,6 +386,42 @@ app.whenReady().then(() => {
   ipcMain.handle('workspace:saveLandmarks', async (_e, id: string, landmarks: Landmark[]) => {
     const dir = await ensureDataDir()
     return saveLandmarks(dir, id, landmarks)
+  })
+
+  // --- ランドマークライブラリ: bbox内の未取り込み候補 ---
+  ipcMain.handle('landmarkLibrary:candidates', async (_e, id: string) => {
+    const dir = await ensureDataDir()
+    return landmarkLibraryCandidates(dir, id)
+  })
+
+  // --- ランドマークライブラリ: bbox内候補を選択ロケーションへまとめて取り込み ---
+  ipcMain.handle('landmarkLibrary:importIntoWorkspace', async (_e, id: string) => {
+    const dir = await ensureDataDir()
+    const ws = await getWorkspace(dir, id)
+    if (!ws) throw new Error('ロケーションが見つかりません。')
+    const entries = (await readLandmarkLibrary(dir)).filter(
+      (entry) =>
+        entry.lng >= ws.heightmap.bbox.west &&
+        entry.lng <= ws.heightmap.bbox.east &&
+        entry.lat >= ws.heightmap.bbox.south &&
+        entry.lat <= ws.heightmap.bbox.north &&
+        !landmarkAlreadyImported(entry, ws.landmarks)
+    )
+    if (!entries.length) return []
+
+    const h = ws.heightmap
+    const values16 = await readValues16(dir, id)
+    const imported: Landmark[] = entries.map((entry: LandmarkLibraryEntry) => ({
+      id: `lm_lib_${entry.id}`,
+      libraryId: entry.id,
+      name: entry.name,
+      lng: entry.lng,
+      lat: entry.lat,
+      elevation: sampleElevation(values16, h.width, h.height, h.bbox, h.zoom, h.minEle, h.maxEle, entry.lng, entry.lat)
+    }))
+    ws.landmarks.push(...imported)
+    await saveLandmarks(dir, id, ws.landmarks)
+    return imported
   })
 
   // --- ルート: 保存 ---

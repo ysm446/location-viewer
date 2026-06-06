@@ -59,6 +59,7 @@ export function computeRegion(bbox: BBox, z: number): PixelRegion {
 export interface TileSource {
   id: string
   label: string
+  maxZoom: number
   /** {z}/{x}/{y} と access_token を埋めて URL を返す */
   url: (z: number, x: number, y: number, token: string) => string
 }
@@ -67,18 +68,21 @@ export const TILE_SOURCES: Record<string, TileSource> = {
   'terrain-dem': {
     id: 'terrain-dem',
     label: 'Mapbox Terrain-DEM v1 (推奨)',
+    maxZoom: 14,
     url: (z, x, y, token) =>
       `https://api.mapbox.com/v4/mapbox.mapbox-terrain-dem-v1/${z}/${x}/${y}@2x.pngraw?access_token=${token}`
   },
   'terrain-rgb': {
     id: 'terrain-rgb',
     label: 'Mapbox Terrain-RGB v1 (旧)',
+    maxZoom: 15,
     url: (z, x, y, token) =>
       `https://api.mapbox.com/v4/mapbox.terrain-rgb/${z}/${x}/${y}@2x.pngraw?access_token=${token}`
   },
   satellite: {
     id: 'satellite',
     label: 'Mapbox Satellite',
+    maxZoom: 22,
     url: (z, x, y, token) =>
       `https://api.mapbox.com/v4/mapbox.satellite/${z}/${x}/${y}@2x.png?access_token=${token}`
   }
