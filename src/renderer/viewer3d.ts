@@ -215,6 +215,7 @@ export class TerrainViewer {
   // カーブ単位の距離/勾配ラベル（routeGroup の子スプライト）。declutter で重なり回避する。
   private routeLabels: { sprite: THREE.Sprite; category: RouteCategory; worldLen: number }[] = []
   private routeLabelsVisible = true
+  private routeDistanceMode: 'horizontal' | 'surface' = 'horizontal'
   // 種別ごとの表示フラグ（「ルートを表示」全体の ON/OFF とは別に効かせる）
   private routeCatVisible: Record<RouteCategory, boolean> = {
     road: true,
@@ -852,6 +853,13 @@ export class TerrainViewer {
     if (on && this.routeLabels.length === 0 && this.routes.length > 0) this.renderRoutes()
   }
 
+  /** ルートラベルに表示する距離の計算方法。勾配は従来どおり水平距離を分母にする。 */
+  setRouteDistanceMode(mode: 'horizontal' | 'surface') {
+    if (this.routeDistanceMode === mode) return
+    this.routeDistanceMode = mode
+    if (this.routeLabelsVisible && this.routes.length > 0) this.renderRoutes()
+  }
+
   /** 種別（道路/歩道/鉄道）ごとに表示/非表示を切り替える */
   setRouteCategoryVisible(cat: RouteCategory, on: boolean) {
     this.routeCatVisible[cat] = on
@@ -972,7 +980,8 @@ export class TerrainViewer {
 
   /**
    * 1本のルート（ワールド頂点列）から距離/勾配ラベルのスプライトを作って返す（無ければ null）。
-   * 距離＝水平距離。勾配＝平均グレード＝Σ|標高差| / Σ水平距離（上り下りを絶対値で合算）。
+   * 距離＝設定に応じて水平距離または実距離（3D斜距離）。
+   * 勾配＝平均グレード＝Σ|標高差| / Σ水平距離（上り下りを絶対値で合算）。
    * OSM ラインの向き（頂点の並び順）に依存しないので、下り向きに並んだ急坂でも正しく急に出る。
    * アンカーは弧長の中点。返り値の登録（this.routeLabels）もここで行う。
    */
@@ -984,39 +993,49 @@ export class TerrainViewer {
   ): THREE.Sprite | null {
     const g = this.geo
     if (!g || px.length < 2) return null
-    // 各区間の水平長（ワールド）と、絶対標高変化の合計（ワールド）を集計。
-    const segLen: number[] = []
-    let totalLen = 0
+    // 各区間の水平長/実距離（ワールド）と、絶対標高変化の合計（ワールド）を集計。
+    const horizSegLen: number[] = []
+    const surfaceSegLen: number[] = []
+    let totalHorizLen = 0
+    let totalSurfaceLen = 0
     let vert = 0
     for (let i = 0; i < px.length - 1; i++) {
       const dx = px[i + 1] - px[i]
+      const dy = py[i + 1] - py[i]
       const dz = pz[i + 1] - pz[i]
-      const L = Math.hypot(dx, dz)
-      segLen.push(L)
-      totalLen += L
-      vert += Math.abs(py[i + 1] - py[i]) // 上りも下りも正で合算
+      const horiz = Math.hypot(dx, dz)
+      const surface = Math.hypot(dx, dy, dz)
+      horizSegLen.push(horiz)
+      surfaceSegLen.push(surface)
+      totalHorizLen += horiz
+      totalSurfaceLen += surface
+      vert += Math.abs(dy) // 上りも下りも正で合算
     }
-    const horizM = totalLen / g.k // ワールド→メートル
+    const displayLen = this.routeDistanceMode === 'surface' ? totalSurfaceLen : totalHorizLen
+    const displayM = displayLen / g.k // ワールド→メートル
+    const horizM = totalHorizLen / g.k // ワールド→メートル
     if (horizM < 1) return null // 退化したカーブはラベルなし
-    const grade = totalLen > 0 ? (vert / totalLen) * 100 : 0 // ワールド比なので k は相殺
-    const km = horizM / 1000
+    const grade = totalHorizLen > 0 ? (vert / totalHorizLen) * 100 : 0 // ワールド比なので k は相殺
+    const km = displayM / 1000
     const text = `${km.toFixed(1)}km/${Math.round(grade)}%`
 
-    // 弧長の中点を求めて配置位置（地表より少し上）にする。
-    const half = totalLen / 2
+    // 弧長の中点を求めて配置位置（地表より少し上）にする。実距離表示時は3D斜距離で中点を取る。
+    const anchorSegLen = this.routeDistanceMode === 'surface' ? surfaceSegLen : horizSegLen
+    const anchorTotalLen = this.routeDistanceMode === 'surface' ? totalSurfaceLen : totalHorizLen
+    const half = anchorTotalLen / 2
     let acc = 0
     let ax = px[0]
     let ay = py[0]
     let az = pz[0]
-    for (let i = 0; i < segLen.length; i++) {
-      if (acc + segLen[i] >= half) {
-        const f = segLen[i] > 0 ? (half - acc) / segLen[i] : 0
+    for (let i = 0; i < anchorSegLen.length; i++) {
+      if (acc + anchorSegLen[i] >= half) {
+        const f = anchorSegLen[i] > 0 ? (half - acc) / anchorSegLen[i] : 0
         ax = px[i] + (px[i + 1] - px[i]) * f
         ay = py[i] + (py[i + 1] - py[i]) * f
         az = pz[i] + (pz[i + 1] - pz[i]) * f
         break
       }
-      acc += segLen[i]
+      acc += anchorSegLen[i]
     }
 
     const sp = makeLabelSprite(text, 0xffffff, ROUTE_LABEL_WORLD_H * this.annotScale)
@@ -1025,7 +1044,7 @@ export class TerrainViewer {
     sp.renderOrder = 11
     sp.material.opacity = 0 // declutter のフェードで出す
     sp.visible = false
-    this.routeLabels.push({ sprite: sp, category, worldLen: totalLen })
+    this.routeLabels.push({ sprite: sp, category, worldLen: displayLen })
     return sp
   }
 
@@ -1189,7 +1208,7 @@ export class TerrainViewer {
         })
       )
       marker.position.set(x, surfaceY, z)
-      marker.renderOrder = 12
+      marker.renderOrder = 10
       marker.userData.landmarkId = lm.id
       group.add(marker)
       this.markerMeshes.push(marker)
@@ -1204,14 +1223,14 @@ export class TerrainViewer {
         lineGeo,
         new THREE.LineBasicMaterial({ color: 0xcccccc, transparent: true })
       )
-      line.renderOrder = 10
+      line.renderOrder = 9
       group.add(line)
 
       // ラベル（名前＋必要なら標高）
       const labelText = this.landmarkElevationVisible ? `${lm.name}\n${Math.round(lm.elevation)}m` : lm.name
       const label = makeLabelSprite(labelText, 0xffffff, 0.034 * s, false, 2)
       label.position.set(x, topY + 0.06 * s, z)
-      label.renderOrder = 11
+      label.renderOrder = 12
       // 画面固定サイズ表示の基準として設計スケールを控える（毎フレーム距離で補正する）。
       label.userData.designScale = label.scale.clone()
       group.add(label)

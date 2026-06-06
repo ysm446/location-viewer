@@ -253,6 +253,13 @@ labelDeclutterSel.addEventListener('change', () => {
   api.setSettings({ labelDeclutter: m })
 })
 
+const routeDistanceModeSel = $<HTMLSelectElement>('route-distance-mode')
+routeDistanceModeSel.addEventListener('change', () => {
+  const m = routeDistanceModeSel.value as 'horizontal' | 'surface'
+  viewer?.setRouteDistanceMode(m)
+  api.setSettings({ routeDistanceMode: m })
+})
+
 // 右ペインの幅をドラッグで変更（#main-pane と #right-pane の間の仕切り）
 const rightResizer = $('right-resizer')
 const rightPane = $('right-pane')
@@ -987,6 +994,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setFov(Number(fovInput.value))
       viewer.setTransition(transitionSel.value as 'none' | 'slide' | 'wipe' | 'morph')
       viewer.setLabelDeclutter(labelDeclutterSel.value as 'stack' | 'hideFar' | 'none')
+      viewer.setRouteDistanceMode(routeDistanceModeSel.value as 'horizontal' | 'surface')
       viewer.setDebug(chkShowDebug.checked)
     }
     if (pendingMesh) {
@@ -2047,6 +2055,9 @@ btnImportZip.addEventListener('click', async () => {
     settings.labelDeclutter === 'none'
   ) {
     labelDeclutterSel.value = settings.labelDeclutter
+  }
+  if (settings.routeDistanceMode === 'horizontal' || settings.routeDistanceMode === 'surface') {
+    routeDistanceModeSel.value = settings.routeDistanceMode
   }
 
   const cfg = await api.getConfig()

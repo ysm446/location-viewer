@@ -81,6 +81,7 @@ export interface AppSettings {
   cameraFov?: number
   transition?: 'none' | 'slide' | 'wipe' | 'morph'
   labelDeclutter?: 'stack' | 'hideFar' | 'none'
+  routeDistanceMode?: 'horizontal' | 'surface'
 }
 
 const api = {
