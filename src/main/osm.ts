@@ -29,6 +29,8 @@ const FOOT_RE = '^(footway|pedestrian|steps|cycleway)$'
 const TRAIL_RE = '^(path|bridleway)$'
 const FOOTTRAIL_RE = '^(footway|pedestrian|steps|cycleway|path|bridleway|construction|proposed)$'
 const RAIL_RE = '^(rail|light_rail|subway|tram|narrow_gauge|monorail|funicular)$'
+const AERIALWAY_RE =
+  '^(cable_car|gondola|chair_lift|mixed_lift|drag_lift|t-bar|j-bar|platter|rope_tow|magic_carpet|zip_line|goods)$'
 
 /**
  * way のタグからカテゴリを判定する（buildQuery のフィルタと対応させる）。
@@ -36,6 +38,7 @@ const RAIL_RE = '^(rail|light_rail|subway|tram|narrow_gauge|monorail|funicular)$
  */
 export function classify(tags: Record<string, string> | undefined): RouteCategory | null {
   if (!tags) return null
+  if (tags.aerialway && new RegExp(AERIALWAY_RE).test(tags.aerialway)) return 'aerialway'
   if (tags.railway && new RegExp(RAIL_RE).test(tags.railway)) return 'rail'
   const hw = tags.highway
   if (!hw) return null
@@ -60,6 +63,7 @@ function buildQuery(bbox: BBox, cats: RouteCategory[]): string {
     parts.push(`way["highway"~"${FOOT_RE}"]["sac_scale"](${bb});`)
   }
   if (cats.includes('rail')) parts.push(`way["railway"~"${RAIL_RE}"](${bb});`)
+  if (cats.includes('aerialway')) parts.push(`way["aerialway"~"${AERIALWAY_RE}"](${bb});`)
   return `[out:json][timeout:25];(${parts.join('')});out geom;`
 }
 
@@ -158,7 +162,7 @@ export async function fetchOsmFeatures(
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         // Overpass は User-Agent が無いと 406 を返す。Accept も明示しておく。
-        'User-Agent': 'mapbox-importer/0.1 (heightmap tool)',
+        'User-Agent': 'location-viewer/0.1',
         Accept: 'application/json'
       },
       body: 'data=' + encodeURIComponent(query),
@@ -215,7 +219,7 @@ export async function fetchOsmTagsByIds(ids: number[]): Promise<Map<number, Reco
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'mapbox-importer/0.1 (heightmap tool)',
+        'User-Agent': 'location-viewer/0.1',
         Accept: 'application/json'
       },
       body: 'data=' + encodeURIComponent(query),

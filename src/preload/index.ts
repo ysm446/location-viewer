@@ -74,6 +74,7 @@ export interface AppSettings {
   showRouteFoot?: boolean
   showRouteTrail?: boolean
   showRouteRail?: boolean
+  showRouteAerialway?: boolean
   showRouteInfo?: boolean
   showHelp?: boolean
   showDebug?: boolean

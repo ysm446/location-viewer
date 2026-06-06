@@ -1,5 +1,5 @@
 {
-  "name": "mapbox-importer",
+  "name": "location-viewer",
   "version": "0.1.0",
   "description": "Mapbox Terrain からハイトマップを生成・プレビューするスタンドアロンエディタ",
   "main": "out/main/index.js",
@@ -28,8 +28,8 @@
     "three": "^0.170.0"
   },
   "build": {
-    "appId": "com.example.mapbox-importer",
-    "productName": "Mapbox Heightmap Importer",
+    "appId": "com.example.location-viewer",
+    "productName": "Location Viewer",
     "files": [
       "out/**/*"
     ],

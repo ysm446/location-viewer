@@ -83,6 +83,7 @@ const chkRouteRoad = $<HTMLInputElement>('chk-route-road')
 const chkRouteFoot = $<HTMLInputElement>('chk-route-foot')
 const chkRouteTrail = $<HTMLInputElement>('chk-route-trail')
 const chkRouteRail = $<HTMLInputElement>('chk-route-rail')
+const chkRouteAerialway = $<HTMLInputElement>('chk-route-aerialway')
 const chkRouteClip = $<HTMLInputElement>('chk-route-clip')
 const btnTileGrid = $<HTMLButtonElement>('btn-tile-grid')
 const chkShowTerrain = $<HTMLInputElement>('chk-show-terrain')
@@ -127,6 +128,7 @@ function syncRouteCatsEnabled() {
     chkShowRouteFoot,
     chkShowRouteTrail,
     chkShowRouteRail,
+    chkShowRouteAerialway,
     chkShowRouteInfo
   ]) {
     c.disabled = !chkShowRoutes.checked
@@ -143,6 +145,7 @@ const chkShowRouteRoad = $<HTMLInputElement>('chk-show-route-road')
 const chkShowRouteFoot = $<HTMLInputElement>('chk-show-route-foot')
 const chkShowRouteTrail = $<HTMLInputElement>('chk-show-route-trail')
 const chkShowRouteRail = $<HTMLInputElement>('chk-show-route-rail')
+const chkShowRouteAerialway = $<HTMLInputElement>('chk-show-route-aerialway')
 chkShowRouteRoad.addEventListener('change', () => {
   viewer?.setRouteCategoryVisible('road', chkShowRouteRoad.checked)
   api.setSettings({ showRouteRoad: chkShowRouteRoad.checked })
@@ -158,6 +161,10 @@ chkShowRouteTrail.addEventListener('change', () => {
 chkShowRouteRail.addEventListener('change', () => {
   viewer?.setRouteCategoryVisible('rail', chkShowRouteRail.checked)
   api.setSettings({ showRouteRail: chkShowRouteRail.checked })
+})
+chkShowRouteAerialway.addEventListener('change', () => {
+  viewer?.setRouteCategoryVisible('aerialway', chkShowRouteAerialway.checked)
+  api.setSettings({ showRouteAerialway: chkShowRouteAerialway.checked })
 })
 
 // ルートの距離/勾配ラベル（カーブ単位）の表示トグル
@@ -1033,6 +1040,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setRouteCategoryVisible('foot', chkShowRouteFoot.checked)
       viewer.setRouteCategoryVisible('trail', chkShowRouteTrail.checked)
       viewer.setRouteCategoryVisible('rail', chkShowRouteRail.checked)
+      viewer.setRouteCategoryVisible('aerialway', chkShowRouteAerialway.checked)
       viewer.setRouteLabelsVisible(chkShowRouteInfo.checked)
       viewer.setLandmarksEditable(detailMode)
       viewer.setRenderMode(renderModeSel.value as 'default' | 'heightmap' | 'satellite')
@@ -1411,7 +1419,8 @@ const ROUTE_COLORS: Record<RouteCategory, string> = {
   road: '#2fc7a8', // 自動車道=ティール/青緑寄りの緑
   foot: '#57c860', // 歩道=緑
   trail: '#9acd32', // 登山道=黄緑（元の色）
-  rail: '#8fb89a' // 鉄道=くすんだ緑（セージ）
+  rail: '#8fb89a', // 鉄道=くすんだ緑（セージ）
+  aerialway: '#d7b85a' // ロープウェイ=山中でも見分けやすい落ち着いた黄
 }
 
 /** category プロパティから線色を引く match 式 */
@@ -1424,6 +1433,7 @@ function catColorExpr(): any {
     'foot', ROUTE_COLORS.foot,
     'trail', ROUTE_COLORS.trail,
     'rail', ROUTE_COLORS.rail,
+    'aerialway', ROUTE_COLORS.aerialway,
     '#ffffff'
   ]
 }
@@ -1515,7 +1525,8 @@ function routeCatLabel(cat: RouteCategory): string {
   if (cat === 'road') return t('route.catRoad')
   if (cat === 'foot') return t('route.catFoot')
   if (cat === 'trail') return t('route.catTrail')
-  return t('route.catRail')
+  if (cat === 'rail') return t('route.catRail')
+  return t('route.catAerialway')
 }
 
 function selectedRouteCats(): RouteCategory[] {
@@ -1524,6 +1535,7 @@ function selectedRouteCats(): RouteCategory[] {
   if (chkRouteFoot.checked) cats.push('foot')
   if (chkRouteTrail.checked) cats.push('trail')
   if (chkRouteRail.checked) cats.push('rail')
+  if (chkRouteAerialway.checked) cats.push('aerialway')
   return cats
 }
 
@@ -2077,6 +2089,7 @@ btnImportZip.addEventListener('click', async () => {
   if (settings.showRouteFoot === false) chkShowRouteFoot.checked = false
   if (settings.showRouteTrail === false) chkShowRouteTrail.checked = false
   if (settings.showRouteRail === false) chkShowRouteRail.checked = false
+  if (settings.showRouteAerialway === false) chkShowRouteAerialway.checked = false
   if (settings.showRouteInfo) chkShowRouteInfo.checked = true
   syncLandmarkOptionsEnabled()
   syncRouteCatsEnabled()

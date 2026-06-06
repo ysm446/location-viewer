@@ -25,6 +25,7 @@ const AXIS_LABEL_RIGHT_OFFSET_RATIO = 0.2
 const CONTOUR_LINE_WIDTH = 1.5
 const DEFAULT_CONTOUR_INTERVAL = 10
 const DEFAULT_CONTOUR_COLOR = 0x203040
+const LANDMARK_ELEVATION_LABEL_SCALE = 0.72
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
 // 色相を緑寄り（ティール緑→緑→黄緑）に収めて種別差を控えめにする（2D ROUTE_COLORS と一致）。
@@ -32,7 +33,8 @@ const ROUTE_COLORS_3D: Record<RouteCategory, number> = {
   road: 0x2fc7a8, // 自動車道=ティール/青緑寄りの緑
   foot: 0x57c860, // 歩道=緑
   trail: 0x9acd32, // 登山道=黄緑（元の色）
-  rail: 0x8fb89a // 鉄道=くすんだ緑（セージ）
+  rail: 0x8fb89a, // 鉄道=くすんだ緑（セージ）
+  aerialway: 0xd7b85a // ロープウェイ=山中でも見分けやすい落ち着いた黄
 }
 
 /** モーフ演出中にルート折れ線を旧→新へ補間するための頂点バッファ（flat xyz） */
@@ -233,7 +235,8 @@ export class TerrainViewer {
     road: true,
     foot: true,
     trail: true,
-    rail: true
+    rail: true,
+    aerialway: true
   }
   // 3Dクリックで地点を配置するモード
   private raycaster = new THREE.Raycaster()
@@ -908,9 +911,21 @@ export class TerrainViewer {
     const lift = 8 * g.k // 地表から数メートル浮かせて Z ファイト／めり込みを避ける
     const labelSprites: THREE.Sprite[] = [] // routeGroup へまとめて追加する距離/勾配ラベル
     // 種別ごとに線分頂点を貯める（new=新地形上 / old=旧地形上＝morph 補間の始点）。
-    const cats: RouteCategory[] = ['road', 'foot', 'trail', 'rail']
-    const newByCat: Record<RouteCategory, number[]> = { road: [], foot: [], trail: [], rail: [] }
-    const oldByCat: Record<RouteCategory, number[]> = { road: [], foot: [], trail: [], rail: [] }
+    const cats: RouteCategory[] = ['road', 'foot', 'trail', 'rail', 'aerialway']
+    const newByCat: Record<RouteCategory, number[]> = {
+      road: [],
+      foot: [],
+      trail: [],
+      rail: [],
+      aerialway: []
+    }
+    const oldByCat: Record<RouteCategory, number[]> = {
+      road: [],
+      foot: [],
+      trail: [],
+      rail: [],
+      aerialway: []
+    }
 
     for (const r of this.routes) {
       if (r.visible === false || r.coords.length < 2) continue
@@ -1242,7 +1257,7 @@ export class TerrainViewer {
 
       // ラベル（名前＋必要なら標高）
       const labelText = this.landmarkElevationVisible ? `${lm.name}\n${Math.round(lm.elevation)}m` : lm.name
-      const label = makeLabelSprite(labelText, 0xffffff, 0.034 * s, false, 2)
+      const label = makeLabelSprite(labelText, 0xffffff, 0.034 * s, false, 2, LANDMARK_ELEVATION_LABEL_SCALE)
       label.position.set(x, topY + 0.06 * s, z)
       label.renderOrder = 12
       // 画面固定サイズ表示の基準として設計スケールを控える（毎フレーム距離で補正する）。
@@ -2039,30 +2054,35 @@ export class TerrainViewer {
   }
 }
 
-function makeTextLabelCanvas(text: string, color: number) {
+function makeTextLabelCanvas(text: string, color: number, secondaryLineScale = 1) {
   const fontPx = 48
   const pad = 10
-  const lineH = fontPx * 1.15
   const lines = text.split('\n')
+  const lineScales = lines.map((_, i) => (i === 0 ? 1 : secondaryLineScale))
+  const lineHeights = lineScales.map((s) => fontPx * s * 1.15)
+  const lineH = fontPx * 1.15
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')!
-  const font = `${fontPx}px Segoe UI, sans-serif`
-  ctx.font = font
-  const w = Math.ceil(Math.max(...lines.map((l) => ctx.measureText(l).width))) + pad * 2
-  const h = Math.ceil(lineH * lines.length) + pad * 2
+  const widths = lines.map((l, i) => {
+    ctx.font = `${fontPx * lineScales[i]}px Segoe UI, sans-serif`
+    return ctx.measureText(l).width
+  })
+  const w = Math.ceil(Math.max(...widths)) + pad * 2
+  const h = Math.ceil(lineHeights.reduce((sum, v) => sum + v, 0)) + pad * 2
   canvas.width = w
   canvas.height = h
-  // canvas をリサイズすると context がクリアされるので font を再設定する
-  ctx.font = font
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.lineWidth = 6
   ctx.strokeStyle = 'rgba(0,0,0,0.85)'
   ctx.fillStyle = '#' + color.toString(16).padStart(6, '0')
+  let y = pad
   lines.forEach((l, i) => {
-    const cy = pad + lineH * (i + 0.5)
+    ctx.font = `${fontPx * lineScales[i]}px Segoe UI, sans-serif`
+    const cy = y + lineHeights[i] / 2
     ctx.strokeText(l, w / 2, cy) // 縁取り（黒）で視認性を確保
     ctx.fillText(l, w / 2, cy)
+    y += lineHeights[i]
   })
   return { canvas, w, h, lines, lineH, pad }
 }
@@ -2077,9 +2097,10 @@ function makeLabelSprite(
   color = 0x9fc2e8,
   worldH = 0.06,
   depthTest = false,
-  scaleReferenceLines?: number
+  scaleReferenceLines?: number,
+  secondaryLineScale = 1
 ): THREE.Sprite {
-  const { canvas, w, h, lines, lineH, pad } = makeTextLabelCanvas(text, color)
+  const { canvas, w, h, lines, lineH, pad } = makeTextLabelCanvas(text, color, secondaryLineScale)
   const tex = new THREE.CanvasTexture(canvas)
   tex.colorSpace = THREE.SRGBColorSpace
   const mat = new THREE.SpriteMaterial({ map: tex, depthTest, transparent: true })

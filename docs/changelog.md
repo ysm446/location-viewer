@@ -3,6 +3,10 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-06-06
+- 名称：プロジェクト名/アプリ表示名を `Location Viewer` に更新。`package.json` / `package-lock.json` の package name を `location-viewer`、Electron Builder の `productName` を `Location Viewer`、`appId` を `com.example.location-viewer` に変更。HTMLタイトル、Electronウィンドウタイトル、OSM取得時のUser-Agent、README見出しと説明文も新名称へ更新。
+- OSMルート：取得カテゴリに `ロープウェイ` を追加。`RouteCategory` に `aerialway` を追加し、Overpass で `way["aerialway"~"..."]`（cable_car/gondola/chair_lift/mixed_lift/drag_lift/t-bar/j-bar/platter/rope_tow/magic_carpet/zip_line/goods）を取得、分類、保存できるようにした。OSMタブの取得カテゴリ、3Dビュー表示メニューの種別表示、2D/3Dの線色、設定保存（`showRouteAerialway`）にも対応。
+- ランドマーク：浄土平エリアの `高山` と `鳥子平` の座標を再確認して修正。元の `高山`（140.2813, 37.7078）は保存済みDEMが約1249m、元の `鳥子平`（140.2762, 37.7046）は約1322mで、登録標高1805m/1606mと大きく矛盾していた。`高山` はYAMAP高山（福島県福島市）の拡大地図リンク座標（140.2575556, 37.70059444）へ、`鳥子平` はヤマレコ鳥子平の北緯37度42分17秒・東経140度14分53秒を十進化した（140.2480556, 37.7047222）へ修正。修正後の保存済みDEMはそれぞれ約1801m/約1605mで標高と整合。`data/ws_mpsx5vlv/workspace.json` と `data/landmark-library.json` を更新（`data/` はGit管理外）。
+- 3Dビュー：ランドマークラベルの標高行を地名行より小さく表示するよう調整。これまで地名と標高は同じスプライト内で同じフォントサイズだったため、ラベルキャンバス生成を行ごとの倍率に対応させ、ランドマークの2行目（標高）だけ約72%に縮小した。ルート距離ラベルやグリッド距離ラベルには影響しない。
 - 環境設定：タブ内を `一般` / `Mapbox` / `3Dビュー` に分け、3Dビュー内も `表示・カメラ` / `注釈` / `ルート` / `等高線` の小セクションで整理。等高線セクションに `等高線の色` カラーピッカーを追加し、設定は `contourColor` として `data/settings.json` に保存・復元。既存の等高線間隔はメートル単位の `contourInterval` のまま維持。
 - 3Dビュー：表示メニューの並びを調整し、`グリッドを表示` を一番上に移動。
 - 3Dビュー：等高線表示を追加。表示メニューに `等高線を表示` チェックを追加し、標高グリッドから指定した標高間隔の等高線を生成して地形表面の少し上に描画する。線は `LineSegments2` / `LineMaterial` で描画し、環境設定 > 3Dビューの `等高線の間隔` セレクト（5m/10m/20m/50m/100m/200m）で縦方向の分割間隔を調整可能。設定は `showContours` / `contourInterval` として `data/settings.json` に保存・復元。

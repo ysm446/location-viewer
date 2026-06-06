@@ -119,7 +119,7 @@ function createWindow(): void {
     width: 1600,
     height: 900,
     useContentSize: true, // タイトルバーを含めず、描画領域を 1600x900 にする
-    title: 'Mapbox Heightmap Importer',
+    title: 'Location Viewer',
     webPreferences: {
       preload: join(__dirname, '../preload/index.cjs'),
       sandbox: false

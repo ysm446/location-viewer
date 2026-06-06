@@ -1,6 +1,6 @@
-# Mapbox Heightmap Importer
+# Location Viewer
 
-Mapbox の Terrain タイルからハイトマップを生成・プレビューするスタンドアロンのデスクトップアプリ（Electron + TypeScript）。
+Mapbox の Terrain タイルからロケーションを作成し、地形・地点・ルートを2D/3Dで確認するスタンドアロンのデスクトップアプリ（Electron + TypeScript）。
 
 [technical-notes.com の Houdini 記事](https://technical-notes.com/houdini/2023/07/23/mapbox-heightmap/) の手法（Terrain-RGB → 標高デコード）を、ツール内で完結するように実装したもの。
 

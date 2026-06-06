@@ -51,7 +51,7 @@ export interface LandmarkLibraryEntry {
 }
 
 /** ルート（OSM等から取り込んだライン）の種別 */
-export type RouteCategory = 'road' | 'foot' | 'trail' | 'rail'
+export type RouteCategory = 'road' | 'foot' | 'trail' | 'rail' | 'aerialway'
 
 /** 地形上のルート（折れ線）。座標は lng/lat で持ち、地形を更新しても残る */
 export interface Route {

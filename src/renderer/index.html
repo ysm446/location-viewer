@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mapbox Heightmap Importer</title>
+    <title>Location Viewer</title>
   </head>
   <body>
     <div id="app">
@@ -151,6 +151,10 @@
                       <span data-i18n="route.catRail">鉄道</span>
                     </label>
                     <label class="checkbox-row">
+                      <input id="chk-show-route-aerialway" type="checkbox" checked />
+                      <span data-i18n="route.catAerialway">ロープウェイ</span>
+                    </label>
+                    <label class="checkbox-row">
                       <input id="chk-show-route-info" type="checkbox" />
                       <span data-i18n="route.info">距離・勾配</span>
                     </label>
@@ -240,6 +244,7 @@
                   <label class="checkbox-row"><input id="chk-route-foot" type="checkbox" checked /><span data-i18n="route.catFoot">歩道</span></label>
                   <label class="checkbox-row"><input id="chk-route-trail" type="checkbox" checked /><span data-i18n="route.catTrail">登山道</span></label>
                   <label class="checkbox-row"><input id="chk-route-rail" type="checkbox" /><span data-i18n="route.catRail">鉄道</span></label>
+                  <label class="checkbox-row"><input id="chk-route-aerialway" type="checkbox" /><span data-i18n="route.catAerialway">ロープウェイ</span></label>
                 </div>
                 <label class="checkbox-row" style="margin: 2px 0 8px">
                   <input id="chk-route-clip" type="checkbox" checked />
