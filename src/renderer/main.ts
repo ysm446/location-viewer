@@ -82,6 +82,7 @@ const chkRouteFoot = $<HTMLInputElement>('chk-route-foot')
 const chkRouteTrail = $<HTMLInputElement>('chk-route-trail')
 const chkRouteRail = $<HTMLInputElement>('chk-route-rail')
 const chkRouteClip = $<HTMLInputElement>('chk-route-clip')
+const btnTileGrid = $<HTMLButtonElement>('btn-tile-grid')
 const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
 const chkShowLandmarkElevation = $<HTMLInputElement>('chk-show-landmark-elevation')
 const viewMenuLandmarkOptions = $('view-menu-landmark-options')
@@ -433,16 +434,93 @@ function locationFitPadding(): number {
 
 // 3D 地形（地図を傾けて立体表示）の状態。トークンがある時のみ有効。
 let map3d = false
+let tileGridVisible = false
+const TILE_GRID_SOURCE = 'tile-grid'
+const TILE_GRID_LAYER = 'tile-grid-line'
+
+function tileGridFeatureCollection() {
+  const z = parseInt(zoomInput.value)
+  const bounds = map.getBounds()
+  const west = Math.max(-180, bounds.getWest())
+  const east = Math.min(180, bounds.getEast())
+  const south = Math.max(-85.05112878, bounds.getSouth())
+  const north = Math.min(85.05112878, bounds.getNorth())
+  if (!Number.isFinite(z) || east <= west || north <= south) return { type: 'FeatureCollection', features: [] }
+
+  const tileCount = 2 ** z
+  const x0 = Math.max(0, Math.floor(lonPx(west, z) / TILE))
+  const x1 = Math.min(tileCount, Math.ceil(lonPx(east, z) / TILE))
+  const y0 = Math.max(0, Math.floor(latPx(north, z) / TILE))
+  const y1 = Math.min(tileCount, Math.ceil(latPx(south, z) / TILE))
+  const lineCount = x1 - x0 + 1 + (y1 - y0 + 1)
+  const stride = Math.max(1, Math.ceil(lineCount / 220))
+  const features: unknown[] = []
+
+  for (let x = x0; x <= x1; x += stride) {
+    const lng = pxLon(x * TILE, z)
+    features.push({
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'LineString', coordinates: [[lng, south], [lng, north]] }
+    })
+  }
+  for (let y = y0; y <= y1; y += stride) {
+    const lat = pxLat(y * TILE, z)
+    features.push({
+      type: 'Feature',
+      properties: {},
+      geometry: { type: 'LineString', coordinates: [[west, lat], [east, lat]] }
+    })
+  }
+
+  return { type: 'FeatureCollection', features }
+}
+
+function updateTileGrid() {
+  if (!map.isStyleLoaded()) return
+  const data = tileGridVisible ? tileGridFeatureCollection() : { type: 'FeatureCollection', features: [] }
+  const src = map.getSource(TILE_GRID_SOURCE) as maplibregl.GeoJSONSource | undefined
+  if (src) {
+    src.setData(data as never)
+    return
+  }
+  map.addSource(TILE_GRID_SOURCE, { type: 'geojson', data: data as never })
+  const beforeId = map.getLayer('bbox-fill') ? 'bbox-fill' : undefined
+  map.addLayer(
+    {
+      id: TILE_GRID_LAYER,
+      type: 'line',
+      source: TILE_GRID_SOURCE,
+      paint: {
+        'line-color': '#ffffff',
+        'line-opacity': 0.32,
+        'line-width': 1
+      }
+    },
+    beforeId
+  )
+}
+
+function setTileGridVisible(on: boolean) {
+  tileGridVisible = on
+  btnTileGrid.classList.toggle('active', tileGridVisible)
+  updateTileGrid()
+  api.setSettings({ showTileGrid: tileGridVisible })
+}
 
 // スタイル切替時に bbox 矩形レイヤー・terrain が消えるので、styledata で再適用する
 map.on('styledata', () => {
   if (map3d && token) map.setTerrain({ source: 'terrain-dem', exaggeration: 1.4 })
+  updateTileGrid()
   const b = currentBBox()
   if ([b.west, b.south, b.east, b.north].every((v) => !isNaN(v))) {
     drawBBoxRect(b.west, b.south, b.east, b.north)
   }
   drawRouteLayers()
 })
+map.on('moveend', updateTileGrid)
+map.on('zoomend', updateTileGrid)
+btnTileGrid.addEventListener('click', () => setTileGridVisible(!tileGridVisible))
 
 // 3D 地形トグル（傾けて立体表示。標高ソースはトークン必須）
 const btnMap3d = $<HTMLButtonElement>('btn-map-3d')
@@ -832,6 +910,7 @@ function updateEstimate() {
 zoomInput.addEventListener('input', () => {
   zoomVal.textContent = zoomInput.value
   updateEstimate()
+  updateTileGrid()
 })
 
 // 標高ソースごとの最大ズーム（Terrain-DEM は z14 まで、Terrain-RGB は z18 まで）
@@ -1901,6 +1980,7 @@ btnImportZip.addEventListener('click', async () => {
     viewer3dHelp.classList.add('hidden')
   }
   if (settings.showDebug) chkShowDebug.checked = true
+  if (settings.showTileGrid) setTileGridVisible(true)
   if (settings.autoFit) chkAutoFit.checked = true
   if (settings.scaleAnnotations) chkScaleAnnotations.checked = true
   if (settings.seaLevelBase) chkSeaLevel.checked = true

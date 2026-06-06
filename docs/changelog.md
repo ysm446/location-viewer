@@ -2,6 +2,11 @@
 
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
+## 2026-06-06
+- 位置選択：タイル境界を薄いグリッドで視覚化する「グリッド」トグルを追加。選択中のズームレベルから Web Mercator タイル境界を計算し、現在の地図表示範囲ぶんだけ GeoJSON line レイヤーとして重ねる。パン・ズーム・スタイル切替・ズームスライダー変更に追従し、広域表示で線数が多すぎる場合は最大約220本に間引いて描画する。表示状態は `showTileGrid` として `data/settings.json` に保存・復元。
+- 位置選択：ロケーション切り替え時の地図フィット余白を調整。`map.fitBounds` の padding を固定 40px から、地図キャンバスの短辺に応じた 72〜140px に変更し、選択矩形が画面いっぱいに詰まらず少し引いた表示になるようにした。
+- 運用ルール：`AGENTS.md` に「作業ごとに docs/ を更新する」最重要ルールを追加。まとまった作業後は `docs/progress.md` の最終更新日と `docs/changelog.md` の当日作業内容を必ず更新し、要件や方針変更時のみ `docs/goals.md`、ロードマップの着手・完了時に `docs/plan.md` を更新する方針を明文化した。
+
 ## 2026-06-04
 - ロケーションの **ZIP バックアップ書き出し／取り込み（復元）** を追加。外部依存なしの最小 ZIP 実装（`src/main/zip.ts`、Node 標準 `zlib` の deflate/inflate＋自前 CRC32、Zip64 非対応）を新設。`library.ts` に `readWorkspaceEntries`（`data/<id>/` の workspace.json/heightmap.u16/preview.png/satellite.png をフラットに収集、satellite は任意）と `importWorkspaceEntries`（workspace.json/heightmap.u16 必須を検証→**新しい id を採番**して衝突回避・order は末尾・既知ファイル名のみ書き出して zip slip 回避）を追加。IPC `workspace:exportZip`（保存ダイアログ→ZIP 書き出し）／`workspace:importZip`（開くダイアログ→新規ロケーションとして復元）と preload `exportZip`/`importZip` を追加。UI は詳細パネルに「ZIP 書き出し」（選択時のみ有効）、ロケーション一覧ヘッダに「📦 取り込み」ボタンを追加（取り込み後に一覧を再描画）。i18n に `btn.exportZip`/`btn.importZip`/`import.done`/`import.failed` を追加。
 - 3Dビュー（最適化）：距離/勾配ラベルが**OFF のときは作らない**ようにした。`renderRoutes` のラベル生成を `routeLabelsVisible` で囲み、OFF（既定）ならワークスペース切替のたびに全ルート分の `CanvasTexture` を生成していた無駄を解消（重いのは計算より1本ごとのテクスチャ生成）。`setRouteLabelsVisible` は OFF→ON で未生成なら `renderRoutes` で作り直す。

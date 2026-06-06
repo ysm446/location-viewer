@@ -138,12 +138,14 @@ body {
   width: auto;
 }
 #btn-draw.active,
-#btn-map-3d.active {
+#btn-map-3d.active,
+#btn-tile-grid.active {
   background: var(--accent);
   border-color: var(--accent-bright);
 }
 /* 3Dボタン：山シルエットSVG＋「3D」テキストを縦中央で揃える */
-#btn-map-3d {
+#btn-map-3d,
+#btn-tile-grid {
   display: inline-flex;
   align-items: center;
   gap: 5px;

@@ -1,5 +1,17 @@
 # AGENTS.md
 
+## ⚠️ 作業ごとに docs/ を更新する（最重要ルール）
+
+**まとまった作業（機能追加・修正・方針変更など）が終わるたびに、必ず `docs/` 内の
+該当ファイルを更新すること。** 更新を忘れない。
+
+- [docs/goals.md](docs/goals.md) … 目的・要件・確定方針。**要件や方針が変わったときだけ**更新。
+- [docs/plan.md](docs/plan.md) … これからやること（ロードマップ）。着手・完了で項目を移動する。
+- [docs/progress.md](docs/progress.md) … 現在の状態・完了/未完了チェックリスト。**毎回**「最終更新」日付を更新。
+- [docs/changelog.md](docs/changelog.md) … 変更履歴。**毎回**、その日の作業内容を新しい順（上）に追記。
+
+日付は実際の当日の日付（YYYY-MM-DD）を使う。相対表現（「今日」等）は使わない。
+
 ## Place Name Coordinate Policy
 
 When adding or correcting landmark coordinates, use the most reliable source available and record the reasoning in the final response.

@@ -72,6 +72,7 @@ export interface AppSettings {
   showRouteInfo?: boolean
   showHelp?: boolean
   showDebug?: boolean
+  showTileGrid?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
   seaLevelBase?: boolean

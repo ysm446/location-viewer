@@ -69,6 +69,7 @@ interface Settings {
   showLandmarkElevation?: boolean
   showRoutes?: boolean
   showHelp?: boolean
+  showTileGrid?: boolean
   autoFit?: boolean
   scaleAnnotations?: boolean
   seaLevelBase?: boolean
