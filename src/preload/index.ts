@@ -64,6 +64,9 @@ export interface AppSettings {
   renderMode?: 'default' | 'heightmap' | 'satellite'
   showTerrain?: boolean
   showGrid?: boolean
+  showContours?: boolean
+  contourInterval?: number
+  contourColor?: string
   showLandmarks?: boolean
   showLandmarkElevation?: boolean
   showRoutes?: boolean

@@ -2,6 +2,9 @@
 // 平面ジオメトリの各頂点 Z を標高で押し出す（displacement 相当）。
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { LineSegments2 } from 'three/examples/jsm/lines/LineSegments2.js'
+import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 import type { MeshPayload, Landmark, Route, RouteCategory } from '../preload/index'
 
 // 全地形で共通の表示スケール（メートル→ワールド単位）。地形ごとに正規化せず
@@ -19,6 +22,9 @@ const ROUTE_LABEL_WORLD_H = 0.027
 // ルートの画面上の長さ（px）がこれ未満ならラベルを出さない（遠い/短いカーブの間引き＝LOD）。
 const ROUTE_LABEL_MIN_PX = 60
 const AXIS_LABEL_RIGHT_OFFSET_RATIO = 0.2
+const CONTOUR_LINE_WIDTH = 1.5
+const DEFAULT_CONTOUR_INTERVAL = 10
+const DEFAULT_CONTOUR_COLOR = 0x203040
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
 // 色相を緑寄り（ティール緑→緑→黄緑）に収めて種別差を控えめにする（2D ROUTE_COLORS と一致）。
@@ -84,6 +90,10 @@ export class TerrainViewer {
   private terrainVisible = true
   private gridVisible = true
   private grid: THREE.GridHelper | null = null
+  private contourGroup: THREE.Group | null = null
+  private contourVisible = false
+  private contourInterval = DEFAULT_CONTOUR_INTERVAL
+  private contourColor = DEFAULT_CONTOUR_COLOR
   // グリッド中心軸の端に置く距離ラベル（中心から端までの km）
   private axisLabels: FlatLabelMesh[] = []
   private container: HTMLElement
@@ -1320,6 +1330,45 @@ export class TerrainViewer {
     }
   }
 
+  /** 等高線の表示/非表示を切り替える。 */
+  setContoursVisible(on: boolean) {
+    this.contourVisible = on
+    if (this.contourGroup) this.contourGroup.visible = on
+  }
+
+  /** 等高線の標高間隔（メートル）を設定する。 */
+  setContourInterval(intervalM: number) {
+    const allowed = [5, 10, 20, 50, 100, 200]
+    const next = allowed.includes(intervalM) ? intervalM : DEFAULT_CONTOUR_INTERVAL
+    if (this.contourInterval === next) return
+    this.contourInterval = next
+    if (this.lastPayload) this.setData(this.lastPayload, false)
+  }
+
+  /** 等高線の色を設定する。 */
+  setContourColor(hex: string) {
+    const color = /^#[0-9a-fA-F]{6}$/.test(hex)
+      ? Number.parseInt(hex.slice(1), 16)
+      : DEFAULT_CONTOUR_COLOR
+    this.contourColor = color
+    this.contourGroup?.traverse((o) => {
+      const mat = (o as THREE.Line).material as LineMaterial | undefined
+      if (mat?.isLineMaterial) {
+        mat.color.setHex(color)
+        mat.needsUpdate = true
+      }
+    })
+  }
+
+  private updateContourMaterialResolution() {
+    const w = this.container.clientWidth || 1
+    const h = this.container.clientHeight || 1
+    this.contourGroup?.traverse((o) => {
+      const mat = (o as THREE.Line).material as LineMaterial | undefined
+      if (mat?.isLineMaterial) mat.resolution.set(w, h)
+    })
+  }
+
   hasSatellite(): boolean {
     return this.satelliteTex !== null
   }
@@ -1370,6 +1419,7 @@ export class TerrainViewer {
     // ルートグループも旧地形グループの子。参照を手放し、旧グループと一緒に生かす/破棄する。
     this.routeGroup = null
     this.routeLabels = [] // 旧ラベルは旧グループと一緒に破棄される（参照だけ捨てる）
+    this.contourGroup = null
     // 新地点データがあれば renderLandmarks より前に反映（演出のフェード対象に含めるため）。
     if (landmarks) this.landmarks = landmarks
     if (oldGroup && !keepOld) {
@@ -1449,6 +1499,7 @@ export class TerrainViewer {
       rows,
       heights
     }
+    this.renderContours(group)
     this.renderLandmarks()
     this.renderRoutes()
 
@@ -1532,6 +1583,84 @@ export class TerrainViewer {
     }
   }
 
+  /** 現在の標高グリッドから等高線（LineSegments2）を作る。 */
+  private renderContours(group: THREE.Group) {
+    const g = this.geo
+    if (!g || g.cols < 2 || g.rows < 2) return
+    const span = this.lastPayload ? this.lastPayload.maxEle - this.lastPayload.minEle : 0
+    if (span <= 0) return
+
+    const interval = this.contourInterval
+    const first = Math.ceil(g.minEle / interval) * interval
+    const positions: number[] = []
+    const lift = 3 * g.k
+    const baseY = this.seaLevelBase ? g.minEle * g.k : 0
+    const xAt = (c: number) => (c / (g.cols - 1) - 0.5) * g.widthMeters * g.k
+    const zAt = (r: number) => (r / (g.rows - 1) - 0.5) * g.heightMeters * g.k
+    const addPoint = (
+      out: THREE.Vector3[],
+      level: number,
+      a: { c: number; r: number; h: number },
+      b: { c: number; r: number; h: number }
+    ) => {
+      const d = b.h - a.h
+      if (Math.abs(d) < 1e-6) return
+      const t = (level - a.h) / d
+      if (t < 0 || t > 1) return
+      out.push(
+        new THREE.Vector3(
+          xAt(a.c + (b.c - a.c) * t),
+          (level - g.minEle) * g.k + baseY + lift,
+          zAt(a.r + (b.r - a.r) * t)
+        )
+      )
+    }
+
+    for (let level = first; level < g.minEle + span; level += interval) {
+      if (level <= g.minEle || level >= g.minEle + span) continue
+      for (let r = 0; r < g.rows - 1; r++) {
+        for (let c = 0; c < g.cols - 1; c++) {
+          const nw = { c, r, h: g.heights[r * g.cols + c] }
+          const ne = { c: c + 1, r, h: g.heights[r * g.cols + c + 1] }
+          const se = { c: c + 1, r: r + 1, h: g.heights[(r + 1) * g.cols + c + 1] }
+          const sw = { c, r: r + 1, h: g.heights[(r + 1) * g.cols + c] }
+          const pts: THREE.Vector3[] = []
+          if ((nw.h <= level && ne.h > level) || (nw.h > level && ne.h <= level)) addPoint(pts, level, nw, ne)
+          if ((ne.h <= level && se.h > level) || (ne.h > level && se.h <= level)) addPoint(pts, level, ne, se)
+          if ((sw.h <= level && se.h > level) || (sw.h > level && se.h <= level)) addPoint(pts, level, sw, se)
+          if ((nw.h <= level && sw.h > level) || (nw.h > level && sw.h <= level)) addPoint(pts, level, nw, sw)
+          if (pts.length >= 2) {
+            positions.push(pts[0].x, pts[0].y, pts[0].z, pts[1].x, pts[1].y, pts[1].z)
+            if (pts.length >= 4)
+              positions.push(pts[2].x, pts[2].y, pts[2].z, pts[3].x, pts[3].y, pts[3].z)
+          }
+        }
+      }
+    }
+    if (positions.length === 0) return
+
+    const geom = new LineSegmentsGeometry()
+    geom.setPositions(positions)
+    const mat = new LineMaterial({
+      color: this.contourColor,
+      linewidth: CONTOUR_LINE_WIDTH,
+      transparent: true,
+      opacity: 0.8,
+      depthTest: true,
+      depthWrite: false
+    })
+    mat.resolution.set(this.container.clientWidth || 1, this.container.clientHeight || 1)
+    const line = new LineSegments2(geom, mat)
+    line.computeLineDistances()
+    line.renderOrder = 8
+
+    const cg = new THREE.Group()
+    cg.visible = this.contourVisible
+    cg.add(line)
+    group.add(cg)
+    this.contourGroup = cg
+  }
+
   /**
    * 地形が画面の「縦いっぱい」に収まるカメラ距離（注視点からの半径）を返す。
    * 画面の縦方向に効くのは南北(Z)と高さ(Y)なので、東西(X)幅は距離に含めない。
@@ -1582,6 +1711,7 @@ export class TerrainViewer {
     this.renderer.setSize(w, h)
     this.camera.aspect = w / h
     this.camera.updateProjectionMatrix()
+    this.updateContourMaterialResolution()
   }
 
   /**

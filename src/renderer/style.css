@@ -430,6 +430,23 @@ body {
 .settings-group {
   margin-bottom: 16px;
 }
+.settings-section-title {
+  margin: 0 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--text);
+}
+.settings-subsection {
+  margin-top: 14px;
+}
+.settings-subsection h4 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--text-dim);
+}
 label {
   display: block;
   font-size: 12px;
@@ -515,6 +532,10 @@ button:hover:not(:disabled) {
 button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+input[type='color'] {
+  height: 32px;
+  padding: 3px;
 }
 #btn-import-zip {
   display: inline-flex;

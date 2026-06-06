@@ -87,6 +87,7 @@ const chkRouteClip = $<HTMLInputElement>('chk-route-clip')
 const btnTileGrid = $<HTMLButtonElement>('btn-tile-grid')
 const chkShowTerrain = $<HTMLInputElement>('chk-show-terrain')
 const chkShowGrid = $<HTMLInputElement>('chk-show-grid')
+const chkShowContours = $<HTMLInputElement>('chk-show-contours')
 const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
 const chkShowLandmarkElevation = $<HTMLInputElement>('chk-show-landmark-elevation')
 const viewMenuLandmarkOptions = $('view-menu-landmark-options')
@@ -97,6 +98,10 @@ chkShowTerrain.addEventListener('change', () => {
 chkShowGrid.addEventListener('change', () => {
   viewer?.setGridVisible(chkShowGrid.checked)
   api.setSettings({ showGrid: chkShowGrid.checked })
+})
+chkShowContours.addEventListener('change', () => {
+  viewer?.setContoursVisible(chkShowContours.checked)
+  api.setSettings({ showContours: chkShowContours.checked })
 })
 function syncLandmarkOptionsEnabled() {
   viewMenuLandmarkOptions.classList.toggle('disabled', !chkShowLandmarks.checked)
@@ -230,6 +235,8 @@ chkFixedLabel.addEventListener('change', () => {
 const DEFAULT_FOV = 50
 const fovInput = $<HTMLInputElement>('camera-fov')
 const fovVal = $('fov-val')
+const contourIntervalSel = $<HTMLSelectElement>('contour-interval')
+const contourColorInput = $<HTMLInputElement>('contour-color')
 function applyFov(deg: number) {
   fovInput.value = String(deg)
   fovVal.textContent = String(deg)
@@ -246,6 +253,34 @@ fovInput.addEventListener('change', () => {
 $<HTMLButtonElement>('btn-fov-reset').addEventListener('click', () => {
   applyFov(DEFAULT_FOV)
   api.setSettings({ cameraFov: DEFAULT_FOV })
+})
+
+function isContourInterval(v: number) {
+  return [5, 10, 20, 50, 100, 200].includes(v)
+}
+function applyContourInterval(interval: number) {
+  const v = isContourInterval(interval) ? interval : 10
+  contourIntervalSel.value = String(v)
+  viewer?.setContourInterval(v)
+}
+contourIntervalSel.addEventListener('change', () => {
+  const v = Number(contourIntervalSel.value)
+  viewer?.setContourInterval(v)
+  api.setSettings({ contourInterval: v })
+})
+function isHexColor(v: string) {
+  return /^#[0-9a-fA-F]{6}$/.test(v)
+}
+function applyContourColor(color: string) {
+  const v = isHexColor(color) ? color : '#203040'
+  contourColorInput.value = v
+  viewer?.setContourColor(v)
+}
+contourColorInput.addEventListener('input', () => {
+  viewer?.setContourColor(contourColorInput.value)
+})
+contourColorInput.addEventListener('change', () => {
+  api.setSettings({ contourColor: contourColorInput.value })
 })
 
 // 地形切替トランジション（なし / 横スライド / ワイプ）
@@ -988,6 +1023,9 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setLandmarkMoveHandler(onMoveLandmark)
       viewer.setTerrainVisible(chkShowTerrain.checked)
       viewer.setGridVisible(chkShowGrid.checked)
+      viewer.setContoursVisible(chkShowContours.checked)
+      viewer.setContourInterval(Number(contourIntervalSel.value))
+      viewer.setContourColor(contourColorInput.value)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
       viewer.setLandmarkElevationVisible(chkShowLandmarkElevation.checked)
       viewer.setRoutesVisible(chkShowRoutes.checked)
@@ -2032,6 +2070,7 @@ btnImportZip.addEventListener('click', async () => {
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
   if (settings.showTerrain === false) chkShowTerrain.checked = false
   if (settings.showGrid === false) chkShowGrid.checked = false
+  if (settings.showContours) chkShowContours.checked = true
   if (settings.showLandmarkElevation === false) chkShowLandmarkElevation.checked = false
   if (settings.showRoutes === false) chkShowRoutes.checked = false
   if (settings.showRouteRoad === false) chkShowRouteRoad.checked = false
@@ -2055,6 +2094,12 @@ btnImportZip.addEventListener('click', async () => {
   if (typeof settings.cameraFov === 'number') {
     fovInput.value = String(settings.cameraFov)
     fovVal.textContent = String(settings.cameraFov)
+  }
+  if (typeof settings.contourInterval === 'number') {
+    applyContourInterval(settings.contourInterval)
+  }
+  if (typeof settings.contourColor === 'string') {
+    applyContourColor(settings.contourColor)
   }
   if (
     settings.transition === 'slide' ||

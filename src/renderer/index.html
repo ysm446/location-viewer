@@ -108,12 +108,16 @@
                 </button>
                 <div id="view-menu" class="popup-menu hidden">
                   <label class="checkbox-row">
+                    <input id="chk-show-grid" type="checkbox" checked />
+                    <span data-i18n="grid.show">グリッドを表示</span>
+                  </label>
+                  <label class="checkbox-row">
                     <input id="chk-show-terrain" type="checkbox" checked />
                     <span data-i18n="terrain.show">地形を表示</span>
                   </label>
                   <label class="checkbox-row">
-                    <input id="chk-show-grid" type="checkbox" checked />
-                    <span data-i18n="grid.show">グリッドを表示</span>
+                    <input id="chk-show-contours" type="checkbox" />
+                    <span data-i18n="contour.show">等高線を表示</span>
                   </label>
                   <label class="checkbox-row">
                     <input id="chk-show-landmarks" type="checkbox" checked />
@@ -284,6 +288,7 @@
         <!-- 環境設定 -->
         <div id="rview-settings" class="rview hidden">
           <section class="settings-group">
+            <h3 class="settings-section-title" data-i18n="settings.general">一般</h3>
             <label data-i18n="side.language">言語 / Language</label>
             <select id="lang-select">
               <option value="ja">日本語</option>
@@ -292,6 +297,7 @@
           </section>
 
           <section class="settings-group">
+            <h3 class="settings-section-title" data-i18n="settings.mapbox">Mapbox</h3>
             <label data-i18n="side.token">Mapbox アクセストークン</label>
             <div class="row">
               <input id="token" type="password" placeholder="pk.xxxxx" />
@@ -301,7 +307,9 @@
           </section>
 
           <section class="settings-group">
-            <label data-i18n="settings.view3d">3D ビュー</label>
+            <h3 class="settings-section-title" data-i18n="settings.view3d">3D ビュー</h3>
+            <div class="settings-subsection">
+              <h4 data-i18n="settings.displayCamera">表示・カメラ</h4>
             <label class="checkbox-row">
               <input id="chk-auto-fit" type="checkbox" />
               <span data-i18n="settings.autoFit"
@@ -320,23 +328,6 @@
                 >海抜標高で配置（海面=0m を基準に地形を浮かせる）</span
               >
             </label>
-            <label class="checkbox-row">
-              <input id="chk-fixed-label" type="checkbox" />
-              <span data-i18n="settings.fixedLabelSize"
-                >地名ラベルを画面に対して一定サイズで表示（ズームで拡縮しない）</span
-              >
-            </label>
-            <label data-i18n="settings.labelDeclutter">地名ラベルの重なり回避</label>
-            <select id="label-declutter">
-              <option value="none" data-i18n="declutter.none">なし</option>
-              <option value="stack" selected data-i18n="declutter.stack">上へ逃がす（全部表示）</option>
-              <option value="hideFar" data-i18n="declutter.hideFar">奥を隠す（手前を優先）</option>
-            </select>
-            <label data-i18n="settings.routeDistanceMode">ルート距離の計算</label>
-            <select id="route-distance-mode">
-              <option value="horizontal" selected data-i18n="routeDistance.horizontal">水平距離</option>
-              <option value="surface" data-i18n="routeDistance.surface">実距離（斜距離）</option>
-            </select>
             <label
               ><span data-i18n="settings.fov">カメラの画角</span>:
               <span id="fov-val">50</span>°</label
@@ -359,6 +350,47 @@
               <option value="wipe" data-i18n="transition.wipe">ワイプ</option>
               <option value="morph" data-i18n="transition.morph">ハイト・モーフ</option>
             </select>
+            </div>
+
+            <div class="settings-subsection">
+              <h4 data-i18n="settings.annotations">注釈</h4>
+            <label class="checkbox-row">
+              <input id="chk-fixed-label" type="checkbox" />
+              <span data-i18n="settings.fixedLabelSize"
+                >地名ラベルを画面に対して一定サイズで表示（ズームで拡縮しない）</span
+              >
+            </label>
+            <label data-i18n="settings.labelDeclutter">地名ラベルの重なり回避</label>
+            <select id="label-declutter">
+              <option value="none" data-i18n="declutter.none">なし</option>
+              <option value="stack" selected data-i18n="declutter.stack">上へ逃がす（全部表示）</option>
+              <option value="hideFar" data-i18n="declutter.hideFar">奥を隠す（手前を優先）</option>
+            </select>
+            </div>
+
+            <div class="settings-subsection">
+              <h4 data-i18n="settings.routes">ルート</h4>
+            <label data-i18n="settings.routeDistanceMode">ルート距離の計算</label>
+            <select id="route-distance-mode">
+              <option value="horizontal" selected data-i18n="routeDistance.horizontal">水平距離</option>
+              <option value="surface" data-i18n="routeDistance.surface">実距離（斜距離）</option>
+            </select>
+            </div>
+
+            <div class="settings-subsection">
+              <h4 data-i18n="settings.contours">等高線</h4>
+            <label data-i18n="settings.contourInterval">等高線の間隔</label>
+            <select id="contour-interval">
+              <option value="5">5m</option>
+              <option value="10" selected>10m</option>
+              <option value="20">20m</option>
+              <option value="50">50m</option>
+              <option value="100">100m</option>
+              <option value="200">200m</option>
+            </select>
+            <label data-i18n="settings.contourColor">等高線の色</label>
+            <input id="contour-color" type="color" value="#203040" />
+            </div>
           </section>
         </div>
       </div>
