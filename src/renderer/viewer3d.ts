@@ -81,6 +81,8 @@ export class TerrainViewer {
     else if (e.code === 'KeyA') this.fitOrbitToModel()
   }
   private mesh: THREE.Mesh | null = null
+  private terrainVisible = true
+  private gridVisible = true
   private grid: THREE.GridHelper | null = null
   // グリッド中心軸の端に置く距離ラベル（中心から端までの km）
   private axisLabels: FlatLabelMesh[] = []
@@ -553,6 +555,8 @@ export class TerrainViewer {
       oldTexMesh.scale.copy(mesh.scale)
       oldTexMesh.position.copy(mesh.position) // 海抜オフセット（mesh.position.y）も一致させ二重表示を防ぐ
       oldTexMesh.renderOrder = 1
+      oldTexMesh.userData.isTerrainMesh = true
+      oldTexMesh.visible = this.terrainVisible
       newGroup.add(oldTexMesh)
     }
 
@@ -1270,6 +1274,52 @@ export class TerrainViewer {
     if (this.lastPayload) this.setData(this.lastPayload, false)
   }
 
+  /** 地形（ハイトフィールド）メッシュの表示/非表示を切り替える。グリッド・地点・ルートは残す。 */
+  setTerrainVisible(on: boolean) {
+    this.terrainVisible = on
+    this.applyTerrainVisible()
+  }
+
+  private applyTerrainVisible() {
+    const apply = (root: THREE.Object3D | null) => {
+      root?.traverse((o) => {
+        if (o.userData?.isTerrainMesh) o.visible = this.terrainVisible
+      })
+    }
+    apply(this.terrainGroup)
+    if (this.trans) {
+      if (this.trans.kind === 'slide' || this.trans.kind === 'wipe') {
+        apply(this.trans.oldGroup)
+        apply(this.trans.newGroup)
+      } else {
+        apply(this.trans.newGroup)
+      }
+    }
+  }
+
+  /** 3Dグリッドと端の距離ラベルの表示/非表示を切り替える。 */
+  setGridVisible(on: boolean) {
+    this.gridVisible = on
+    this.applyGridVisible()
+  }
+
+  private applyGridVisible() {
+    const apply = (root: THREE.Object3D | null) => {
+      root?.traverse((o) => {
+        if (o.userData?.isGridObject) o.visible = this.gridVisible
+      })
+    }
+    apply(this.terrainGroup)
+    if (this.trans) {
+      if (this.trans.kind === 'slide' || this.trans.kind === 'wipe') {
+        apply(this.trans.oldGroup)
+        apply(this.trans.newGroup)
+      } else {
+        apply(this.trans.newGroup)
+      }
+    }
+  }
+
   hasSatellite(): boolean {
     return this.satelliteTex !== null
   }
@@ -1369,6 +1419,8 @@ export class TerrainViewer {
       flatShading: false
     })
     this.mesh = new THREE.Mesh(geo, mat)
+    this.mesh.userData.isTerrainMesh = true
+    this.mesh.visible = this.terrainVisible
 
     // 表示用に全体を一様スケール（全地形で共通の固定倍率）。一様なので実寸比率は保たれ、
     // 地形ごとに正規化しないのでワークスペース切替で実サイズの差がそのまま比較できる。
@@ -1406,6 +1458,8 @@ export class TerrainViewer {
     const divisions = Math.round(gridSpan / gridStep)
     this.grid = new THREE.GridHelper(gridSpan * k, divisions, 0x5a7a9a, 0x3a4a5a)
     // GridHelper は XZ 平面・原点中心。地形も原点中心なので位置はそのままでよい。
+    this.grid.userData.isGridObject = true
+    this.grid.visible = this.gridVisible
     group.add(this.grid)
 
     const halfWorld = (gridSpan * k) / 2
@@ -1471,6 +1525,8 @@ export class TerrainViewer {
     for (const [text, pos, textDir, offsetDir] of ends) {
       const sp = makeFlatLabelMesh(text, 0x9fc2e8, 0.06 * this.annotScale, textDir, offsetDir)
       sp.position.copy(pos).add(sp.userData.axisLabelOffset as THREE.Vector3)
+      sp.userData.isGridObject = true
+      sp.visible = this.gridVisible
       group.add(sp)
       this.axisLabels.push(sp)
     }

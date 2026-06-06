@@ -3,6 +3,8 @@
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
 ## 2026-06-06
+- 3Dビュー：ビューポートの「表示」メニューに `グリッドを表示` チェックを追加。3Dグリッドと端の距離ラベルをまとめて表示/非表示できるようにし、設定は `showGrid` として `data/settings.json` に保存・復元。
+- 3Dビュー：ビューポートの「表示」メニューに `地形を表示` チェックを追加。地形（ハイトフィールド）メッシュだけを表示/非表示でき、グリッド・地点・ルート・ラベルは残る。衛星モードやハイト・モーフ中の旧テクスチャメッシュにも同じ表示状態を反映し、設定は `showTerrain` として `data/settings.json` に保存・復元。
 - ランドマーク：検証済みの `data/landmark-library.json` から、生成時トレース用に付与していた `sourceWorkspaces` と `sourceLandmarkIds` を全365件から削除。ライブラリ本体には `source` / `confidence` / `notes` を残し、出典・検証状況・注記で運用する形に整理。対応して `LandmarkLibraryEntry` の任意フィールド定義も削除。`data/` はGit管理外。
 - ランドマーク：アルブラ峠・ベルニナ峠・アイガー北壁・フルカ峠・ユリア峠・ゴッタルド峠・ツェルマット由来の `confidence="medium"` 項目122件を検証し、対象エリア由来の項目をすべて `high` に更新。Jungfrau公式、Graubünden Tourism、Bernina Glaciers/Diavolezza-Lagalb公式、Switzerland Tourism/Goms、Zermatt/Matterhorn Paradise公式、Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼・鉄道/駅ページなどで同名地点・周辺文脈・標高を確認し、保存済みDEMとも照合。マッターホルンの急峻な山頂、アイガーヴァント駅の壁中施設、氷河・峠道路・谷筋・索道/駅代表点などDEM差が大きく出る地点は外部標高と周辺文脈を優先した。`data/landmark-library.json` の対象項目は `source` と `notes` を検証済み文言に更新。`data/` はGit管理外。
 - 3Dルート：距離/勾配ラベルの距離計算方法を環境設定で切り替えられるようにした。右ペインの環境設定 > 3Dビューに「ルート距離の計算」プルダウンを追加し、`水平距離`（既定、従来どおり）と `実距離（斜距離）` を選択可能にした。ラベルの距離表示と配置中点は選択方式に応じて再計算し、勾配は従来どおり平均勾配として `Σ|標高差| / Σ水平距離` で計算する。設定は `routeDistanceMode` として `data/settings.json` に保存・復元。

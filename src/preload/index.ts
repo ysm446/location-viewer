@@ -62,6 +62,8 @@ export interface AppSettings {
   lang?: 'ja' | 'en'
   snapPow2?: boolean
   renderMode?: 'default' | 'heightmap' | 'satellite'
+  showTerrain?: boolean
+  showGrid?: boolean
   showLandmarks?: boolean
   showLandmarkElevation?: boolean
   showRoutes?: boolean

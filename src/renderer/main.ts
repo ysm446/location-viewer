@@ -85,9 +85,19 @@ const chkRouteTrail = $<HTMLInputElement>('chk-route-trail')
 const chkRouteRail = $<HTMLInputElement>('chk-route-rail')
 const chkRouteClip = $<HTMLInputElement>('chk-route-clip')
 const btnTileGrid = $<HTMLButtonElement>('btn-tile-grid')
+const chkShowTerrain = $<HTMLInputElement>('chk-show-terrain')
+const chkShowGrid = $<HTMLInputElement>('chk-show-grid')
 const chkShowLandmarks = $<HTMLInputElement>('chk-show-landmarks')
 const chkShowLandmarkElevation = $<HTMLInputElement>('chk-show-landmark-elevation')
 const viewMenuLandmarkOptions = $('view-menu-landmark-options')
+chkShowTerrain.addEventListener('change', () => {
+  viewer?.setTerrainVisible(chkShowTerrain.checked)
+  api.setSettings({ showTerrain: chkShowTerrain.checked })
+})
+chkShowGrid.addEventListener('change', () => {
+  viewer?.setGridVisible(chkShowGrid.checked)
+  api.setSettings({ showGrid: chkShowGrid.checked })
+})
 function syncLandmarkOptionsEnabled() {
   viewMenuLandmarkOptions.classList.toggle('disabled', !chkShowLandmarks.checked)
   chkShowLandmarkElevation.disabled = !chkShowLandmarks.checked
@@ -976,6 +986,8 @@ function showTab(which: 'map' | '2d' | '3d') {
     if (!viewer) {
       viewer = new TerrainViewer($('viewer3d'))
       viewer.setLandmarkMoveHandler(onMoveLandmark)
+      viewer.setTerrainVisible(chkShowTerrain.checked)
+      viewer.setGridVisible(chkShowGrid.checked)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
       viewer.setLandmarkElevationVisible(chkShowLandmarkElevation.checked)
       viewer.setRoutesVisible(chkShowRoutes.checked)
@@ -2018,6 +2030,8 @@ btnImportZip.addEventListener('click', async () => {
     renderModeSel.value = settings.renderMode
   }
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
+  if (settings.showTerrain === false) chkShowTerrain.checked = false
+  if (settings.showGrid === false) chkShowGrid.checked = false
   if (settings.showLandmarkElevation === false) chkShowLandmarkElevation.checked = false
   if (settings.showRoutes === false) chkShowRoutes.checked = false
   if (settings.showRouteRoad === false) chkShowRouteRoad.checked = false
