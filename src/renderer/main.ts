@@ -390,6 +390,12 @@ const map = new maplibregl.Map({
 })
 map.addControl(new maplibregl.NavigationControl(), 'bottom-right')
 
+function locationFitPadding(): number {
+  const canvas = map.getCanvas()
+  const shortest = Math.min(canvas.clientWidth || 0, canvas.clientHeight || 0)
+  return Math.max(72, Math.min(140, Math.round(shortest * 0.18)))
+}
+
 // 中ボタンドラッグでパン（MapLibre 標準にないので自前実装）
 ;(() => {
   const canvas = map.getCanvas()
@@ -1814,7 +1820,7 @@ async function selectItem(id: string) {
         [bb.west, bb.south],
         [bb.east, bb.north]
       ],
-      { padding: 40, duration: 600 }
+      { padding: locationFitPadding(), duration: 600 }
     )
 
     progress.textContent = ''
