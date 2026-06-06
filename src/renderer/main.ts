@@ -71,6 +71,7 @@ const landmarkList = $<HTMLUListElement>('landmark-list')
 const landmarkHint = $('landmark-hint')
 const btnAddLandmark = $<HTMLButtonElement>('btn-add-landmark')
 const btnImportLandmarkLibrary = $<HTMLButtonElement>('btn-import-landmark-library')
+const btnRemoveOutsideLandmarks = $<HTMLButtonElement>('btn-remove-outside-landmarks')
 const landmarkLibraryStatus = $('landmark-library-status')
 // OSM ルート
 const routeList = $<HTMLUListElement>('route-list')
@@ -381,6 +382,7 @@ let token = ''
 let viewer: TerrainViewer | null = null
 let pendingMesh: MeshPayload | null = null // 3Dタブ未生成時の保留データ
 let selectedId: string | null = null
+let selectedBbox: HeightmapMeta['bbox'] | null = null
 // 選択中ワークスペースのランドマーク
 let landmarks: Landmark[] = []
 let placeMode = false
@@ -1206,6 +1208,7 @@ function showPreview(
 
   selectedId = workspace.id
   const h = workspace.heightmap
+  selectedBbox = h.bbox
   const satMark = satelliteDataUrl ? ` / ${t('view3d.satellite')}` : ''
   selectedInfo.textContent = `${h.width}×${h.height}px / ${h.minEle.toFixed(1)}〜${h.maxEle.toFixed(
     1
@@ -1250,6 +1253,7 @@ function updateViewer3dInfo(mesh: MeshPayload, h: HeightmapMeta) {
 /** 選択が無くなったときにランドマーク表示をクリアする */
 function clearAnnotations() {
   setPlaceMode(false)
+  selectedBbox = null
   landmarks = []
   viewer?.setLandmarks([])
   viewer3dTitle.textContent = '' // 3Dビューポートのロケーション名タイトルを消す
@@ -1266,9 +1270,11 @@ async function saveLandmarks() {
 async function refreshLandmarkLibraryStatus() {
   if (!selectedId) {
     btnImportLandmarkLibrary.disabled = true
+    btnRemoveOutsideLandmarks.disabled = true
     landmarkLibraryStatus.textContent = ''
     return
   }
+  btnRemoveOutsideLandmarks.disabled = countOutsideLandmarks() === 0
   try {
     const candidates = await api.landmarkLibraryCandidates(selectedId)
     btnImportLandmarkLibrary.disabled = candidates.length === 0
@@ -1279,6 +1285,15 @@ async function refreshLandmarkLibraryStatus() {
     btnImportLandmarkLibrary.disabled = true
     landmarkLibraryStatus.textContent = ''
   }
+}
+
+function isInsideBbox(lm: Landmark, bbox: HeightmapMeta['bbox']): boolean {
+  return lm.lng >= bbox.west && lm.lng <= bbox.east && lm.lat >= bbox.south && lm.lat <= bbox.north
+}
+
+function countOutsideLandmarks(): number {
+  if (!selectedBbox) return 0
+  return landmarks.filter((lm) => !isInsideBbox(lm, selectedBbox)).length
 }
 
 function setPlaceMode(on: boolean) {
@@ -1326,6 +1341,23 @@ btnImportLandmarkLibrary.addEventListener('click', async () => {
   }
 })
 
+/** 保存済みbboxの外へ出たランドマークをまとめて削除する */
+btnRemoveOutsideLandmarks.addEventListener('click', async () => {
+  if (!selectedId || !selectedBbox) return
+  const outsideCount = countOutsideLandmarks()
+  if (outsideCount === 0) {
+    landmarkLibraryStatus.textContent = t('landmark.removeOutsideNone')
+    btnRemoveOutsideLandmarks.disabled = true
+    return
+  }
+  if (!confirm(t('landmark.removeOutsideConfirm').replace('{count}', String(outsideCount)))) return
+  landmarks = landmarks.filter((lm) => isInsideBbox(lm, selectedBbox!))
+  await saveLandmarks()
+  viewer?.setLandmarks(landmarks)
+  renderLandmarkPanel(false)
+  await refreshLandmarkLibraryStatus()
+  landmarkLibraryStatus.textContent = t('landmark.removeOutsideDone').replace('{count}', String(outsideCount))
+})
 
 /** 3Dで地点をドラッグ移動して確定したとき：標高を取り直して保存 */
 async function onMoveLandmark(id: string, lng: number, lat: number) {
@@ -1342,7 +1374,7 @@ async function onMoveLandmark(id: string, lng: number, lat: number) {
 }
 
 /** 右ペインのランドマーク編集パネルを描画する */
-function renderLandmarkPanel() {
+function renderLandmarkPanel(refreshLibrary = true) {
   landmarkList.innerHTML = ''
   for (const lm of landmarks) {
     const li = document.createElement('li')
@@ -1410,7 +1442,7 @@ function renderLandmarkPanel() {
     li.append(top, coords)
     landmarkList.appendChild(li)
   }
-  void refreshLandmarkLibraryStatus()
+  if (refreshLibrary) void refreshLandmarkLibraryStatus()
 }
 
 // ===== OSM ルート（オーバーレイ・選択・保存） =====

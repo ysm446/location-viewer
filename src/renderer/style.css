@@ -571,14 +571,24 @@ button.primary:hover {
 }
 .tab {
   padding: 4px 14px;
-  background: var(--surface-2);
+  background: color-mix(in srgb, var(--surface-2) 92%, #fff);
   border: 1px solid var(--border);
   border-bottom: none;
   border-radius: 6px 6px 0 0;
+  color: var(--text-muted);
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+}
+.tab:hover {
+  background: var(--control-hover);
+  color: var(--text-2);
+  border-color: var(--border-strong);
 }
 .tab.active {
-  background: var(--control-hover);
-  border-color: var(--border-strong);
+  background: var(--surface);
+  border-color: var(--border);
   color: var(--text);
 }
 
