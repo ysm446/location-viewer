@@ -62,6 +62,7 @@ export interface AppSettings {
   lang?: 'ja' | 'en'
   snapPow2?: boolean
   renderMode?: 'default' | 'heightmap' | 'satellite'
+  backgroundColor?: string
   showTerrain?: boolean
   showGrid?: boolean
   showContours?: boolean

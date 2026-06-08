@@ -336,6 +336,19 @@
                 >海抜標高で配置（海面=0m を基準に地形を浮かせる）</span
               >
             </label>
+            <label data-i18n="settings.backgroundColor">背景色</label>
+            <div class="contour-reset-row">
+              <input id="background-color" type="color" value="#111417" />
+              <button
+                id="btn-background-color-reset"
+                type="button"
+                class="vp-icon"
+                data-i18n-title="settings.fovReset"
+                title="初期値に戻す"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              </button>
+            </div>
             <label
               ><span data-i18n="settings.fov">カメラの画角</span>:
               <span id="fov-val">50</span>°</label

@@ -25,6 +25,7 @@ const AXIS_LABEL_RIGHT_OFFSET_RATIO = 0.2
 const CONTOUR_LINE_WIDTH = 1.5
 const DEFAULT_CONTOUR_INTERVAL = 10
 const DEFAULT_CONTOUR_COLOR = 0x203040
+const DEFAULT_BACKGROUND_COLOR = 0x111417
 type ContourColorMode = 'solid' | 'gradient'
 type ContourGradientStop = { position: number; color: string }
 const DEFAULT_CONTOUR_GRADIENT_STOPS: ContourGradientStop[] = [
@@ -261,7 +262,7 @@ export class TerrainViewer {
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.localClippingEnabled = true // ワイプ演出でクリップ平面を使う
     this.renderer.setPixelRatio(window.devicePixelRatio)
-    this.renderer.setClearColor(0x111417)
+    this.renderer.setClearColor(DEFAULT_BACKGROUND_COLOR)
     container.appendChild(this.renderer.domElement)
 
     // デバッグ表示のオーバーレイ（左上）。既定は非表示、setDebug で切替。
@@ -1306,6 +1307,14 @@ export class TerrainViewer {
   setRenderMode(mode: 'default' | 'heightmap' | 'satellite') {
     this.renderMode = mode
     if (this.lastPayload) this.setData(this.lastPayload, false)
+  }
+
+  /** 3Dビューの背景色を設定する。 */
+  setBackgroundColor(hex: string) {
+    const color = /^#[0-9a-fA-F]{6}$/.test(hex)
+      ? Number.parseInt(hex.slice(1), 16)
+      : DEFAULT_BACKGROUND_COLOR
+    this.renderer.setClearColor(color)
   }
 
   /** 地形（ハイトフィールド）メッシュの表示/非表示を切り替える。グリッド・地点・ルートは残す。 */

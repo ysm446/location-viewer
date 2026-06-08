@@ -233,6 +233,25 @@ chkSeaLevel.addEventListener('change', () => {
   api.setSettings({ seaLevelBase: chkSeaLevel.checked })
 })
 
+const DEFAULT_BACKGROUND_COLOR = '#111417'
+const backgroundColorInput = $<HTMLInputElement>('background-color')
+const btnBackgroundColorReset = $<HTMLButtonElement>('btn-background-color-reset')
+function applyBackgroundColor(color: string) {
+  const v = isHexColor(color) ? color : DEFAULT_BACKGROUND_COLOR
+  backgroundColorInput.value = v
+  viewer?.setBackgroundColor(v)
+}
+backgroundColorInput.addEventListener('input', () => {
+  viewer?.setBackgroundColor(backgroundColorInput.value)
+})
+backgroundColorInput.addEventListener('change', () => {
+  api.setSettings({ backgroundColor: backgroundColorInput.value })
+})
+btnBackgroundColorReset.addEventListener('click', () => {
+  applyBackgroundColor(DEFAULT_BACKGROUND_COLOR)
+  api.setSettings({ backgroundColor: DEFAULT_BACKGROUND_COLOR })
+})
+
 // 地名ラベルを画面に対して一定サイズで表示する（環境設定）
 const chkFixedLabel = $<HTMLInputElement>('chk-fixed-label')
 chkFixedLabel.addEventListener('change', () => {
@@ -1253,6 +1272,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setRouteLabelsVisible(chkShowRouteInfo.checked)
       viewer.setLandmarksEditable(detailMode)
       viewer.setRenderMode(renderModeSel.value as 'default' | 'heightmap' | 'satellite')
+      viewer.setBackgroundColor(backgroundColorInput.value)
       viewer.setAutoRotate(autoRotate)
       viewer.setAutoFit(chkAutoFit.checked)
       viewer.setScaleAnnotations(chkScaleAnnotations.checked)
@@ -2317,6 +2337,9 @@ btnImportZip.addEventListener('click', async () => {
     settings.renderMode === 'satellite'
   ) {
     renderModeSel.value = settings.renderMode
+  }
+  if (typeof settings.backgroundColor === 'string') {
+    applyBackgroundColor(settings.backgroundColor)
   }
   if (settings.showLandmarks === false) chkShowLandmarks.checked = false
   if (settings.showTerrain === false) chkShowTerrain.checked = false
