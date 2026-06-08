@@ -66,7 +66,9 @@ export interface AppSettings {
   showGrid?: boolean
   showContours?: boolean
   contourInterval?: number
+  contourColorMode?: 'solid' | 'gradient'
   contourColor?: string
+  contourGradientStops?: Array<{ position: number; color: string }>
   showLandmarks?: boolean
   showLandmarkElevation?: boolean
   showRoutes?: boolean

@@ -537,6 +537,69 @@ input[type='color'] {
   height: 32px;
   padding: 3px;
 }
+.contour-reset-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.contour-reset-row input[type='color'] {
+  flex: 1 1 auto;
+  min-width: 64px;
+}
+.contour-reset-row .gradient-editor {
+  flex: 1 1 auto;
+}
+.gradient-editor {
+  position: relative;
+  height: 36px;
+  margin: 4px 0 8px;
+}
+.gradient-track {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 9px;
+  height: 18px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  background: linear-gradient(90deg, #2f80ed, #7ac943 50%, #f2994a);
+  cursor: crosshair;
+}
+.gradient-stop {
+  position: absolute;
+  top: 21px;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  transform: translateX(-50%) rotate(45deg);
+  background: var(--stop-color, #fff);
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+  cursor: grab;
+}
+.gradient-stop.selected {
+  border-color: var(--accent-bright);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45),
+    0 0 0 3px color-mix(in srgb, var(--accent-bright) 45%, transparent);
+}
+.gradient-stop:active {
+  cursor: grabbing;
+}
+.gradient-stop-controls {
+  align-items: end;
+}
+.gradient-stop-controls label {
+  flex: 1 1 0;
+}
+.gradient-stop-controls span {
+  display: block;
+  margin-bottom: 4px;
+}
+.gradient-stop-controls input {
+  width: 100%;
+}
 #btn-import-zip {
   display: inline-flex;
   align-items: center;

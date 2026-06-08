@@ -25,6 +25,13 @@ const AXIS_LABEL_RIGHT_OFFSET_RATIO = 0.2
 const CONTOUR_LINE_WIDTH = 1.5
 const DEFAULT_CONTOUR_INTERVAL = 10
 const DEFAULT_CONTOUR_COLOR = 0x203040
+type ContourColorMode = 'solid' | 'gradient'
+type ContourGradientStop = { position: number; color: string }
+const DEFAULT_CONTOUR_GRADIENT_STOPS: ContourGradientStop[] = [
+  { position: 0, color: '#2f80ed' },
+  { position: 0.5, color: '#7ac943' },
+  { position: 1, color: '#f2994a' }
+]
 const LANDMARK_ELEVATION_LABEL_SCALE = 0.72
 
 // ルート種別ごとの線色（2D オーバーレイと合わせる）
@@ -96,6 +103,8 @@ export class TerrainViewer {
   private contourVisible = false
   private contourInterval = DEFAULT_CONTOUR_INTERVAL
   private contourColor = DEFAULT_CONTOUR_COLOR
+  private contourColorMode: ContourColorMode = 'solid'
+  private contourGradientStops: ContourGradientStop[] = DEFAULT_CONTOUR_GRADIENT_STOPS.map((s) => ({ ...s }))
   // グリッド中心軸の端に置く距離ラベル（中心から端までの km）
   private axisLabels: FlatLabelMesh[] = []
   private container: HTMLElement
@@ -1366,6 +1375,7 @@ export class TerrainViewer {
       ? Number.parseInt(hex.slice(1), 16)
       : DEFAULT_CONTOUR_COLOR
     this.contourColor = color
+    if (this.contourColorMode !== 'solid') return
     this.contourGroup?.traverse((o) => {
       const mat = (o as THREE.Line).material as LineMaterial | undefined
       if (mat?.isLineMaterial) {
@@ -1373,6 +1383,13 @@ export class TerrainViewer {
         mat.needsUpdate = true
       }
     })
+  }
+
+  /** 等高線の単色/グラデーションとキーポイントを設定する。 */
+  setContourGradient(mode: ContourColorMode, stops: ContourGradientStop[]) {
+    this.contourColorMode = mode === 'gradient' ? 'gradient' : 'solid'
+    this.contourGradientStops = normalizeContourGradientStops(stops)
+    if (this.lastPayload) this.setData(this.lastPayload, false)
   }
 
   private updateContourMaterialResolution() {
@@ -1608,6 +1625,7 @@ export class TerrainViewer {
     const interval = this.contourInterval
     const first = Math.ceil(g.minEle / interval) * interval
     const positions: number[] = []
+    const colors: number[] = []
     const lift = 3 * g.k
     const baseY = this.seaLevelBase ? g.minEle * g.k : 0
     const xAt = (c: number) => (c / (g.cols - 1) - 0.5) * g.widthMeters * g.k
@@ -1645,9 +1663,13 @@ export class TerrainViewer {
           if ((sw.h <= level && se.h > level) || (sw.h > level && se.h <= level)) addPoint(pts, level, sw, se)
           if ((nw.h <= level && sw.h > level) || (nw.h > level && sw.h <= level)) addPoint(pts, level, nw, sw)
           if (pts.length >= 2) {
+            const color = this.contourColorForLevel(level, g.minEle, g.minEle + span)
             positions.push(pts[0].x, pts[0].y, pts[0].z, pts[1].x, pts[1].y, pts[1].z)
-            if (pts.length >= 4)
+            colors.push(color.r, color.g, color.b, color.r, color.g, color.b)
+            if (pts.length >= 4) {
               positions.push(pts[2].x, pts[2].y, pts[2].z, pts[3].x, pts[3].y, pts[3].z)
+              colors.push(color.r, color.g, color.b, color.r, color.g, color.b)
+            }
           }
         }
       }
@@ -1656,8 +1678,10 @@ export class TerrainViewer {
 
     const geom = new LineSegmentsGeometry()
     geom.setPositions(positions)
+    if (this.contourColorMode === 'gradient') geom.setColors(colors)
     const mat = new LineMaterial({
       color: this.contourColor,
+      vertexColors: this.contourColorMode === 'gradient',
       linewidth: CONTOUR_LINE_WIDTH,
       transparent: true,
       opacity: 0.8,
@@ -1674,6 +1698,24 @@ export class TerrainViewer {
     cg.add(line)
     group.add(cg)
     this.contourGroup = cg
+  }
+
+  private contourColorForLevel(level: number, minEle: number, maxEle: number): THREE.Color {
+    if (this.contourColorMode !== 'gradient') return new THREE.Color(this.contourColor)
+    const span = maxEle - minEle || 1
+    const t = Math.max(0, Math.min(1, (level - minEle) / span))
+    const stops = this.contourGradientStops
+    if (t <= stops[0].position) return new THREE.Color(stops[0].color)
+    const last = stops[stops.length - 1]
+    if (t >= last.position) return new THREE.Color(last.color)
+    for (let i = 0; i < stops.length - 1; i++) {
+      const a = stops[i]
+      const b = stops[i + 1]
+      if (t < a.position || t > b.position) continue
+      const localT = (t - a.position) / (b.position - a.position || 1)
+      return new THREE.Color(a.color).lerp(new THREE.Color(b.color), localT)
+    }
+    return new THREE.Color(last.color)
   }
 
   /**
@@ -2200,6 +2242,17 @@ function makeTextSprite(text: string, color: number): THREE.Sprite {
   tex.colorSpace = THREE.SRGBColorSpace
   const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true })
   return new THREE.Sprite(mat)
+}
+
+function normalizeContourGradientStops(stops: ContourGradientStop[]): ContourGradientStop[] {
+  const normalized = stops
+    .map((s) => ({
+      position: Math.max(0, Math.min(1, typeof s.position === 'number' ? s.position : 0)),
+      color: /^#[0-9a-fA-F]{6}$/.test(s.color) ? s.color : ''
+    }))
+    .filter((s) => s.color)
+    .sort((a, b) => a.position - b.position)
+  return normalized.length >= 2 ? normalized : DEFAULT_CONTOUR_GRADIENT_STOPS.map((s) => ({ ...s }))
 }
 
 /** 標高比 t(0..1) を地形配色に変換 */

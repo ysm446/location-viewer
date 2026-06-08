@@ -10,7 +10,8 @@ import type {
   Landmark,
   Route,
   RouteCategory,
-  OsmFeature
+  OsmFeature,
+  AppSettings
 } from '../preload/index'
 import { TerrainViewer } from './viewer3d'
 import { t, setLang, getLang, applyDom, type Lang } from './i18n'
@@ -244,7 +245,27 @@ const DEFAULT_FOV = 50
 const fovInput = $<HTMLInputElement>('camera-fov')
 const fovVal = $('fov-val')
 const contourIntervalSel = $<HTMLSelectElement>('contour-interval')
+const contourColorModeSel = $<HTMLSelectElement>('contour-color-mode')
 const contourColorInput = $<HTMLInputElement>('contour-color')
+const contourSolidControls = $('contour-solid-controls')
+const contourGradientControls = $('contour-gradient-controls')
+const contourGradientEditor = $('contour-gradient-editor')
+const contourGradientTrack = $('contour-gradient-track')
+const contourGradientPositionInput = $<HTMLInputElement>('contour-gradient-position')
+const contourGradientColorInput = $<HTMLInputElement>('contour-gradient-color')
+const btnContourColorReset = $<HTMLButtonElement>('btn-contour-color-reset')
+const btnContourGradientReset = $<HTMLButtonElement>('btn-contour-gradient-reset')
+type ContourColorMode = 'solid' | 'gradient'
+type ContourGradientStop = { position: number; color: string }
+const DEFAULT_CONTOUR_COLOR = '#203040'
+const DEFAULT_CONTOUR_GRADIENT_STOPS: ContourGradientStop[] = [
+  { position: 0, color: '#2f80ed' },
+  { position: 0.5, color: '#7ac943' },
+  { position: 1, color: '#f2994a' }
+]
+let contourColorMode: ContourColorMode = 'solid'
+let contourGradientStops: ContourGradientStop[] = DEFAULT_CONTOUR_GRADIENT_STOPS.map((s) => ({ ...s }))
+let selectedContourGradientStop = 0
 function applyFov(deg: number) {
   fovInput.value = String(deg)
   fovVal.textContent = String(deg)
@@ -279,10 +300,116 @@ contourIntervalSel.addEventListener('change', () => {
 function isHexColor(v: string) {
   return /^#[0-9a-fA-F]{6}$/.test(v)
 }
+function clamp01(v: number) {
+  return Math.max(0, Math.min(1, v))
+}
+function normalizeContourGradientStops(stops: unknown): ContourGradientStop[] {
+  if (!Array.isArray(stops)) return DEFAULT_CONTOUR_GRADIENT_STOPS.map((s) => ({ ...s }))
+  const normalized = stops
+    .map((s) => {
+      if (!s || typeof s !== 'object') return null
+      const raw = s as { position?: unknown; color?: unknown }
+      const position = typeof raw.position === 'number' ? clamp01(raw.position) : NaN
+      const color = typeof raw.color === 'string' && isHexColor(raw.color) ? raw.color : ''
+      return Number.isFinite(position) && color ? { position, color } : null
+    })
+    .filter((s): s is ContourGradientStop => !!s)
+    .sort((a, b) => a.position - b.position)
+  return normalized.length >= 2 ? normalized : DEFAULT_CONTOUR_GRADIENT_STOPS.map((s) => ({ ...s }))
+}
+function contourGradientCss(stops: ContourGradientStop[]) {
+  return `linear-gradient(90deg, ${stops
+    .map((s) => `${s.color} ${(clamp01(s.position) * 100).toFixed(1)}%`)
+    .join(', ')})`
+}
+function contourStopLeft(position: number) {
+  return `calc(8px + ${position * 100}% - ${position * 16}px)`
+}
+function syncContourGradientPreview() {
+  contourGradientTrack.style.background = contourGradientCss(contourGradientStops)
+}
+function syncContourColorModeUi() {
+  contourColorModeSel.value = contourColorMode
+  const showSolid = contourColorMode === 'solid'
+  contourSolidControls.hidden = !showSolid
+  contourGradientControls.hidden = showSolid
+  contourSolidControls.classList.toggle('hidden', !showSolid)
+  contourGradientControls.classList.toggle('hidden', showSolid)
+}
+function renderContourGradientEditor() {
+  contourGradientStops = normalizeContourGradientStops(contourGradientStops)
+  selectedContourGradientStop = Math.max(0, Math.min(selectedContourGradientStop, contourGradientStops.length - 1))
+  syncContourGradientPreview()
+  contourGradientEditor.querySelectorAll('.gradient-stop').forEach((el) => el.remove())
+  contourGradientStops.forEach((stop, index) => {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = 'gradient-stop' + (index === selectedContourGradientStop ? ' selected' : '')
+    btn.style.left = contourStopLeft(stop.position)
+    btn.style.setProperty('--stop-color', stop.color)
+    btn.title = `${Math.round(stop.position * 100)}%`
+    btn.addEventListener('pointerdown', (ev) => {
+      ev.preventDefault()
+      ev.stopPropagation()
+      selectedContourGradientStop = index
+      contourGradientPositionInput.value = String(Math.round(stop.position * 100))
+      contourGradientColorInput.value = stop.color
+      const onMove = (moveEv: PointerEvent) => {
+        const rect = contourGradientTrack.getBoundingClientRect()
+        stop.position = clamp01((moveEv.clientX - rect.left) / rect.width)
+        btn.style.left = contourStopLeft(stop.position)
+        btn.title = `${Math.round(stop.position * 100)}%`
+        contourGradientPositionInput.value = String(Math.round(stop.position * 100))
+        syncContourGradientPreview()
+      }
+      const onUp = () => {
+        document.removeEventListener('pointermove', onMove)
+        document.removeEventListener('pointerup', onUp)
+        contourGradientStops.sort((a, b) => a.position - b.position)
+        selectedContourGradientStop = contourGradientStops.indexOf(stop)
+        renderContourGradientEditor()
+        applyContourGradient()
+        saveContourGradient()
+      }
+      document.addEventListener('pointermove', onMove)
+      document.addEventListener('pointerup', onUp, { once: true })
+    })
+    contourGradientEditor.appendChild(btn)
+  })
+  const selected = contourGradientStops[selectedContourGradientStop]
+  contourGradientPositionInput.value = String(Math.round(selected.position * 100))
+  contourGradientColorInput.value = selected.color
+}
+function applyContourGradient() {
+  viewer?.setContourGradient(contourColorMode, contourGradientStops)
+}
+function saveContourGradient() {
+  api.setSettings({ contourGradientStops } as Partial<AppSettings>)
+}
+function setContourColorMode(mode: ContourColorMode, save = false) {
+  contourColorMode = mode === 'gradient' ? 'gradient' : 'solid'
+  syncContourColorModeUi()
+  viewer?.setContourGradient(contourColorMode, contourGradientStops)
+  if (save) api.setSettings({ contourColorMode } as Partial<AppSettings>)
+}
 function applyContourColor(color: string) {
-  const v = isHexColor(color) ? color : '#203040'
+  const v = isHexColor(color) ? color : DEFAULT_CONTOUR_COLOR
   contourColorInput.value = v
   viewer?.setContourColor(v)
+}
+function applyContourGradientStops(stops: unknown) {
+  contourGradientStops = normalizeContourGradientStops(stops)
+  selectedContourGradientStop = 0
+  renderContourGradientEditor()
+  applyContourGradient()
+}
+function removeSelectedContourGradientStop() {
+  if (contourGradientStops.length <= 2) return
+  contourGradientStops.splice(selectedContourGradientStop, 1)
+  selectedContourGradientStop = Math.max(0, Math.min(selectedContourGradientStop, contourGradientStops.length - 1))
+  renderContourGradientEditor()
+  applyContourGradient()
+  saveContourGradient()
 }
 contourColorInput.addEventListener('input', () => {
   viewer?.setContourColor(contourColorInput.value)
@@ -290,6 +417,60 @@ contourColorInput.addEventListener('input', () => {
 contourColorInput.addEventListener('change', () => {
   api.setSettings({ contourColor: contourColorInput.value })
 })
+btnContourColorReset.addEventListener('click', () => {
+  applyContourColor(DEFAULT_CONTOUR_COLOR)
+  api.setSettings({ contourColor: DEFAULT_CONTOUR_COLOR })
+})
+contourColorModeSel.addEventListener('change', () => {
+  setContourColorMode(contourColorModeSel.value === 'gradient' ? 'gradient' : 'solid', true)
+})
+contourGradientTrack.addEventListener('pointerdown', (ev) => {
+  const rect = contourGradientTrack.getBoundingClientRect()
+  const position = clamp01((ev.clientX - rect.left) / rect.width)
+  const stop = { position, color: contourGradientColorInput.value }
+  contourGradientStops.push(stop)
+  contourGradientStops.sort((a, b) => a.position - b.position)
+  selectedContourGradientStop = contourGradientStops.indexOf(stop)
+  renderContourGradientEditor()
+  applyContourGradient()
+  saveContourGradient()
+})
+contourGradientPositionInput.addEventListener('input', () => {
+  const stop = contourGradientStops[selectedContourGradientStop]
+  if (!stop) return
+  stop.position = clamp01(Number(contourGradientPositionInput.value) / 100)
+  contourGradientStops.sort((a, b) => a.position - b.position)
+  selectedContourGradientStop = contourGradientStops.indexOf(stop)
+  renderContourGradientEditor()
+  applyContourGradient()
+})
+contourGradientPositionInput.addEventListener('change', saveContourGradient)
+contourGradientColorInput.addEventListener('input', () => {
+  const stop = contourGradientStops[selectedContourGradientStop]
+  if (!stop) return
+  stop.color = contourGradientColorInput.value
+  renderContourGradientEditor()
+  applyContourGradient()
+})
+contourGradientColorInput.addEventListener('change', saveContourGradient)
+btnContourGradientReset.addEventListener('click', () => {
+  contourGradientStops = DEFAULT_CONTOUR_GRADIENT_STOPS.map((s) => ({ ...s }))
+  selectedContourGradientStop = 0
+  renderContourGradientEditor()
+  applyContourGradient()
+  saveContourGradient()
+})
+document.addEventListener('keydown', (ev) => {
+  if (contourColorMode !== 'gradient') return
+  if (ev.key !== 'Delete' && ev.key !== 'Backspace') return
+  const target = ev.target as HTMLElement | null
+  const tag = target?.tagName
+  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return
+  ev.preventDefault()
+  removeSelectedContourGradientStop()
+})
+syncContourColorModeUi()
+renderContourGradientEditor()
 
 // 地形切替トランジション（なし / 横スライド / ワイプ）
 const transitionSel = $<HTMLSelectElement>('transition-mode')
@@ -1060,6 +1241,7 @@ function showTab(which: 'map' | '2d' | '3d') {
       viewer.setContoursVisible(chkShowContours.checked)
       viewer.setContourInterval(Number(contourIntervalSel.value))
       viewer.setContourColor(contourColorInput.value)
+      viewer.setContourGradient(contourColorMode, contourGradientStops)
       viewer.setLandmarksVisible(chkShowLandmarks.checked)
       viewer.setLandmarkElevationVisible(chkShowLandmarkElevation.checked)
       viewer.setRoutesVisible(chkShowRoutes.checked)
@@ -2170,6 +2352,12 @@ btnImportZip.addEventListener('click', async () => {
   }
   if (typeof settings.contourColor === 'string') {
     applyContourColor(settings.contourColor)
+  }
+  if (Array.isArray(settings.contourGradientStops)) {
+    applyContourGradientStops(settings.contourGradientStops)
+  }
+  if (settings.contourColorMode === 'gradient' || settings.contourColorMode === 'solid') {
+    setContourColorMode(settings.contourColorMode)
   }
   if (
     settings.transition === 'slide' ||

@@ -396,8 +396,53 @@
               <option value="100">100m</option>
               <option value="200">200m</option>
             </select>
-            <label data-i18n="settings.contourColor">等高線の色</label>
-            <input id="contour-color" type="color" value="#203040" />
+            <label data-i18n="settings.contourColorMode">等高線の色モード</label>
+            <select id="contour-color-mode">
+              <option value="solid" selected data-i18n="contourColorMode.solid">単色</option>
+              <option value="gradient" data-i18n="contourColorMode.gradient">グラデーション</option>
+            </select>
+            <div id="contour-solid-controls">
+              <label data-i18n="settings.contourColor">等高線の色</label>
+              <div class="contour-reset-row">
+                <input id="contour-color" type="color" value="#203040" />
+                <button
+                  id="btn-contour-color-reset"
+                  type="button"
+                  class="vp-icon"
+                  data-i18n-title="settings.fovReset"
+                  title="初期値に戻す"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                </button>
+              </div>
+            </div>
+            <div id="contour-gradient-controls" class="hidden" hidden>
+              <label data-i18n="settings.contourGradient">グラデーション</label>
+              <div class="contour-reset-row">
+                <div id="contour-gradient-editor" class="gradient-editor">
+                  <div id="contour-gradient-track" class="gradient-track"></div>
+                </div>
+                <button
+                  id="btn-contour-gradient-reset"
+                  type="button"
+                  class="vp-icon"
+                  data-i18n-title="settings.fovReset"
+                  title="初期値に戻す"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                </button>
+              </div>
+              <div class="row gradient-stop-controls">
+                <label>
+                  <span data-i18n="settings.contourGradientPosition">位置</span>
+                  <input id="contour-gradient-position" type="number" min="0" max="100" step="1" value="0" />
+                </label>
+                <label>
+                  <span data-i18n="settings.contourGradientColor">色</span>
+                  <input id="contour-gradient-color" type="color" value="#2f80ed" />
+                </label>
+              </div>
+            </div>
             </div>
           </section>
         </div>
