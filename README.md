@@ -40,12 +40,15 @@ npm run dev        # 開発起動（ホットリロード）
 
 | ファイル | 内容 |
 |---|---|
-| `<id>.u16` | 全解像度の正規化16bit値（Uint16, LE）= 真実のデータ |
-| `<id>.preview.png` | 2D タブ用の8bitプレビュー |
-| `<id>.satellite.png` | 衛星画像テクスチャ（3D メッシュに貼る。取得できた場合のみ） |
-| `library.json` | ライブラリ索引（メタ情報） |
+| `<id>/workspace.json` | ロケーションのメタ情報、ランドマーク、ルート |
+| `<id>/heightmap.u16` | 全解像度の正規化16bit値（Uint16, LE）= 真実のデータ |
+| `<id>/preview.png` | 2D タブ用の8bitプレビュー |
+| `<id>/satellite.png` | 衛星画像テクスチャ（3D メッシュに貼る。取得できた場合のみ） |
+| `landmark-library.json` | 共通ランドマークライブラリのローカル作業コピー |
 
-PNG16 / R16 への書き出しは `<id>.u16` から都度生成します。
+PNG16 / R16 への書き出しは `<id>/heightmap.u16` から都度生成します。
+
+共通ランドマークライブラリのマスターは `assets/landmarks/landmark-library.json` として git 管理します。起動時に `data/landmark-library.json` が無い場合は、このマスターからローカル作業コピーを作成します。
 
 ## ビルド（配布用）
 
@@ -69,6 +72,9 @@ src/
    ├─ style.css
    ├─ main.ts         #   MapLibre 地図・範囲選択・生成・タブ制御・ライブラリ
    └─ viewer3d.ts     #   Three.js による3D地形ビューワ
+assets/
+└─ landmarks/
+   └─ landmark-library.json # git 管理する共通ランドマークライブラリのマスター
 ```
 
 ## 今後の拡張候補

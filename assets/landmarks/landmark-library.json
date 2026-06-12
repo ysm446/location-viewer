@@ -1,0 +1,3965 @@
+[
+  {
+    "id": "imported_hm_mps6derl_eiger",
+    "name": "アイガー",
+    "lng": 8.00427,
+    "lat": 46.57783,
+    "elevation": 3967,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_eigerwand_station",
+    "name": "アイガーヴァント駅",
+    "lng": 8.0035685,
+    "lat": 46.5811539,
+    "elevation": 2865,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_eigergletscher",
+    "name": "アイガーグレッチャー",
+    "lng": 7.9882042,
+    "lat": 46.5684555,
+    "elevation": 2600,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_eigergletscher_station",
+    "name": "アイガーグレッチャー駅",
+    "lng": 7.9748643,
+    "lat": 46.574801,
+    "elevation": 2320,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_airolo_station",
+    "name": "アイロロ駅",
+    "lng": 8.6085162,
+    "lat": 46.5275752,
+    "elevation": 1141,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_hm_mps6derl_alpiglen_station",
+    "name": "アルピグレン駅",
+    "lng": 8.0019524,
+    "lat": 46.6000697,
+    "elevation": 1615,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_alp_crap_alv",
+    "name": "アルプ・クラップ・アルヴ",
+    "lng": 9.8002887,
+    "lat": 46.5817305,
+    "elevation": 2027,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_albulapass_ospiz",
+    "name": "アルブラ・オスピツ",
+    "lng": 9.8426,
+    "lat": 46.5829,
+    "elevation": 2315,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_albulasee",
+    "name": "アルブラ湖",
+    "lng": 9.8483333,
+    "lat": 46.5841389,
+    "elevation": 2294,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_albulapass",
+    "name": "アルブラ峠",
+    "lng": 9.8376821,
+    "lat": 46.5822515,
+    "elevation": 2312,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_igl_compass",
+    "name": "イグル・コンパス",
+    "lng": 9.8236652,
+    "lat": 46.5892768,
+    "elevation": 3016,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_val_bernina",
+    "name": "ヴァル・ベルニナ",
+    "lng": 9.947,
+    "lat": 46.458,
+    "elevation": 2050,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_weston_relief",
+    "name": "ウェストン碑",
+    "lng": 137.626792,
+    "lat": 36.247202,
+    "elevation": 1500,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_hm_mps6derl_wengernalp",
+    "name": "ヴェンゲルンアルプ",
+    "lng": 7.939032,
+    "lat": 46.5756768,
+    "elevation": 1874,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_wengen",
+    "name": "ウェンゲン",
+    "lng": 7.9219,
+    "lat": 46.6055,
+    "elevation": 1274,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_wengen_maennlichen_station",
+    "name": "ヴェンゲン・メンリッヘン駅",
+    "lng": 7.9214929,
+    "lat": 46.6062539,
+    "elevation": 1274,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_ova_da_la_val_da_fain",
+    "name": "オーヴァ・ダ・ラ・ヴァル・ダ・ファイン",
+    "lng": 9.941,
+    "lat": 46.4645,
+    "elevation": 2140,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_orengoya",
+    "name": "オーレン小屋",
+    "lng": 138.3574071,
+    "lat": 36.0028965,
+    "elevation": 2330,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳・八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_ospizio_san_gottardo",
+    "name": "オスピツィオ・サン・ゴッタルド",
+    "lng": 8.5679416,
+    "lat": 46.5553845,
+    "elevation": 2091,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_ospizio_bernina_west",
+    "name": "オスピツィオ・ベルニナ",
+    "lng": 10.0194,
+    "lat": 46.4089,
+    "elevation": 2253,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_galenstock",
+    "name": "ガレンシュトック",
+    "lng": 8.41694,
+    "lat": 46.61194,
+    "elevation": 3586,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_kiretto_goya",
+    "name": "キレット小屋",
+    "lng": 138.3625,
+    "lat": 35.962778,
+    "elevation": 2438,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_hm_mps6derl_kleinescheidegg",
+    "name": "クライネ・シャイデック",
+    "lng": 7.9614,
+    "lat": 46.5853,
+    "elevation": 2061,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_klein_furkahorn",
+    "name": "クライン・フルカホルン",
+    "lng": 8.40626,
+    "lat": 46.585725,
+    "elevation": 3026,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_klein_matterhorn",
+    "name": "クライン・マッターホルン",
+    "lng": 7.72972,
+    "lat": 45.93833,
+    "elevation": 3883,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_crap_alv",
+    "name": "クラップ・アルヴ",
+    "lng": 9.8002692,
+    "lat": 46.5816054,
+    "elevation": 2026,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_grimselpass",
+    "name": "グリムゼル峠",
+    "lng": 8.337697,
+    "lat": 46.561519,
+    "elevation": 2164,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_hm_mps6derl_grindelwald",
+    "name": "グリンデルワルト",
+    "lng": 8.0414,
+    "lat": 46.6242,
+    "elevation": 1034,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_grindelwald_terminal",
+    "name": "グリンデルワルト・ターミナル",
+    "lng": 8.0193659,
+    "lat": 46.6243074,
+    "elevation": 943,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_grevasalvas",
+    "name": "グレヴァザルヴァス",
+    "lng": 9.7181327,
+    "lat": 46.4237298,
+    "elevation": 1940,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_gletsch",
+    "name": "グレッチュ",
+    "lng": 8.361505,
+    "lat": 46.562136,
+    "elevation": 1759,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_gletsch_station",
+    "name": "グレッチュ駅",
+    "lng": 8.361496,
+    "lat": 46.561323,
+    "elevation": 1757,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_gross_furkahorn",
+    "name": "グロース・フルカホルン",
+    "lng": 8.410396,
+    "lat": 46.596519,
+    "elevation": 3168,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_gemsstock",
+    "name": "ゲムスシュトック",
+    "lng": 8.611694,
+    "lat": 46.602278,
+    "elevation": 2962,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_gotthard_pass",
+    "name": "ゴッタルド峠",
+    "lng": 8.5611537,
+    "lat": 46.5593092,
+    "elevation": 2106,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_gotthard_passhoehe",
+    "name": "ゴッタルド峠停留所",
+    "lng": 8.5666939,
+    "lat": 46.555351,
+    "elevation": 2106,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_corn_diavolezza",
+    "name": "コルン・ディアヴォレッツァ",
+    "lng": 9.9677592,
+    "lat": 46.4174077,
+    "elevation": 2978,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_sass_queder",
+    "name": "サス・クエダー",
+    "lng": 9.9726213,
+    "lat": 46.4107764,
+    "elevation": 3066,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_sasso_san_gottardo",
+    "name": "サッソ・サン・ゴッタルド",
+    "lng": 8.5666681,
+    "lat": 46.5588425,
+    "elevation": 2095,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_sasso_da_pigna",
+    "name": "サッソ・ダ・ピーニャ",
+    "lng": 8.566389,
+    "lat": 46.558722,
+    "elevation": 2100,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_museo_san_gottardo",
+    "name": "サン・ゴッタルド国立博物館",
+    "lng": 8.566875,
+    "lat": 46.5552395,
+    "elevation": 2091,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_sidelenhuette",
+    "name": "シーデレンヒュッテ",
+    "lng": 8.42694,
+    "lat": 46.5975,
+    "elevation": 2708,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_sidelenhorn",
+    "name": "ジーデレンホルン",
+    "lng": 8.40762,
+    "lat": 46.599492,
+    "elevation": 3217,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_schwarzsee_zermatt",
+    "name": "シュヴァルツゼー",
+    "lng": 7.706944,
+    "lat": 45.991111,
+    "elevation": 2552,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_shirabidaira",
+    "name": "しらび平駅",
+    "lng": 137.834315,
+    "lat": 35.768032,
+    "elevation": 1662,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_silvaplana",
+    "name": "シルヴァプラーナ",
+    "lng": 9.7959165,
+    "lat": 46.4599334,
+    "elevation": 1815,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_surlej",
+    "name": "スールレイ",
+    "lng": 9.8118384,
+    "lat": 46.4578296,
+    "elevation": 1809,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_sunnegga",
+    "name": "スネガ",
+    "lng": 7.7719,
+    "lat": 46.0173,
+    "elevation": 2293,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_dammastock",
+    "name": "ダンマシュトック",
+    "lng": 8.42111,
+    "lat": 46.643694,
+    "elevation": 3630,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_champfer",
+    "name": "チャンプフェール",
+    "lng": 9.8122415,
+    "lat": 46.4778216,
+    "elevation": 1825,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_zermatt_village",
+    "name": "ツェルマット",
+    "lng": 7.74863,
+    "lat": 46.02,
+    "elevation": 1608,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_diavolezza",
+    "name": "ディアヴォレッツァ",
+    "lng": 9.9670632,
+    "lat": 46.4106951,
+    "elevation": 2973,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_diavolezza_base",
+    "name": "ディアヴォレッツァ谷駅",
+    "lng": 9.9823567,
+    "lat": 46.4418269,
+    "elevation": 2093,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_tiefenstock",
+    "name": "ティーフェンシュトック",
+    "lng": 8.422111,
+    "lat": 46.627111,
+    "elevation": 3515,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_taellistock",
+    "name": "テリシュトック",
+    "lng": 8.401266,
+    "lat": 46.551735,
+    "elevation": 2861,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_taelliluecke",
+    "name": "テリリュッケ",
+    "lng": 8.399453,
+    "lat": 46.556352,
+    "elevation": 2720,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_tremola",
+    "name": "トレモラ街道",
+    "lng": 8.5596,
+    "lat": 46.5438,
+    "elevation": 1700,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_trockener_steg",
+    "name": "トロッケナー・シュテーク",
+    "lng": 7.7225,
+    "lat": 45.9711,
+    "elevation": 2939,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_nozoki",
+    "name": "ノゾキ",
+    "lng": 138.926389,
+    "lat": 36.843333,
+    "elevation": 1857,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_panorama_tower",
+    "name": "パノラマタワー",
+    "lng": 8.384172,
+    "lat": 46.579012,
+    "elevation": 2330,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_piz_alvra",
+    "name": "ピーツ・アルヴラ",
+    "lng": 9.8310716,
+    "lat": 46.596753,
+    "elevation": 3117,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_piz_albana",
+    "name": "ピーツ・アルバナ",
+    "lng": 9.7736475,
+    "lat": 46.481093,
+    "elevation": 3100,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_piz_albris",
+    "name": "ピーツ・アルブリス",
+    "lng": 9.9635576,
+    "lat": 46.4639397,
+    "elevation": 3166,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_piz_cambrena",
+    "name": "ピーツ・カンブレナ",
+    "lng": 9.9777148,
+    "lat": 46.3872884,
+    "elevation": 3606,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_piz_grevasalvas",
+    "name": "ピーツ・グレヴァザルヴァス",
+    "lng": 9.6744409,
+    "lat": 46.4228329,
+    "elevation": 2932,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_piz_kesch",
+    "name": "ピーツ・ケッシュ",
+    "lng": 9.8727883,
+    "lat": 46.6212966,
+    "elevation": 3418,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_piz_corvatsch",
+    "name": "ピーツ・コルヴァッチ",
+    "lng": 9.8161413,
+    "lat": 46.4084924,
+    "elevation": 3451,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_piz_surgonda",
+    "name": "ピーツ・スルゴンダ",
+    "lng": 9.7249671,
+    "lat": 46.5101798,
+    "elevation": 3196,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_piz_darlux",
+    "name": "ピーツ・ダルルクス",
+    "lng": 9.7959419,
+    "lat": 46.6228565,
+    "elevation": 2642,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_piz_chalchagn",
+    "name": "ピーツ・チャルチャーニュ",
+    "lng": 9.9058,
+    "lat": 46.4513979,
+    "elevation": 3154,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_piz_trovat",
+    "name": "ピーツ・トロヴァット",
+    "lng": 9.9704286,
+    "lat": 46.4057017,
+    "elevation": 3146,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_piz_nair_station",
+    "name": "ピーツ・ネイル展望駅",
+    "lng": 9.787712,
+    "lat": 46.5054051,
+    "elevation": 3030,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_piz_blaisun",
+    "name": "ピーツ・ブライスン",
+    "lng": 9.8628832,
+    "lat": 46.6031885,
+    "elevation": 3200,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_piz_polaschin",
+    "name": "ピーツ・ポラシン",
+    "lng": 9.7529019,
+    "lat": 46.4608694,
+    "elevation": 3013,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_piz_muot",
+    "name": "ピーツ・ムオット",
+    "lng": 9.7811579,
+    "lat": 46.6017936,
+    "elevation": 2669,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_piz_uertsch",
+    "name": "ピーツ・ユエルチュ",
+    "lng": 9.8364089,
+    "lat": 46.5964079,
+    "elevation": 3267,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_piz_julier",
+    "name": "ピーツ・ユリア",
+    "lng": 9.7598949,
+    "lat": 46.4909889,
+    "elevation": 3380,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_piz_lagrev",
+    "name": "ピーツ・ラグレフ",
+    "lng": 9.7227778,
+    "lat": 46.4458333,
+    "elevation": 3165,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_pizzo_centrale",
+    "name": "ピッツォ・チェントラーレ",
+    "lng": 8.614972,
+    "lat": 46.578111,
+    "elevation": 2999,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_pizzo_lucendro",
+    "name": "ピッツォ・ルチェンドロ",
+    "lng": 8.51944,
+    "lat": 46.53889,
+    "elevation": 2963,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_fibbia",
+    "name": "フィッビア",
+    "lng": 8.547518,
+    "lat": 46.542756,
+    "elevation": 2739,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_furi",
+    "name": "フーリ",
+    "lng": 7.7253,
+    "lat": 46.0016,
+    "elevation": 1867,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_fuorcla_crap_alv",
+    "name": "フオルクラ・クラップ・アルヴ",
+    "lng": 9.7975396,
+    "lat": 46.5652661,
+    "elevation": 2466,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_fuorcla_grevasalvas",
+    "name": "フオルクラ・グレヴァザルヴァス",
+    "lng": 9.7128693,
+    "lat": 46.4385433,
+    "elevation": 2688,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_forte_airolo",
+    "name": "フォルテ・アイロロ",
+    "lng": 8.589156,
+    "lat": 46.528342,
+    "elevation": 1300,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_breithorn",
+    "name": "ブライトホルン",
+    "lng": 7.74722,
+    "lat": 45.94056,
+    "elevation": 4164,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_hm_mps6derl_brandegg_station",
+    "name": "ブランデック駅",
+    "lng": 8.0112153,
+    "lat": 46.6088998,
+    "elevation": 1332,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_furkastock",
+    "name": "フルカシュトック",
+    "lng": 8.412359,
+    "lat": 46.575496,
+    "elevation": 2665,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_furkapass",
+    "name": "フルカ峠",
+    "lng": 8.415184,
+    "lat": 46.572685,
+    "elevation": 2429,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_preda",
+    "name": "プレダ",
+    "lng": 9.7761388,
+    "lat": 46.5894281,
+    "elevation": 1789,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_preda_station",
+    "name": "プレダ駅",
+    "lng": 9.7773533,
+    "lat": 46.5882632,
+    "elevation": 1789,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_bernina_suot",
+    "name": "ベルニナ・スオット",
+    "lng": 9.9691597,
+    "lat": 46.445093,
+    "elevation": 2046,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_bernina_suot_station",
+    "name": "ベルニナ・スオット駅",
+    "lng": 9.9688801,
+    "lat": 46.4450871,
+    "elevation": 2046,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_bernina_diavolezza_station",
+    "name": "ベルニナ・ディアヴォレッツァ駅",
+    "lng": 9.9824285,
+    "lat": 46.4417268,
+    "elevation": 2093,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_hoernlihuette",
+    "name": "ヘルンリ小屋",
+    "lng": 7.677211,
+    "lat": 45.982261,
+    "elevation": 3260,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_hohhoren",
+    "name": "ホーホーレン",
+    "lng": 8.354825,
+    "lat": 46.581727,
+    "elevation": 2771,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_hospental",
+    "name": "ホスペンタール",
+    "lng": 8.567,
+    "lat": 46.617,
+    "elevation": 1493,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_hotel_belvedere",
+    "name": "ホテル・ベルヴェデーレ",
+    "lng": 8.387538,
+    "lat": 46.57737,
+    "elevation": 2272,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_machigasawa_deai",
+    "name": "マチガ沢出合",
+    "lng": 138.952225,
+    "lat": 36.8408917,
+    "elevation": 890,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_matterhorn",
+    "name": "マッターホルン",
+    "lng": 7.65859,
+    "lat": 45.97642,
+    "elevation": 4478,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_mikurigaike",
+    "name": "みくりが池",
+    "lng": 137.6004,
+    "lat": 36.5806,
+    "elevation": 2405,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_muttbach_belvedere_station",
+    "name": "ムットバッハ・ベルヴェデーレ駅",
+    "lng": 8.404277,
+    "lat": 46.567229,
+    "elevation": 2118,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_munt_pers",
+    "name": "ムント・ペルス",
+    "lng": 9.953485,
+    "lat": 46.4214286,
+    "elevation": 3207,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps6derl_monch",
+    "name": "メンヒ",
+    "lng": 7.99736,
+    "lat": 46.55859,
+    "elevation": 4107,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_maennlichen",
+    "name": "メンリッヘン",
+    "lng": 7.9380395,
+    "lat": 46.6181397,
+    "elevation": 2343,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_maennlichen_station",
+    "name": "メンリッヘン駅",
+    "lng": 7.9436061,
+    "lat": 46.6111252,
+    "elevation": 2225,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_yamanoko_mura",
+    "name": "やまのこ村",
+    "lng": 138.3242355,
+    "lat": 35.9822895,
+    "elevation": 1720,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_julierpass",
+    "name": "ユリア峠",
+    "lng": 9.7281463,
+    "lat": 46.4722136,
+    "elevation": 2284,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps6derl_jungfrau",
+    "name": "ユングフラウ",
+    "lng": 7.96238,
+    "lat": 46.53693,
+    "elevation": 4158,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_jungfraujoch",
+    "name": "ユングフラウヨッホ",
+    "lng": 7.9806,
+    "lat": 46.5475,
+    "elevation": 3454,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_la_veduta",
+    "name": "ラ・ヴェドゥータ",
+    "lng": 9.7292,
+    "lat": 46.4734,
+    "elevation": 2233,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_la_punt_chamues_ch",
+    "name": "ラ・プント・チャムエス",
+    "lng": 9.9308212,
+    "lat": 46.5765828,
+    "elevation": 1687,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_lago_della_sella",
+    "name": "ラーゴ・デッラ・セッラ",
+    "lng": 8.5927697,
+    "lat": 46.5591179,
+    "elevation": 2256,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_lago_della_piazza",
+    "name": "ラーゴ・デッラ・ピアッツァ",
+    "lng": 8.5658061,
+    "lat": 46.5566243,
+    "elevation": 2091,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_lago_bianco",
+    "name": "ラーゴ・ビアンコ",
+    "lng": 10.0188,
+    "lat": 46.4042,
+    "elevation": 2234,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps26f8a_lai_da_palpuogna",
+    "name": "ライ・ダ・パルプオーニャ",
+    "lng": 9.7861127,
+    "lat": 46.5816912,
+    "elevation": 1918,
+    "source": "Graubünden Tourism; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アルブラ峠エリアの既存ロケーション由来。Graubünden Tourism、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・峠施設・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: アルブラ峠。"
+  },
+  {
+    "id": "imported_hm_mps6derl_lauterbrunnen",
+    "name": "ラウターブルンネン",
+    "lng": 7.9089,
+    "lat": 46.5938,
+    "elevation": 796,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_hm_mps6derl_laubhorn",
+    "name": "ラウバーホルン",
+    "lng": 7.9480344,
+    "lat": 46.5925196,
+    "elevation": 2472,
+    "source": "Jungfrau official pages; swisstopo/Wikipedia peak/railway pages; local DEM checked",
+    "confidence": "high",
+    "notes": "アイガー北壁エリアの既存ロケーション由来。Jungfrau公式ページ、swisstopo/Wikipedia系の山頂・鉄道/駅ページ、Eiger Trail周辺文脈で同名地点と標高を確認し、保存済みDEMも照合。北壁・氷河・壁中駅などDEM地表標高と施設標高が大きく異なる地点は外部標高と周辺文脈を優先。 作成元ロケーション: アイガー北壁。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_riffelberg",
+    "name": "リッフェルベルク",
+    "lng": 7.7533,
+    "lat": 45.9906,
+    "elevation": 2582,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_riffelsee",
+    "name": "リッフェル湖",
+    "lng": 7.762752,
+    "lat": 45.983495,
+    "elevation": 2757,
+    "source": "Zermatt/Matterhorn Paradise official pages; swisstopo/Wikipedia peak/hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの既存ロケーション由来。Zermatt公式、Matterhorn Paradise公式、swisstopo/Wikipedia系の山頂・山小屋・湖沼ページ、周辺索道/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。マッターホルンのような急峻な山頂や氷河/山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_lago_di_lucendro",
+    "name": "ルチェンドロ湖",
+    "lng": 8.54194,
+    "lat": 46.56194,
+    "elevation": 2135,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_ws_mpt174lm_realp",
+    "name": "レアルプ",
+    "lng": 8.5,
+    "lat": 46.583,
+    "elevation": 1538,
+    "source": "Sasso San Gottardo/Gotthard tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ゴッタルド峠エリアの既存ロケーション由来。Sasso San Gottardo/Gotthard観光系ページ、swisstopo/Wikipedia系の峠・湖沼・山頂ページ、周辺道路/博物館文脈で同名地点と標高を確認し、保存済みDEMも照合。トレモラ街道や谷筋の代表点などDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ゴッタルド峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_lej_da_silvaplauna",
+    "name": "レイ・ダ・シルヴァプラーナ",
+    "lng": 9.7944684,
+    "lat": 46.4482753,
+    "elevation": 1791,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_lej_da_champfer",
+    "name": "レイ・ダ・チャンプフェール",
+    "lng": 9.8008768,
+    "lat": 46.4663747,
+    "elevation": 1791,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps2mlqu_lej_da_las_culuonnas",
+    "name": "レイ・ダ・ラス・クルオンナス",
+    "lng": 9.7274794,
+    "lat": 46.4702332,
+    "elevation": 2250,
+    "source": "Graubünden/Engadin tourism pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ユリア峠エリアの既存ロケーション由来。Graubünden/Engadin観光系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。湖沼・集落・峠/山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ユリア峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_lej_nair",
+    "name": "レイ・ナイール",
+    "lng": 10.0073,
+    "lat": 46.4164,
+    "elevation": 2223,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_hm_mps6aho2_lej_pitschen",
+    "name": "レイ・ピッチェン",
+    "lng": 10.0019754,
+    "lat": 46.4187325,
+    "elevation": 2220,
+    "source": "Bernina Glaciers/Diavolezza-Lagalb official pages; swisstopo/Wikipedia mountain-pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ベルニナ峠エリアの既存ロケーション由来。Bernina Glaciers/Diavolezza-Lagalb公式系ページ、swisstopo/Wikipedia系の峠・山頂・湖沼ページ、周辺鉄道/索道文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・湖沼・駅/索道代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: ベルニナ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_rhonestock",
+    "name": "ローヌシュトック",
+    "lng": 8.419306,
+    "lat": 46.63444,
+    "elevation": 3588,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_rhone_glacier",
+    "name": "ローヌ氷河",
+    "lng": 8.38605,
+    "lat": 46.60454,
+    "elevation": 2627,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsv6q82_rhonegletscher_eisgrotte",
+    "name": "ローヌ氷河氷窟",
+    "lng": 8.386876,
+    "lat": 46.580279,
+    "elevation": 2270,
+    "source": "Switzerland Tourism/Goms glacier pages; swisstopo/Wikipedia pass/peak pages; local DEM checked",
+    "confidence": "high",
+    "notes": "フルカ峠エリアの既存ロケーション由来。Switzerland Tourism、Goms氷河ページ、swisstopo/Wikipedia系の峠・山頂・氷河ページ、周辺交通/登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。氷河・峠道路・山頂代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: フルカ峠。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_amidadake",
+    "name": "阿弥陀岳",
+    "lng": 138.358611,
+    "lat": 35.972222,
+    "elevation": 2805,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_shirouma_asahigaoka",
+    "name": "旭岳",
+    "lng": 137.745833,
+    "lat": 36.757778,
+    "elevation": 2867,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_inamaedake",
+    "name": "伊那前岳",
+    "lng": 137.819722,
+    "lat": 35.783611,
+    "elevation": 2883,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_ichinokoshi",
+    "name": "一ノ越",
+    "lng": 137.612944,
+    "lat": 36.569694,
+    "elevation": 2700,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_ichinokuradake",
+    "name": "一ノ倉岳",
+    "lng": 138.924167,
+    "lat": 36.846944,
+    "elevation": 1974.2,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_ichinokuradake_hinangoya",
+    "name": "一ノ倉岳避難小屋",
+    "lng": 138.924444,
+    "lat": 36.846944,
+    "elevation": 1971,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_ichinokurasawa_deai",
+    "name": "一ノ倉沢出合",
+    "lng": 138.942204,
+    "lat": 36.846934,
+    "elevation": 870,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_issaikyozan",
+    "name": "一切経山",
+    "lng": 140.244444,
+    "lat": 37.735278,
+    "elevation": 1949,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_issai_nanzanpuku",
+    "name": "一切経山南山腹",
+    "lng": 140.246,
+    "lat": 37.731167,
+    "elevation": 1875,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_ukita_hideie_jinato",
+    "name": "宇喜多秀家陣跡（南天満山）",
+    "lng": 136.4556,
+    "lat": 35.3612,
+    "elevation": 150,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_ubagahara",
+    "name": "姥ヶ原",
+    "lng": 140.2267,
+    "lat": 37.7178,
+    "elevation": 1770,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_ubagadaira",
+    "name": "姥ヶ平",
+    "lng": 139.9530751,
+    "lat": 37.1246482,
+    "elevation": 1590,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_sarukura_so",
+    "name": "猿倉荘",
+    "lng": 137.8009059,
+    "lat": 36.7460177,
+    "elevation": 1250,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_sarukura_trailhead",
+    "name": "猿倉登山口",
+    "lng": 137.800292,
+    "lat": 36.746872,
+    "elevation": 1230,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_okudainichidake",
+    "name": "奥大日岳",
+    "lng": 137.5922,
+    "lat": 36.5914,
+    "elevation": 2611,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_okuhotakadake",
+    "name": "奥穂高岳",
+    "lng": 137.648056,
+    "lat": 36.289167,
+    "elevation": 3190,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_yokodake_okunoin",
+    "name": "横岳（奥ノ院）",
+    "lng": 138.372778,
+    "lat": 35.985833,
+    "elevation": 2830,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_yokoo",
+    "name": "横尾",
+    "lng": 137.6992466,
+    "lat": 36.2933303,
+    "elevation": 1620,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_yokoo_sanso",
+    "name": "横尾山荘",
+    "lng": 137.6992466,
+    "lat": 36.2933303,
+    "elevation": 1620,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_otaki_chojo",
+    "name": "王滝頂上",
+    "lng": 137.482222,
+    "lat": 35.888611,
+    "elevation": 2930,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_okenuma",
+    "name": "桶沼",
+    "lng": 140.253993,
+    "lat": 37.7186,
+    "elevation": 1600,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_natsuzawa_kosen",
+    "name": "夏沢鉱泉",
+    "lng": 138.3433384,
+    "lat": 36.0035635,
+    "elevation": 2060,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_natsuzawatoge",
+    "name": "夏沢峠",
+    "lng": 138.3647992,
+    "lat": 36.0060485,
+    "elevation": 2430,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_iegatayama",
+    "name": "家形山",
+    "lng": 140.228611,
+    "lat": 37.746111,
+    "elevation": 1877,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_kawaguchiko_5th",
+    "name": "河口湖口五合目",
+    "lng": 138.731872,
+    "lat": 35.394667,
+    "elevation": 2305,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_kappabashi",
+    "name": "河童橋",
+    "lng": 137.6379786,
+    "lat": 36.2487783,
+    "elevation": 1500,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_kaisenchi",
+    "name": "開戦地",
+    "lng": 136.4585035,
+    "lat": 35.3653745,
+    "elevation": 135,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_dakesawa_wetland",
+    "name": "岳沢湿原",
+    "lng": 137.638978,
+    "lat": 36.253269,
+    "elevation": 1510,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_dakesawa_goya",
+    "name": "岳沢小屋",
+    "lng": 137.647222,
+    "lat": 36.276389,
+    "elevation": 2170,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_kamaiwakan",
+    "name": "鎌岩館",
+    "lng": 138.743611,
+    "lat": 35.377778,
+    "elevation": 2779,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_kamanuma",
+    "name": "鎌沼",
+    "lng": 140.2325,
+    "lat": 37.723889,
+    "elevation": 1743,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_ainodake",
+    "name": "間ノ岳",
+    "lng": 138.228333,
+    "lat": 35.646111,
+    "elevation": 3190,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_sekigahara_station",
+    "name": "関ケ原駅",
+    "lng": 136.4707459,
+    "lat": 35.3637129,
+    "elevation": 124,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_sekigahara_kessenchi",
+    "name": "関ヶ原古戦場 決戦地",
+    "lng": 136.461599,
+    "lat": 35.3704769,
+    "elevation": 140,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_sekigahara_memorial_museum",
+    "name": "岐阜関ケ原古戦場記念館",
+    "lng": 136.466944,
+    "lat": 35.365556,
+    "elevation": 125,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_kusushidake",
+    "name": "久須志岳",
+    "lng": 138.73411,
+    "lat": 35.3642,
+    "elevation": 3725,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_ushigakubi",
+    "name": "牛ヶ首",
+    "lng": 139.9596,
+    "lat": 37.1227,
+    "elevation": 1730,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_ushigakubi_sancho_bunki",
+    "name": "牛ヶ首山頂分岐",
+    "lng": 139.9693214,
+    "lat": 37.1230323,
+    "elevation": 1710,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_munatsuki_sanso",
+    "name": "九合五勺胸突山荘",
+    "lng": 138.730833,
+    "lat": 35.356389,
+    "elevation": 3555,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_mannenyuki_sanso",
+    "name": "九合目万年雪山荘",
+    "lng": 138.732778,
+    "lat": 35.354444,
+    "elevation": 3408,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_chojosanso",
+    "name": "駒ヶ岳頂上山荘",
+    "lng": 137.806389,
+    "lat": 35.787778,
+    "elevation": 2870,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_kumanosawa_hinangoya",
+    "name": "熊穴沢避難小屋",
+    "lng": 138.935833,
+    "lat": 36.823056,
+    "elevation": 1465,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_tsugikodake",
+    "name": "継子岳",
+    "lng": 137.4864,
+    "lat": 35.9182,
+    "elevation": 2859,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_tsugumodake",
+    "name": "継母岳",
+    "lng": 137.4678,
+    "lat": 35.8849,
+    "elevation": 2867,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_ontake_kengamine",
+    "name": "剣ヶ峰",
+    "lng": 137.480278,
+    "lat": 35.892778,
+    "elevation": 3067,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_norikura_kengamine",
+    "name": "剣ヶ峰",
+    "lng": 137.553611,
+    "lat": 36.106389,
+    "elevation": 3026,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_kengamine_fuji",
+    "name": "剣ヶ峰（富士山頂）",
+    "lng": 138.727347,
+    "lat": 35.360638,
+    "elevation": 3776,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_kenzanso",
+    "name": "剣山荘",
+    "lng": 137.6214,
+    "lat": 36.595833,
+    "elevation": 2475,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_gongendake",
+    "name": "権現岳",
+    "lng": 138.359444,
+    "lat": 35.949722,
+    "elevation": 2715,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_gongen_goya",
+    "name": "権現小屋",
+    "lng": 138.358889,
+    "lat": 35.950278,
+    "elevation": 2670,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_gongenike",
+    "name": "権現池",
+    "lng": 137.5522,
+    "lat": 36.1082,
+    "elevation": 2845,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_katanokoya",
+    "name": "肩の小屋",
+    "lng": 137.5525,
+    "lat": 36.114444,
+    "elevation": 2768,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_katanokoya_guchi",
+    "name": "肩の小屋口",
+    "lng": 137.5446,
+    "lat": 36.1137,
+    "elevation": 2616,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_gonoike_goya",
+    "name": "五の池小屋",
+    "lng": 137.483611,
+    "lat": 35.909444,
+    "elevation": 2798,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_goshikinuma_majo",
+    "name": "五色沼（魔女の瞳）",
+    "lng": 140.243114,
+    "lat": 37.740557,
+    "elevation": 1748,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_azuma_koya",
+    "name": "吾妻小舎",
+    "lng": 140.2572,
+    "lat": 37.7249,
+    "elevation": 1580,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_azuma_kofuji",
+    "name": "吾妻小富士",
+    "lng": 140.2639,
+    "lat": 37.7227,
+    "elevation": 1707,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_gotemba_new_5th",
+    "name": "御殿場口新五合目",
+    "lng": 138.794672,
+    "lat": 35.335281,
+    "elevation": 1430,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_goraikokan",
+    "name": "御来光館",
+    "lng": 138.737222,
+    "lat": 35.368056,
+    "elevation": 3453,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_ontake_okutomiya",
+    "name": "御嶽神社奥社",
+    "lng": 137.4802,
+    "lat": 35.8929,
+    "elevation": 3067,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_hirogawara",
+    "name": "広河原",
+    "lng": 138.282,
+    "lat": 35.7019,
+    "elevation": 1520,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_hirogawara_sanso",
+    "name": "広河原山荘",
+    "lng": 138.2806,
+    "lat": 35.7011,
+    "elevation": 1520,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_gyoja_goya",
+    "name": "行者小屋",
+    "lng": 138.364444,
+    "lat": 35.978889,
+    "elevation": 2350,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_gyoba_sanso",
+    "name": "行場山荘",
+    "lng": 137.5090917,
+    "lat": 35.8972166,
+    "elevation": 2200,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_takayama",
+    "name": "高山",
+    "lng": 140.2575556,
+    "lat": 37.70059444,
+    "elevation": 1805,
+    "source": "YAMAP mountain page map link; 浄土平ビジターセンター/フィールドガイド; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。2026-06-06再確認: 元座標 140.2813,37.7078 は保存済みDEMが約1249mで、高山の標高1805mと大きく矛盾。YAMAP高山（福島県福島市）ページの拡大地図リンク座標 140.2575556,37.70059444 に修正し、保存済みDEM約1801mと整合することを確認。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_mpss7h8i",
+    "name": "黒百合ヒュッテ",
+    "lng": 138.3573659,
+    "lat": 36.0295396,
+    "elevation": 2400,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_neishidake",
+    "name": "根石岳",
+    "lng": 138.3602138,
+    "lat": 36.0155111,
+    "elevation": 2603,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_neishidake_sanso",
+    "name": "根石岳山荘",
+    "lng": 138.3592776,
+    "lat": 36.013975,
+    "elevation": 2550,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_sunabashirikan",
+    "name": "砂走館",
+    "lng": 138.741944,
+    "lat": 35.351944,
+    "elevation": 3112,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "sakuradaira_parking_lower",
+    "name": "桜平駐車場（下）",
+    "lng": 138.315039435402,
+    "lat": 36.0147896423738,
+    "category": "parking",
+    "elevation": 1630,
+    "source": "YAMAP model course Google Map link; 登山口P; O-ren hut guide; DEM checked",
+    "confidence": "high",
+    "notes": "桜平駐車場の下。YAMAPのGoogle Mapリンク座標を基準にし、登山口Pの標高1630mとDEMで確認。"
+  },
+  {
+    "id": "sakuradaira_parking_upper",
+    "name": "桜平駐車場（上）",
+    "lng": 138.33611,
+    "lat": 36.01,
+    "category": "parking",
+    "elevation": 1920,
+    "source": "YAMAP model course Google Map link; 登山口P; O-ren hut guide; DEM checked",
+    "confidence": "high",
+    "notes": "桜平駐車場の上。登山口P掲載の 36°00′36″/138°20′10″ と既存DEMで確認。"
+  },
+  {
+    "id": "sakuradaira_parking_middle",
+    "name": "桜平駐車場（中）",
+    "lng": 138.328956,
+    "lat": 36.010303,
+    "category": "parking",
+    "elevation": 1840,
+    "source": "YAMAP model course Google Map link; 登山口P; O-ren hut guide; DEM checked",
+    "confidence": "high",
+    "notes": "桜平駐車場の中。YAMAPのGoogle Mapリンク座標を基準にし、登山口Pの標高1840mとDEMで確認。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_sasaoyama",
+    "name": "笹尾山",
+    "lng": 136.458666,
+    "lat": 35.371807,
+    "elevation": 164,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_sannosawadake",
+    "name": "三ノ沢岳",
+    "lng": 137.793889,
+    "lat": 35.766667,
+    "elevation": 2847,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_sannoike",
+    "name": "三ノ池",
+    "lng": 137.4876,
+    "lat": 35.9045,
+    "elevation": 2720,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_mikuni_sakai",
+    "name": "三国境",
+    "lng": 137.762222,
+    "lat": 36.766111,
+    "elevation": 2751,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_mibudake",
+    "name": "三峰岳",
+    "lng": 138.2197,
+    "lat": 35.6428,
+    "elevation": 2999,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_mpsruau4",
+    "name": "山頂駅",
+    "lng": 139.97072,
+    "lat": 37.12406,
+    "elevation": 1684,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_mpss1641",
+    "name": "山麓駅",
+    "lng": 139.97917,
+    "lat": 37.12528,
+    "elevation": 1388,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_kodamadake",
+    "name": "蚕玉岳",
+    "lng": 137.5508,
+    "lat": 36.1075,
+    "elevation": 2979,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_sugadaira",
+    "name": "酸ヶ平",
+    "lng": 140.2398,
+    "lat": 37.7265,
+    "elevation": 1760,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_sugadaira_hinangoya",
+    "name": "酸ヶ平避難小屋",
+    "lng": 140.2413056,
+    "lat": 37.7267778,
+    "elevation": 1760,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_yonnoike",
+    "name": "四ノ池",
+    "lng": 137.4907,
+    "lat": 35.9134,
+    "elevation": 2690,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_murodo_terminal",
+    "name": "室堂ターミナル",
+    "lng": 137.5954,
+    "lat": 36.5782,
+    "elevation": 2450,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_shakushidake",
+    "name": "杓子岳",
+    "lng": 137.758889,
+    "lat": 36.740278,
+    "elevation": 2812,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_nyonindo",
+    "name": "女人堂",
+    "lng": 137.5078,
+    "lat": 35.9042,
+    "elevation": 2470,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_shogigashira",
+    "name": "将棊頭山",
+    "lng": 137.826944,
+    "lat": 35.803333,
+    "elevation": 2730,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_kobayakawa_hideaki_jinato",
+    "name": "小早川秀秋陣跡",
+    "lng": 136.4613882,
+    "lat": 35.3520249,
+    "elevation": 280,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_kotaro_yama",
+    "name": "小太郎山",
+    "lng": 138.2258,
+    "lat": 35.6926,
+    "elevation": 2725,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_kotaro_one_bunki",
+    "name": "小太郎尾根分岐",
+    "lng": 138.237,
+    "lat": 35.6837,
+    "elevation": 2850,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_korengesan",
+    "name": "小蓮華山",
+    "lng": 137.776111,
+    "lat": 36.773611,
+    "elevation": 2766,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_matsuoyama",
+    "name": "松尾山",
+    "lng": 136.4543079,
+    "lat": 35.3471631,
+    "elevation": 293,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_kamikochi_bus_terminal",
+    "name": "上高地バスターミナル",
+    "lng": 137.6353881,
+    "lat": 36.2466558,
+    "elevation": 1505,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_kamikochi_visitor_center",
+    "name": "上高地ビジターセンター",
+    "lng": 137.639392,
+    "lat": 36.249566,
+    "elevation": 1505,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_norikura_ohanabatake",
+    "name": "乗鞍お花畑",
+    "lng": 137.5506,
+    "lat": 36.1222,
+    "elevation": 2700,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_norikura_hongu",
+    "name": "乗鞍本宮頂上本社",
+    "lng": 137.5535,
+    "lat": 36.1065,
+    "elevation": 3026,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_nottekoshijodo",
+    "name": "乗越浄土",
+    "lng": 137.81018,
+    "lat": 35.78317,
+    "elevation": 2858,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_jodosan",
+    "name": "浄土山",
+    "lng": 137.603611,
+    "lat": 36.568333,
+    "elevation": 2831,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_jododaira_visitor_center",
+    "name": "浄土平ビジターセンター",
+    "lng": 140.256,
+    "lat": 37.724333,
+    "elevation": 1584,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_jododaira_wetland",
+    "name": "浄土平湿原",
+    "lng": 140.2528,
+    "lat": 37.7235,
+    "elevation": 1580,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_jododaira_parking",
+    "name": "浄土平駐車場",
+    "lng": 140.255147,
+    "lat": 37.723286,
+    "elevation": 1575,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_tatamidaira",
+    "name": "畳平",
+    "lng": 137.5534,
+    "lat": 36.1236,
+    "elevation": 2702,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_tatamidaira_bus_terminal",
+    "name": "畳平バスターミナル",
+    "lng": 137.5537,
+    "lat": 36.124,
+    "elevation": 2702,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_masagodake",
+    "name": "真砂岳",
+    "lng": 137.62,
+    "lat": 36.586667,
+    "elevation": 2861,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_subashiri_5th",
+    "name": "須走口五合目",
+    "lng": 138.7772778,
+    "lat": 35.3655,
+    "elevation": 1890.9808453498135,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_nishidake_yatsu",
+    "name": "西岳",
+    "lng": 138.334722,
+    "lat": 35.949722,
+    "elevation": 2398,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_nishiguroone_trailhead",
+    "name": "西黒尾根登山口",
+    "lng": 138.9606472,
+    "lat": 36.8365972,
+    "elevation": 780,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_mpss7ev0",
+    "name": "西天狗岳",
+    "lng": 138.35555,
+    "lat": 36.019242,
+    "elevation": 2646,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_seinen_goya",
+    "name": "青年小屋",
+    "lng": 138.348333,
+    "lat": 35.944444,
+    "elevation": 2380,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_ishida_mitsunari_jinato",
+    "name": "石田三成陣跡",
+    "lng": 136.4594091,
+    "lat": 35.3707698,
+    "elevation": 155,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_akadake_yatsu",
+    "name": "赤岳",
+    "lng": 138.37,
+    "lat": 35.970833,
+    "elevation": 2899,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_akadake_kosen",
+    "name": "赤岳鉱泉",
+    "lng": 138.3602273,
+    "lat": 35.9868335,
+    "elevation": 2220,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_akadake_chojo_sanso",
+    "name": "赤岳頂上山荘",
+    "lng": 138.3704883,
+    "lat": 35.9712309,
+    "elevation": 2890,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_akadake_tenboso",
+    "name": "赤岳展望荘",
+    "lng": 138.3717123,
+    "lat": 35.975057,
+    "elevation": 2722,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_akaiwa_hachigokan",
+    "name": "赤岩八合館",
+    "lng": 138.738611,
+    "lat": 35.354444,
+    "elevation": 3295,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_senjojiki",
+    "name": "千畳敷駅",
+    "lng": 137.8136685,
+    "lat": 35.777437,
+    "elevation": 2612,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_maehotakadake",
+    "name": "前穂高岳",
+    "lng": 137.660278,
+    "lat": 36.281944,
+    "elevation": 3090.23,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_kusasuveri",
+    "name": "草すべり",
+    "lng": 138.25078,
+    "lat": 35.68534,
+    "elevation": 2304,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_taishikan",
+    "name": "太子館",
+    "lng": 138.741389,
+    "lat": 35.373889,
+    "elevation": 3041,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_ookabasawa_futamata",
+    "name": "大樺沢二俣",
+    "lng": 138.2549,
+    "lat": 35.6811,
+    "elevation": 2230,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_daikokudake",
+    "name": "大黒岳",
+    "lng": 137.559167,
+    "lat": 36.1275,
+    "elevation": 2772,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_oishi_chaya",
+    "name": "大石茶屋",
+    "lng": 138.790278,
+    "lat": 35.336944,
+    "elevation": 1522,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_otani_yoshitsugu_jinato",
+    "name": "大谷吉継陣跡",
+    "lng": 136.4503723,
+    "lat": 35.3585231,
+    "elevation": 155,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_onanjiyama",
+    "name": "大汝山",
+    "lng": 137.619722,
+    "lat": 36.575833,
+    "elevation": 3015,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_ochodake",
+    "name": "大日岳",
+    "lng": 137.5558,
+    "lat": 36.1062,
+    "elevation": 3014,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tanigawadake_okinomimi",
+    "name": "谷川岳（オキの耳）",
+    "lng": 138.93,
+    "lat": 36.837222,
+    "elevation": 1977,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tanigawadake_tomanomimi",
+    "name": "谷川岳（トマの耳）",
+    "lng": 138.930273,
+    "lat": 36.834466,
+    "elevation": 1963,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tanigawadake_base_plaza",
+    "name": "谷川岳ベースプラザ",
+    "lng": 138.962884,
+    "lat": 36.836961,
+    "elevation": 746,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tanigawadake_ropeway_tenjindaira",
+    "name": "谷川岳ロープウェイ天神平駅",
+    "lng": 138.9496257,
+    "lat": 36.8181005,
+    "elevation": 1319,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tanigawadake_ropeway_doai",
+    "name": "谷川岳ロープウェイ土合口駅",
+    "lng": 138.9618886,
+    "lat": 36.8363596,
+    "elevation": 746,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tanigawadake_katanokoya",
+    "name": "谷川岳肩ノ小屋",
+    "lng": 138.929708,
+    "lat": 36.833025,
+    "elevation": 1912,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_yachidaira_wetland",
+    "name": "谷地平湿原",
+    "lng": 140.2136,
+    "lat": 37.6942,
+    "elevation": 1480,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_jigokudani_tateyama",
+    "name": "地獄谷",
+    "lng": 137.5968,
+    "lat": 36.5833,
+    "elevation": 2320,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_mpsn0l0x",
+    "name": "茶臼岳",
+    "lng": 139.9629008,
+    "lat": 37.1249179,
+    "elevation": 1915,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_chausuyama",
+    "name": "茶臼山",
+    "lng": 137.821667,
+    "lat": 35.814722,
+    "elevation": 2658,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_nakadake_kk",
+    "name": "中岳",
+    "lng": 137.8075,
+    "lat": 35.786111,
+    "elevation": 2925,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_nakadake_yatsu",
+    "name": "中岳",
+    "lng": 138.364167,
+    "lat": 35.971389,
+    "elevation": 2700,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_nakashirane_yama",
+    "name": "中白根山",
+    "lng": 138.231944,
+    "lat": 35.654167,
+    "elevation": 3055,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_mpsrhoqr",
+    "name": "朝日岳",
+    "lng": 139.968299,
+    "lat": 37.1366855,
+    "elevation": 1896,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_asahidake_norikura",
+    "name": "朝日岳",
+    "lng": 137.5486,
+    "lat": 36.1084,
+    "elevation": 2975,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_osada_sanso",
+    "name": "長田山荘",
+    "lng": 138.761389,
+    "lat": 35.369722,
+    "elevation": 2418,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_chojo_fujikan",
+    "name": "頂上富士館",
+    "lng": 138.730833,
+    "lat": 35.359444,
+    "elevation": 3713,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_chojokisogoya",
+    "name": "頂上木曽小屋",
+    "lng": 137.8021,
+    "lat": 35.78935,
+    "elevation": 2900,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_torikodaira",
+    "name": "鳥子平",
+    "lng": 140.2480556,
+    "lat": 37.7047222,
+    "elevation": 1606,
+    "source": "Yamareco place page; MLIT/Jododaira wetland guide; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。2026-06-06再確認: 元座標 140.2762,37.7046 は保存済みDEMが約1322mで、鳥子平の標高1606mと大きく矛盾。ヤマレコ鳥子平ページの北緯37度42分17秒・東経140度14分53秒を十進化した 140.2480556,37.7047222 に修正し、保存済みDEM約1605mと整合することを確認。MLIT/浄土平湿原ガイドでも高山の麓の鳥子平（標高1606m）として確認。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_tsurugaike",
+    "name": "鶴ヶ池",
+    "lng": 137.5517,
+    "lat": 36.1231,
+    "elevation": 2690,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tengu_no_tomariba",
+    "name": "天狗の留まり場",
+    "lng": 138.933056,
+    "lat": 36.8275,
+    "elevation": 1665,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_tengusanso_hakuba",
+    "name": "天狗山荘",
+    "lng": 137.753056,
+    "lat": 36.720833,
+    "elevation": 2730,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_tenguso",
+    "name": "天狗荘",
+    "lng": 137.80885,
+    "lat": 35.78333,
+    "elevation": 2870,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tenjin_toge",
+    "name": "天神峠",
+    "lng": 138.945833,
+    "lat": 36.815556,
+    "elevation": 1502,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_tenjin_daira",
+    "name": "天神平",
+    "lng": 138.949167,
+    "lat": 36.817778,
+    "elevation": 1320,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_tanohara_trailhead",
+    "name": "田の原登山口",
+    "lng": 137.5035,
+    "lat": 35.873167,
+    "elevation": 2196,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_tanaka_yoshimasa_jinato",
+    "name": "田中吉政陣跡",
+    "lng": 136.4657182,
+    "lat": 35.365214,
+    "elevation": 125,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_doai_station",
+    "name": "土合駅",
+    "lng": 138.967111,
+    "lat": 36.831333,
+    "elevation": 653,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_karasawakousen",
+    "name": "唐沢鉱泉 八ヶ岳秘湯の宿",
+    "lng": 138.3296286,
+    "lat": 36.0246518,
+    "elevation": 1870,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_shimazu_yoshihiro_jinato",
+    "name": "島津義弘陣跡",
+    "lng": 136.4592487,
+    "lat": 35.3670733,
+    "elevation": 130,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_higashi_azumayama",
+    "name": "東吾妻山",
+    "lng": 140.230278,
+    "lat": 37.711667,
+    "elevation": 1975,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_mpss7g0x",
+    "name": "東天狗岳",
+    "lng": 138.3594093,
+    "lat": 36.0198078,
+    "elevation": 2640,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_higashi_fuji_sanso",
+    "name": "東富士山荘",
+    "lng": 138.778333,
+    "lat": 35.366111,
+    "elevation": 1969,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_todo_kyogoku_jinato",
+    "name": "藤堂高虎・京極高知陣跡",
+    "lng": 136.4641416,
+    "lat": 35.3594035,
+    "elevation": 130,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_mpsrhukt",
+    "name": "峠の茶屋登山口",
+    "lng": 139.97566,
+    "lat": 37.12867,
+    "elevation": 1462,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_tokugawa_iyeyasu_saigo",
+    "name": "徳川家康最後陣地",
+    "lng": 136.4654699,
+    "lat": 35.3654986,
+    "elevation": 125,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_tokugawa_iyeyasu_saisho",
+    "name": "徳川家康最初陣地（桃配山）",
+    "lng": 136.4878754,
+    "lat": 35.3654291,
+    "elevation": 180,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_tokusawa",
+    "name": "徳沢",
+    "lng": 137.688333,
+    "lat": 36.265556,
+    "elevation": 1562,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_tokusawaen",
+    "name": "徳澤園",
+    "lng": 137.690612,
+    "lat": 36.265576,
+    "elevation": 1561,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_nasudake_hinangoya",
+    "name": "那須岳避難小屋",
+    "lng": 139.9577069,
+    "lat": 37.1328303,
+    "elevation": 1660,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_kuranosuke_sanso",
+    "name": "内蔵助山荘",
+    "lng": 137.6219,
+    "lat": 36.5846,
+    "elevation": 2780,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_minamigassan",
+    "name": "南月山",
+    "lng": 139.9582752,
+    "lat": 37.1096237,
+    "elevation": 1776,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_ninoike",
+    "name": "二ノ池",
+    "lng": 137.4845,
+    "lat": 35.896667,
+    "elevation": 2905,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_ninoike_hutte",
+    "name": "二ノ池ヒュッテ",
+    "lng": 137.4811,
+    "lat": 35.8962,
+    "elevation": 2890,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_ninoike_sanso",
+    "name": "二ノ池山荘",
+    "lng": 137.4821,
+    "lat": 35.8959,
+    "elevation": 2905,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_hinodekan",
+    "name": "日の出館",
+    "lng": 138.744167,
+    "lat": 35.378611,
+    "elevation": 2713,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_nogaike",
+    "name": "濃ヶ池",
+    "lng": 137.816389,
+    "lat": 35.794722,
+    "elevation": 2655,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_nodorigoya_site",
+    "name": "農鳥小屋跡",
+    "lng": 138.2247,
+    "lat": 35.6402,
+    "elevation": 2800,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_hakuunso",
+    "name": "白雲荘",
+    "lng": 138.7396413,
+    "lat": 35.3715409,
+    "elevation": 3200,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_shirane_oike",
+    "name": "白根御池",
+    "lng": 138.2541,
+    "lat": 35.6883,
+    "elevation": 2230,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_shirane_oike_goya",
+    "name": "白根御池小屋",
+    "lng": 138.2546,
+    "lat": 35.6886,
+    "elevation": 2236,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_hakusandake",
+    "name": "白山岳",
+    "lng": 138.729542,
+    "lat": 35.366678,
+    "elevation": 3756,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_shiroumadake",
+    "name": "白馬岳",
+    "lng": 137.758611,
+    "lat": 36.758611,
+    "elevation": 2932,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_hakuba_chojo_shukusha",
+    "name": "白馬岳頂上宿舎",
+    "lng": 137.75374,
+    "lat": 36.75277,
+    "elevation": 2730,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_hakuba_sanso",
+    "name": "白馬山荘",
+    "lng": 137.75635,
+    "lat": 36.75599,
+    "elevation": 2832,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_hakubajiri_sanso",
+    "name": "白馬尻山荘",
+    "lng": 137.783611,
+    "lat": 36.750833,
+    "elevation": 1560,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_hakubajiri_goya",
+    "name": "白馬尻小屋",
+    "lng": 137.7825,
+    "lat": 36.750556,
+    "elevation": 1560,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_hakuba_daisekkei",
+    "name": "白馬大雪渓",
+    "lng": 137.7782,
+    "lat": 36.7484,
+    "elevation": 2100,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_hakuba_oike",
+    "name": "白馬大池",
+    "lng": 137.7966,
+    "lat": 36.784,
+    "elevation": 2379,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_hakuba_oike_sanso",
+    "name": "白馬大池山荘",
+    "lng": 137.7952356,
+    "lat": 36.7864803,
+    "elevation": 2377,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_hakuba_yarigatake",
+    "name": "白馬鑓ヶ岳",
+    "lng": 137.75539,
+    "lat": 36.73134,
+    "elevation": 2903,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_mugikusadake",
+    "name": "麦草岳",
+    "lng": 137.786111,
+    "lat": 35.796667,
+    "elevation": 2733,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_happonba_no_col",
+    "name": "八本歯ノコル",
+    "lng": 138.2403,
+    "lat": 35.6657,
+    "elevation": 2920,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpug4quy_rengesen",
+    "name": "鉢ヶ岳",
+    "lng": 137.749444,
+    "lat": 36.780278,
+    "elevation": 2563,
+    "source": "YAMAP mountain/model-course pages; 白馬岳/山小屋/登山ルート pages; local DEM checked",
+    "confidence": "high",
+    "notes": "白馬岳エリアの既存ロケーション由来。YAMAP山情報/モデルコース、白馬岳周辺の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。雪渓・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 白馬岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_hida_chojo",
+    "name": "飛騨頂上",
+    "lng": 137.4838,
+    "lat": 35.9097,
+    "elevation": 2811,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_minoto_sanso",
+    "name": "美濃戸山荘",
+    "lng": 138.3278537,
+    "lat": 35.9813317,
+    "elevation": 1760,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_minoto_nakayama",
+    "name": "美濃戸中山",
+    "lng": 138.3525,
+    "lat": 35.981944,
+    "elevation": 2387,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_fujino_oritate",
+    "name": "富士ノ折立",
+    "lng": 137.6186,
+    "lat": 36.5784,
+    "elevation": 2999,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_fujinomiya_5th",
+    "name": "富士宮口五合目",
+    "lng": 138.734233,
+    "lat": 35.33654,
+    "elevation": 2380,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_fujimidake_norikura",
+    "name": "富士見岳",
+    "lng": 137.5478,
+    "lat": 36.1205,
+    "elevation": 2817,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_fuji_hotel",
+    "name": "富士山ホテル",
+    "lng": 138.738889,
+    "lat": 35.369167,
+    "elevation": 3356,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_fuji_miharashi",
+    "name": "富士山みはらし",
+    "lng": 138.733333,
+    "lat": 35.394167,
+    "elevation": 2304,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_fujisan_yamaguchiya",
+    "name": "富士山頂上山口屋",
+    "lng": 138.733056,
+    "lat": 35.365,
+    "elevation": 3715,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpsylfab_fukushima_masanori_jinato",
+    "name": "福島正則陣跡",
+    "lng": 136.4603341,
+    "lat": 35.3596551,
+    "elevation": 135,
+    "source": "Imported from existing local location data",
+    "confidence": "medium",
+    "notes": "data/ 配下の既存ロケーションに保存されていたランドマークから作成。外部ソース未再検証。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_bessan_tateyama",
+    "name": "別山",
+    "lng": 137.6183,
+    "lat": 36.5981,
+    "elevation": 2880,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_hotaka_jinja_okumiya",
+    "name": "穂高神社奥宮",
+    "lng": 137.663889,
+    "lat": 36.253333,
+    "elevation": 1530,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_haaeizan",
+    "name": "宝永山",
+    "lng": 138.751992,
+    "lat": 35.343897,
+    "elevation": 2693,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_hoeisanso",
+    "name": "宝永山荘",
+    "lng": 138.738056,
+    "lat": 35.339167,
+    "elevation": 2498,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_hokendake",
+    "name": "宝剣岳",
+    "lng": 137.809165,
+    "lat": 35.781419,
+    "elevation": 2931,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_hokensanso",
+    "name": "宝剣山荘",
+    "lng": 137.8089382,
+    "lat": 35.7831545,
+    "elevation": 2868,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_minenochaya",
+    "name": "峰の茶屋跡避難小屋",
+    "lng": 139.9622028,
+    "lat": 37.1307413,
+    "elevation": 1728,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpsx5vlv_horaiyama",
+    "name": "蓬莱山",
+    "lng": 140.2475,
+    "lat": 37.7227,
+    "elevation": 1802,
+    "source": "浄土平ビジターセンター/フィールドガイド; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "浄土平エリアの既存ロケーション由来。浄土平ビジターセンター/フィールドガイド、YAMAP、周辺登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。急峻地形や湿原・池沼の代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 浄土平。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_kitadake",
+    "name": "北岳",
+    "lng": 138.238889,
+    "lat": 35.674444,
+    "elevation": 3193,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_kitadake_katanokoya",
+    "name": "北岳肩ノ小屋",
+    "lng": 138.23869,
+    "lat": 35.68064,
+    "elevation": 3000,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpujahtp_kitadake_sanso",
+    "name": "北岳山荘",
+    "lng": 138.233056,
+    "lat": 35.664722,
+    "elevation": 2900,
+    "source": "南アルプス市/山小屋 official pages; YAMAP mountain/model-course pages; local DEM checked",
+    "confidence": "high",
+    "notes": "北岳エリアの既存ロケーション由来。南アルプス市/山小屋公式系ページ、YAMAP山情報/モデルコースで同名地点と標高を確認し、保存済みDEMも照合。広河原など谷底や急峻な稜線でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 北岳。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_kitahotakadake",
+    "name": "北穂高岳",
+    "lng": 137.6525,
+    "lat": 36.303611,
+    "elevation": 3106,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_hm_mps24b7i_honhachigome_tomoekan",
+    "name": "本八合目トモエ館",
+    "lng": 138.738611,
+    "lat": 35.368889,
+    "elevation": 3375,
+    "source": "富士登山オフィシャルサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "富士山エリアの既存ロケーション由来。富士登山オフィシャルサイト、YAMAP山情報/ランドマーク、各登山ルート・山小屋・五合目の文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 富士山。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_marishitendake_norikura",
+    "name": "摩利支天岳",
+    "lng": 137.5419,
+    "lat": 36.1175,
+    "elevation": 2873,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_ws_mpufre3a_marisitensan",
+    "name": "摩利支天山",
+    "lng": 137.476667,
+    "lat": 35.904722,
+    "elevation": 2959,
+    "source": "YAMAP mountain/landmark pages; 御嶽山ビジターセンター/自治体/山小屋 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "御嶽山エリアの既存ロケーション由来。YAMAP、御嶽山ビジターセンター/自治体系資料、五の池小屋等の山小屋・登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。火口湖・稜線・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 御嶽山。"
+  },
+  {
+    "id": "imported_ws_mpuftlcr_maodake",
+    "name": "魔王岳",
+    "lng": 137.5563,
+    "lat": 36.1246,
+    "elevation": 2760,
+    "source": "乗鞍岳頂上小屋/観光・山小屋 pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "乗鞍岳エリアの既存ロケーション由来。乗鞍岳頂上小屋/観光・山小屋系ページ、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。稜線・池沼・バス停代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 乗鞍岳。"
+  },
+  {
+    "id": "imported_hm_mpsksqgi_mugenjigoku",
+    "name": "無間地獄",
+    "lng": 139.9605167,
+    "lat": 37.1248243,
+    "elevation": 1780,
+    "source": "那須ロープウェイ公式; とちぎ旅ネット; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "茶臼岳エリアの既存ロケーション由来。那須ロープウェイ公式、とちぎ旅ネット、YAMAP山情報/ランドマーク、那須岳周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 茶臼岳。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_myojin",
+    "name": "明神",
+    "lng": 137.666236,
+    "lat": 36.252283,
+    "elevation": 1530,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_myojinike",
+    "name": "明神池",
+    "lng": 137.663889,
+    "lat": 36.253333,
+    "elevation": 1530,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpujxt22_shigekuradake",
+    "name": "茂倉岳",
+    "lng": 138.916667,
+    "lat": 36.848889,
+    "elevation": 1977.9,
+    "source": "谷川岳ロープウェイ/山岳 route pages; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "谷川岳エリアの既存ロケーション由来。谷川岳ロープウェイ/山岳ルート情報、YAMAPで同名地点と標高を確認し、保存済みDEMも照合。岩壁・谷筋・ロープウェイ駅代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 谷川岳。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_kisokoma",
+    "name": "木曽駒ヶ岳",
+    "lng": 137.804559,
+    "lat": 35.789557,
+    "elevation": 2956,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_oyama_tateyama",
+    "name": "雄山",
+    "lng": 137.6191,
+    "lat": 36.5729,
+    "elevation": 3003,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_raichozawa_camp",
+    "name": "雷鳥沢キャンプ場",
+    "lng": 137.6032,
+    "lat": 36.5863,
+    "elevation": 2277,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_hm_mps28ig3_mpss7map",
+    "name": "硫黄岳",
+    "lng": 138.3674633,
+    "lat": 35.9984163,
+    "elevation": 2760,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 天狗岳・八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpsvp97w_iodake_sanso",
+    "name": "硫黄岳山荘",
+    "lng": 138.372222,
+    "lat": 35.993889,
+    "elevation": 2654,
+    "source": "YAMAP maps/landmarks; municipal/mountain guide pages; official/tourism hut pages where available; local DEM checked",
+    "confidence": "high",
+    "notes": "八ヶ岳・天狗岳エリアの既存ロケーション由来。YAMAPの八ヶ岳地図/ランドマーク、自治体・山岳/山小屋/観光系ページで同名地点と周辺文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。作成元ロケーション: 八ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_ryuodake",
+    "name": "龍王岳",
+    "lng": 137.6108,
+    "lat": 36.5638,
+    "elevation": 2872,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_tsurugidake",
+    "name": "剱岳",
+    "lng": 137.6175077,
+    "lat": 36.6235354,
+    "elevation": 2999,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_tsurugi_gozen",
+    "name": "剱御前",
+    "lng": 137.6108,
+    "lat": 36.5984,
+    "elevation": 2777,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_tsurugi_gozen_goya",
+    "name": "剱御前小舎",
+    "lng": 137.6097,
+    "lat": 36.5969,
+    "elevation": 2750,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_tsurugisawa_camp",
+    "name": "剱沢キャンプ場",
+    "lng": 137.616111,
+    "lat": 36.603056,
+    "elevation": 2520,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpufijxw_tsurugisawa_goya",
+    "name": "剱澤小屋",
+    "lng": 137.615833,
+    "lat": 36.604722,
+    "elevation": 2525,
+    "source": "YAMAP mountain/landmark pages; 立山/室堂周辺公式・山小屋/観光 pages; local DEM checked",
+    "confidence": "high",
+    "notes": "立山エリアの既存ロケーション由来。YAMAP、室堂/立山周辺の公式・山小屋/観光系ページで同名地点と標高を確認し、保存済みDEMも照合。稜線・山小屋・谷筋でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 立山。"
+  },
+  {
+    "id": "imported_ws_mpstn2zu_hinokiodake",
+    "name": "檜尾岳",
+    "lng": 137.813333,
+    "lat": 35.751944,
+    "elevation": 2728,
+    "source": "中央アルプス駒ヶ岳ロープウェイ公式; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "木曽駒ヶ岳エリアの既存ロケーション由来。中央アルプス駒ヶ岳ロープウェイ公式、YAMAP山情報/ランドマーク、山小屋・稜線・千畳敷周辺の登山ルート文脈を確認し、保存済みDEMの標高と大きな矛盾がないことを確認。 作成元ロケーション: 木曽駒ヶ岳。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_karasawa",
+    "name": "涸沢",
+    "lng": 137.663056,
+    "lat": 36.294167,
+    "elevation": 2300,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_karasawa_hutte",
+    "name": "涸沢ヒュッテ",
+    "lng": 137.663056,
+    "lat": 36.293611,
+    "elevation": 2309,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_karasawadake",
+    "name": "涸沢岳",
+    "lng": 137.646389,
+    "lat": 36.296389,
+    "elevation": 3110,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "imported_ws_mpuixxvh_karasawa_goya",
+    "name": "涸沢小屋",
+    "lng": 137.660833,
+    "lat": 36.295556,
+    "elevation": 2350,
+    "source": "上高地公式ウェブサイト; YAMAP mountain/landmark pages; local DEM checked",
+    "confidence": "high",
+    "notes": "上高地エリアの既存ロケーション由来。上高地公式ウェブサイト、YAMAP、穂高・涸沢方面の登山ルート文脈で同名地点と標高を確認し、保存済みDEMも照合。谷底・湿原・山小屋代表点でDEM差が出る地点は外部標高と周辺文脈を優先。 作成元ロケーション: 上高地。"
+  },
+  {
+    "id": "utsugidake_area_utsugidake",
+    "name": "空木岳",
+    "lng": 137.8172222,
+    "lat": 35.7188889,
+    "elevation": 2864,
+    "source": "GSI main mountain elevations; mikketa/PORTALFIELD hut pages; Yamareco point pages; Peakbagger with GSI map source; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリア追加。国土地理院の主な山岳標高一覧で主要ピーク標高を確認し、山小屋・特徴物はmikketa/PORTALFIELDおよびヤマレコのDMS座標を使用。熊沢岳はPeakbagger（Map Source: Japan - GSI）座標を参照。同名の大滝山は北アルプスの情報が混在しやすいため今回は未登録。保存済みDEMで標高整合を確認。"
+  },
+  {
+    "id": "utsugidake_area_utsugi_komaho_hutte",
+    "name": "空木駒峰ヒュッテ",
+    "lng": 137.8183333,
+    "lat": 35.7197222,
+    "elevation": 2791,
+    "source": "GSI main mountain elevations; mikketa/PORTALFIELD hut pages; Yamareco point pages; Peakbagger with GSI map source; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリア追加。国土地理院の主な山岳標高一覧で主要ピーク標高を確認し、山小屋・特徴物はmikketa/PORTALFIELDおよびヤマレコのDMS座標を使用。熊沢岳はPeakbagger（Map Source: Japan - GSI）座標を参照。同名の大滝山は北アルプスの情報が混在しやすいため今回は未登録。保存済みDEMで標高整合を確認。"
+  },
+  {
+    "id": "utsugidake_area_komaishi",
+    "name": "駒石",
+    "lng": 137.8255556,
+    "lat": 35.7230556,
+    "elevation": 2654,
+    "source": "GSI main mountain elevations; mikketa/PORTALFIELD hut pages; Yamareco point pages; Peakbagger with GSI map source; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリア追加。国土地理院の主な山岳標高一覧で主要ピーク標高を確認し、山小屋・特徴物はmikketa/PORTALFIELDおよびヤマレコのDMS座標を使用。熊沢岳はPeakbagger（Map Source: Japan - GSI）座標を参照。同名の大滝山は北アルプスの情報が混在しやすいため今回は未登録。保存済みDEMで標高整合を確認。"
+  },
+  {
+    "id": "utsugidake_area_utsugidaira_hinangoya",
+    "name": "空木平避難小屋",
+    "lng": 137.8283333,
+    "lat": 35.7208333,
+    "elevation": 2517,
+    "source": "GSI main mountain elevations; mikketa/PORTALFIELD hut pages; Yamareco point pages; Peakbagger with GSI map source; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリア追加。国土地理院の主な山岳標高一覧で主要ピーク標高を確認し、山小屋・特徴物はmikketa/PORTALFIELDおよびヤマレコのDMS座標を使用。熊沢岳はPeakbagger（Map Source: Japan - GSI）座標を参照。同名の大滝山は北アルプスの情報が混在しやすいため今回は未登録。保存済みDEMで標高整合を確認。"
+  },
+  {
+    "id": "utsugidake_area_kisodono_sanso",
+    "name": "木曽殿山荘",
+    "lng": 137.8077778,
+    "lat": 35.7230556,
+    "elevation": 2494,
+    "source": "GSI main mountain elevations; mikketa/PORTALFIELD hut pages; Yamareco point pages; Peakbagger with GSI map source; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリア追加。国土地理院の主な山岳標高一覧で主要ピーク標高を確認し、山小屋・特徴物はmikketa/PORTALFIELDおよびヤマレコのDMS座標を使用。熊沢岳はPeakbagger（Map Source: Japan - GSI）座標を参照。同名の大滝山は北アルプスの情報が混在しやすいため今回は未登録。保存済みDEMで標高整合を確認。"
+  },
+  {
+    "id": "utsugidake_area_higashikawadake",
+    "name": "東川岳",
+    "lng": 137.8052778,
+    "lat": 35.725,
+    "elevation": 2671,
+    "source": "GSI main mountain elevations; mikketa/PORTALFIELD hut pages; Yamareco point pages; Peakbagger with GSI map source; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリア追加。国土地理院の主な山岳標高一覧で主要ピーク標高を確認し、山小屋・特徴物はmikketa/PORTALFIELDおよびヤマレコのDMS座標を使用。熊沢岳はPeakbagger（Map Source: Japan - GSI）座標を参照。同名の大滝山は北アルプスの情報が混在しやすいため今回は未登録。保存済みDEMで標高整合を確認。"
+  },
+  {
+    "id": "utsugidake_area_kumazawadake",
+    "name": "熊沢岳",
+    "lng": 137.803316,
+    "lat": 35.739319,
+    "elevation": 2778,
+    "source": "GSI main mountain elevations; mikketa/PORTALFIELD hut pages; Yamareco point pages; Peakbagger with GSI map source; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリア追加。国土地理院の主な山岳標高一覧で主要ピーク標高を確認し、山小屋・特徴物はmikketa/PORTALFIELDおよびヤマレコのDMS座標を使用。熊沢岳はPeakbagger（Map Source: Japan - GSI）座標を参照。同名の大滝山は北アルプスの情報が混在しやすいため今回は未登録。保存済みDEMで標高整合を確認。"
+  },
+  {
+    "id": "utsugidake_area_hinokio_goya",
+    "name": "檜尾小屋",
+    "lng": 137.8158333,
+    "lat": 35.7511111,
+    "elevation": 2680,
+    "source": "GSI main mountain elevations; mikketa/PORTALFIELD hut pages; Yamareco point pages; Peakbagger with GSI map source; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリア追加。国土地理院の主な山岳標高一覧で主要ピーク標高を確認し、山小屋・特徴物はmikketa/PORTALFIELDおよびヤマレコのDMS座標を使用。熊沢岳はPeakbagger（Map Source: Japan - GSI）座標を参照。同名の大滝山は北アルプスの情報が混在しやすいため今回は未登録。保存済みDEMで標高整合を確認。"
+  },
+  {
+    "id": "utsugidake_area_minamikomagatake",
+    "name": "南駒ヶ岳",
+    "lng": 137.81055555555557,
+    "lat": 35.70138888888889,
+    "elevation": 2841,
+    "source": "GSI main mountain elevations; Yamareco point pages; PEAKS/Yamakei hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリアの範囲変更後に追加。南側主稜線のピークは国土地理院の主な山岳標高一覧およびヤマレコ地点ページで標高・DMS座標・周辺文脈を確認。摺鉢窪避難小屋はヤマレコ地点ページ、PEAKS、山と溪谷オンラインで位置・標高・南駒ヶ岳と赤梛岳間の摺鉢窪カール内であることを確認。保存済みDEMで標高整合を確認。南越百山は現在のbbox南端外のため未登録。"
+  },
+  {
+    "id": "utsugidake_area_akanagidake",
+    "name": "赤梛岳",
+    "lng": 137.8152777777778,
+    "lat": 35.70611111111111,
+    "elevation": 2798,
+    "source": "GSI main mountain elevations; Yamareco point pages; PEAKS/Yamakei hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリアの範囲変更後に追加。南側主稜線のピークは国土地理院の主な山岳標高一覧およびヤマレコ地点ページで標高・DMS座標・周辺文脈を確認。摺鉢窪避難小屋はヤマレコ地点ページ、PEAKS、山と溪谷オンラインで位置・標高・南駒ヶ岳と赤梛岳間の摺鉢窪カール内であることを確認。保存済みDEMで標高整合を確認。南越百山は現在のbbox南端外のため未登録。"
+  },
+  {
+    "id": "utsugidake_area_tagiridake",
+    "name": "田切岳",
+    "lng": 137.82,
+    "lat": 35.70527777777778,
+    "elevation": 2730,
+    "source": "GSI main mountain elevations; Yamareco point pages; PEAKS/Yamakei hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリアの範囲変更後に追加。南側主稜線のピークは国土地理院の主な山岳標高一覧およびヤマレコ地点ページで標高・DMS座標・周辺文脈を確認。摺鉢窪避難小屋はヤマレコ地点ページ、PEAKS、山と溪谷オンラインで位置・標高・南駒ヶ岳と赤梛岳間の摺鉢窪カール内であることを確認。保存済みDEMで標高整合を確認。南越百山は現在のbbox南端外のため未登録。"
+  },
+  {
+    "id": "utsugidake_area_suribachikubo_hinangoya",
+    "name": "摺鉢窪避難小屋",
+    "lng": 137.81694444444443,
+    "lat": 35.702222222222225,
+    "elevation": 2550,
+    "source": "GSI main mountain elevations; Yamareco point pages; PEAKS/Yamakei hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリアの範囲変更後に追加。南側主稜線のピークは国土地理院の主な山岳標高一覧およびヤマレコ地点ページで標高・DMS座標・周辺文脈を確認。摺鉢窪避難小屋はヤマレコ地点ページ、PEAKS、山と溪谷オンラインで位置・標高・南駒ヶ岳と赤梛岳間の摺鉢窪カール内であることを確認。保存済みDEMで標高整合を確認。南越百山は現在のbbox南端外のため未登録。"
+  },
+  {
+    "id": "utsugidake_area_sengairei",
+    "name": "仙涯嶺",
+    "lng": 137.81361111111113,
+    "lat": 35.69222222222222,
+    "elevation": 2734,
+    "source": "GSI main mountain elevations; Yamareco point pages; PEAKS/Yamakei hut pages; local DEM checked",
+    "confidence": "high",
+    "notes": "空木岳エリアの範囲変更後に追加。南側主稜線のピークは国土地理院の主な山岳標高一覧およびヤマレコ地点ページで標高・DMS座標・周辺文脈を確認。摺鉢窪避難小屋はヤマレコ地点ページ、PEAKS、山と溪谷オンラインで位置・標高・南駒ヶ岳と赤梛岳間の摺鉢窪カール内であることを確認。保存済みDEMで標高整合を確認。南越百山は現在のbbox南端外のため未登録。"
+  },
+  {
+    "id": "lungern_area_lungern",
+    "name": "ルンガーン",
+    "lng": 8.15,
+    "lat": 46.783,
+    "elevation": 715,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ルンガーンエリア追加時に登録。Lungern、Lake Lungern、Lungern/Kaiserstuhl OW railway station、Alte Kirche Lungern、Wilerhorn、Güpfi は各ページの座標・標高・周辺文脈を確認し、保存済みDEMで標高整合を確認。湖は面フィーチャのため水面中央の代表点、山頂は急峻な稜線でDEMが公称標高より低めに出るため外部標高を優先。"
+  },
+  {
+    "id": "lungern_area_lungern_station",
+    "name": "ルンガーン駅",
+    "lng": 8.163554,
+    "lat": 46.786343,
+    "elevation": 752,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ルンガーンエリア追加時に登録。Lungern、Lake Lungern、Lungern/Kaiserstuhl OW railway station、Alte Kirche Lungern、Wilerhorn、Güpfi は各ページの座標・標高・周辺文脈を確認し、保存済みDEMで標高整合を確認。湖は面フィーチャのため水面中央の代表点、山頂は急峻な稜線でDEMが公称標高より低めに出るため外部標高を優先。"
+  },
+  {
+    "id": "lungern_area_alte_kirche_lungern",
+    "name": "旧教会塔",
+    "lng": 8.16242,
+    "lat": 46.79093,
+    "elevation": 704,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ルンガーンエリア追加時に登録。Lungern、Lake Lungern、Lungern/Kaiserstuhl OW railway station、Alte Kirche Lungern、Wilerhorn、Güpfi は各ページの座標・標高・周辺文脈を確認し、保存済みDEMで標高整合を確認。湖は面フィーチャのため水面中央の代表点、山頂は急峻な稜線でDEMが公称標高より低めに出るため外部標高を優先。"
+  },
+  {
+    "id": "lungern_area_lungerersee",
+    "name": "ルンガーン湖",
+    "lng": 8.16333,
+    "lat": 46.8025,
+    "elevation": 688,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ルンガーンエリア追加時に登録。Lungern、Lake Lungern、Lungern/Kaiserstuhl OW railway station、Alte Kirche Lungern、Wilerhorn、Güpfi は各ページの座標・標高・周辺文脈を確認し、保存済みDEMで標高整合を確認。湖は面フィーチャのため水面中央の代表点、山頂は急峻な稜線でDEMが公称標高より低めに出るため外部標高を優先。"
+  },
+  {
+    "id": "lungern_area_kaiserstuhl_ow_station",
+    "name": "カイザーストゥールOW駅",
+    "lng": 8.175504,
+    "lat": 46.81436,
+    "elevation": 698,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ルンガーンエリア追加時に登録。Lungern、Lake Lungern、Lungern/Kaiserstuhl OW railway station、Alte Kirche Lungern、Wilerhorn、Güpfi は各ページの座標・標高・周辺文脈を確認し、保存済みDEMで標高整合を確認。湖は面フィーチャのため水面中央の代表点、山頂は急峻な稜線でDEMが公称標高より低めに出るため外部標高を優先。"
+  },
+  {
+    "id": "lungern_area_wilerhorn",
+    "name": "ヴィラーホルン",
+    "lng": 8.10917,
+    "lat": 46.77361,
+    "elevation": 2005,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ルンガーンエリア追加時に登録。Lungern、Lake Lungern、Lungern/Kaiserstuhl OW railway station、Alte Kirche Lungern、Wilerhorn、Güpfi は各ページの座標・標高・周辺文脈を確認し、保存済みDEMで標高整合を確認。湖は面フィーチャのため水面中央の代表点、山頂は急峻な稜線でDEMが公称標高より低めに出るため外部標高を優先。"
+  },
+  {
+    "id": "lungern_area_guepfi",
+    "name": "ギュプフィ",
+    "lng": 8.19528,
+    "lat": 46.79611,
+    "elevation": 2043,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ルンガーンエリア追加時に登録。Lungern、Lake Lungern、Lungern/Kaiserstuhl OW railway station、Alte Kirche Lungern、Wilerhorn、Güpfi は各ページの座標・標高・周辺文脈を確認し、保存済みDEMで標高整合を確認。湖は面フィーチャのため水面中央の代表点、山頂は急峻な稜線でDEMが公称標高より低めに出るため外部標高を優先。"
+  },
+  {
+    "id": "lungern_area_obsee",
+    "name": "オプゼー",
+    "lng": 8.155,
+    "lat": 46.782,
+    "elevation": 703,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "medium",
+    "notes": "ルンガーンエリア追加時に登録。Obseeページでルンガーン南西・ルンガーン湖南端の集落であること、Lungern-Schönbüelページで標高703mのObseeからロープウェイが出ることを確認。記事に点座標が無いため、保存済み衛星画像・既存OSM道路/ロープウェイ形状・DEMを見て集落中心寄りの代表点を設定。"
+  },
+  {
+    "id": "lungern_area_lungern_turren_valley_station",
+    "name": "ルンガーン＝トゥレン山麓駅",
+    "lng": 8.1494327,
+    "lat": 46.7851128,
+    "elevation": 701,
+    "source": "Wikipedia pages citing map.geo.admin.ch/swisstopo; Lungern-Schönbüel and Obsee pages; local DEM checked",
+    "confidence": "medium",
+    "notes": "ルンガーンエリア追加時に登録。ObseeページとLungern-SchönbüelページでObsee側にLungern-Turren-Bahnの山麓駅があることを確認。座標はこのワークスペースに取得済みのOSMロープウェイ形状の東側端点を代表点とし、保存済みDEMで約701mを確認。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_gornergrat",
+    "name": "ゴルナーグラート",
+    "lng": 7.78472,
+    "lat": 45.98333,
+    "elevation": 3135,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_gornergrat_station",
+    "name": "ゴルナーグラート駅",
+    "lng": 7.7822,
+    "lat": 45.9833,
+    "elevation": 3089,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_rotenboden_station",
+    "name": "ローテンボーデン駅",
+    "lng": 7.7653,
+    "lat": 45.9844,
+    "elevation": 2815,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_riffelalp_station",
+    "name": "リッフェルアルプ駅",
+    "lng": 7.75,
+    "lat": 46,
+    "elevation": 2211,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_riffelhorn",
+    "name": "リッフェルホルン",
+    "lng": 7.75825,
+    "lat": 45.981333,
+    "elevation": 2928,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_grindjisee",
+    "name": "グリンジゼー",
+    "lng": 7.79144,
+    "lat": 46.0115,
+    "elevation": 2334,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_gruensee_zermatt",
+    "name": "グリューンゼー",
+    "lng": 7.785729,
+    "lat": 46.005599,
+    "elevation": 2299,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_moosjisee",
+    "name": "モースジゼー",
+    "lng": 7.77962,
+    "lat": 46.01038,
+    "elevation": 2139,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  },
+  {
+    "id": "imported_ws_mpzmsafn_65ca_unterrothorn",
+    "name": "ウンターロートホルン",
+    "lng": 7.797519,
+    "lat": 46.021964,
+    "elevation": 3104,
+    "source": "Gornergrat Railway/Wikipedia station pages; swisstopo/Wikipedia peak pages; German Wikipedia lake pages; local DEM checked",
+    "confidence": "high",
+    "notes": "ツェルマットエリアの座標範囲変更後に追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで同名地点・周辺文脈・標高を確認し、保存済みDEMと照合。急峻なリッフェルホルン山頂はDEM差が大きいため外部標高を優先。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。 作成元ロケーション: ツェルマット。"
+  }
+]

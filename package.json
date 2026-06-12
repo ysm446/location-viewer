@@ -31,7 +31,8 @@
     "appId": "com.example.location-viewer",
     "productName": "Location Viewer",
     "files": [
-      "out/**/*"
+      "out/**/*",
+      "assets/**/*"
     ],
     "win": {
       "target": "nsis"

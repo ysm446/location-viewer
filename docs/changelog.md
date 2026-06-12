@@ -2,6 +2,10 @@
 
 形式: 新しいものを上に。日付は YYYY-MM-DD。
 
+## 2026-06-13
+- ランドマーク：共通ランドマークライブラリのマスターを `assets/landmarks/landmark-library.json` に移し、Git管理できるようにした。起動時は従来どおり `data/landmark-library.json` をローカル作業コピーとして優先し、存在しない場合だけ `assets/landmarks/landmark-library.json` から生成する。配布ビルドにも同梱されるよう `package.json` の electron-builder `files` に `assets/**/*` を追加し、READMEのデータ配置説明も更新した。
+- ランドマーク：座標範囲変更後のツェルマットエリア（`data/ws_mpzmsafn_65ca/`）に `ゴルナーグラート`、`ゴルナーグラート駅`、`ローテンボーデン駅`、`リッフェルアルプ駅`、`リッフェルホルン`、`グリンジゼー`、`グリューンゼー`、`モースジゼー`、`ウンターロートホルン` の9件を追加。Gornergrat/Gornergratbahn系の駅ページ、swisstopo/Wikipedia系の山頂ページ、独語Wikipedia系の湖沼ページで座標・標高・周辺文脈を確認し、保存済みDEMで照合した。リッフェルホルンは急峻な山頂のためDEMが約131m低く出たが、外部標高と周辺文脈を優先した。シュテリゼーとホーテリは代表座標が現在bbox外のため未登録。ツェルマットロケーション内のランドマークは20件、共通ランドマークライブラリは396件になった。`data/` はGit管理外。
+
 ## 2026-06-12
 - ランドマーク：新規追加されたルンガーンエリア（`data/ws_mqaftlu4/`）に `ルンガーン`、`ルンガーン駅`、`旧教会塔`、`ルンガーン湖`、`カイザーストゥールOW駅`、`ヴィラーホルン`、`ギュプフィ`、`オプゼー`、`ルンガーン＝トゥレン山麓駅` の9件を追加。Wikipedia/map.geo.admin.ch/swisstopo系の座標・標高、Lungern-Schönbüel/Obseeの周辺文脈、保存済みDEMを照合した。Obseeと山麓駅は点座標の直接ソースが弱いため、保存済み衛星画像・既存OSM形状・DEMから代表点として登録し `confidence: medium`、その他は `confidence: high` とした。ルンガーンロケーション内のランドマークは9件、共通ランドマークライブラリは387件になった。`data/` はGit管理外。
 

@@ -22,6 +22,7 @@ const PREVIEW_FILE = 'preview.png'
 const SATELLITE_FILE = 'satellite.png'
 const LEGACY_INDEX = 'library.json'
 const LANDMARK_LIBRARY_FILE = 'landmark-library.json'
+const LANDMARK_LIBRARY_ASSET = join('assets', 'landmarks', LANDMARK_LIBRARY_FILE)
 
 /** 地形上のランドマーク（点）。座標は緯度経度で持ち、3D描画時にメッシュ座標へ変換する */
 export interface Landmark {
@@ -113,7 +114,7 @@ function landmarkLibraryPath(dir: string): string {
   return join(dir, LANDMARK_LIBRARY_FILE)
 }
 
-const DEFAULT_LANDMARK_LIBRARY: LandmarkLibraryEntry[] = [
+const FALLBACK_LANDMARK_LIBRARY: LandmarkLibraryEntry[] = [
   {
     id: 'sakuradaira_parking_upper',
     name: '桜平駐車場（上）',
@@ -149,6 +150,21 @@ const DEFAULT_LANDMARK_LIBRARY: LandmarkLibraryEntry[] = [
   }
 ]
 
+async function readBundledLandmarkLibrary(): Promise<LandmarkLibraryEntry[] | null> {
+  const candidates = [
+    join(process.cwd(), LANDMARK_LIBRARY_ASSET),
+    join(__dirname, '..', '..', LANDMARK_LIBRARY_ASSET)
+  ]
+  for (const p of candidates) {
+    try {
+      return JSON.parse(await fs.readFile(p, 'utf-8')) as LandmarkLibraryEntry[]
+    } catch {
+      /* Try the next likely runtime location. */
+    }
+  }
+  return null
+}
+
 async function readWorkspaceFile(dir: string, id: string): Promise<Workspace | null> {
   try {
     const w = JSON.parse(await fs.readFile(wsJsonPath(dir, id), 'utf-8')) as Workspace
@@ -175,7 +191,8 @@ async function ensureLandmarkLibrary(dir: string): Promise<void> {
     await fs.access(landmarkLibraryPath(dir))
   } catch {
     await fs.mkdir(dir, { recursive: true })
-    await fs.writeFile(landmarkLibraryPath(dir), JSON.stringify(DEFAULT_LANDMARK_LIBRARY, null, 2), 'utf-8')
+    const entries = (await readBundledLandmarkLibrary()) ?? FALLBACK_LANDMARK_LIBRARY
+    await fs.writeFile(landmarkLibraryPath(dir), JSON.stringify(entries, null, 2), 'utf-8')
   }
 }
 
